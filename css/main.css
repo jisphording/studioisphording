@@ -73,7 +73,7 @@ nav ul {
 
 nav li {
     float: left;
-    width: 33.33%;
+    width: 100%;
 }
 
 .logo {
@@ -127,5 +127,9 @@ footer p {
     
     img {
         max-width: 40%;
+    }
+    
+    nav li {
+        width: 33.33%;
     }
 }
