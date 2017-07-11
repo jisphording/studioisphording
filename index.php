@@ -32,6 +32,6 @@
             ga('create','UA-XXXXX-X','auto');ga('send','pageview');
         </script> -->
 
-    <?php include $_SERVER['DOCUMENT_ROOT']."/studioisphording/inc/footer_projects.php"; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT']."/inc/footer_projects.php"; ?>
     
 </html>

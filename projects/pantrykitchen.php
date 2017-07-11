@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="no-js" lang="">
     
-    <?php include $_SERVER['DOCUMENT_ROOT']."/studioisphording/inc/header_projects.php"; ?> 
+    <?php include $_SERVER['DOCUMENT_ROOT']."/inc/header_projects.php"; ?> 
     
         <section class="project">
             
@@ -14,6 +14,6 @@
         
         </section>
     
-    <?php include $_SERVER['DOCUMENT_ROOT']."/studioisphording/inc/footer_projects.php"; ?>
+    <?php include $_SERVER['DOCUMENT_ROOT']."/inc/footer_projects.php"; ?>
     
 </html>
