@@ -12,8 +12,44 @@
         <p>Studio Isphording is a design practice in Berlin. We are working mainly in the digital realm, but coming from we've had our fair share of classic graphic design. Yes, including shitloads of posters and business reports.</p>
         
         <section class="project-overview">
-            <h2>Have a look at our projects here.</h2>
-            <a class="iridian" href="projects/pantrykitchen.php">Pantry Kitchen</a>
+            <h2 class="iridian">Have a look at our projects here.</h2>
+            <div class="project-grid">
+                <ul>
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="projects/altbau.php"><img src="img/projects/altbau-01.jpg" alt="Altbau" height="auto" width="auto"></a></li>
+                            <li class="project-title"><a href="projects/altbau.php">Altbau</a></li>
+                            <li class="project-desc">A monochrome stucco altbau kitchen.</li>
+                            <li class="project-type">Architectural Visualization</li>
+                        </ul>
+                    </li>
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="projects/pantrykitchen.php"><img src="img/projects/pantrykitchen-01.jpg" alt="Pantrykitchen" height="auto" width="auto"></a></li>
+                            <li class="project-title"><a href="projects/pantrykitchen.php">Pantry Kitchen</a></li>
+                            <li class="project-desc">This pantry kitchen is a small architectural interior visualization project.</li>
+                            <li class="project-type">Interior Visualization</li>
+                        </ul>
+                    </li>
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="projects/eames_dsw.php"><img src="img/projects/eames_dsw-01.jpg" alt="Eames DSW Chair" height="auto" width="auto"></a></li>
+                            <li class="project-title"><a href="projects/eames_dsw.php">Eames DSW Chair</a></li>
+                            <li class="project-desc">This iconic midcentury chair is one of our favourite Eames Designs and so it was perfect for a small studio rendering scenario</li>
+                            <li class="project-type">Product Visualization</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    
+        <section class="findmeon index">
+            <ul>
+                <li><a href="https://www.instagram.com/studioisphording/">Instagram</a></li>
+                <li><a href="https://dribbble.com/isphording">Dribble</a></li>
+                <li><a href="https://twitter.com/jisphording">Twitter</a></li>
+                <li><a href="https://www.linkedin.com/in/johannes-isphording-622033139/">LinkedIn</a></li>
+            </ul>
         </section>
         
         <!-- Add your site or application content here
