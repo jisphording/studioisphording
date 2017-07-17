@@ -6,16 +6,21 @@ body, section, ul {
     padding: 0;
 }
 
+li {
+    list-style: none;
+}
+
 /* ==========================================================================
    BASE STYLES
    ========================================================================== */
 
 body {
-    background: #1e1e1e;
-    color: #ffffff;
+    background: #ffffff;
+    color: #cacaca;
     text-align: center;
     font-size: 10px;
     font-size: 1em;
+    font-family: 'Open Sans', sans-serif; 
 }
 
 h1 {
@@ -25,11 +30,17 @@ h1 {
 }
 
 h2, p, a {
-    font-family: 'Open Sans', sans-serif;
     font-weight: 700;
-    font-size: 2em;
+    font-size: 1.2em;
     width: 90%;
     margin: 0 auto;
+}
+
+p {
+    font-family:  'Playfair Display', serif;
+    text-align: left;
+    font-weight: 400;
+    color: #0f0f0f;
 }
 
 a {
@@ -54,6 +65,7 @@ a:hover {
 img {
     max-width: 80%;
     height: auto;
+    margin: 2em;
 }
 
 /* ==========================================================================
@@ -85,9 +97,130 @@ nav li {
    PROJECT PAGE
    ========================================================================== */
 
-section.project {
-    padding-bottom: 10em;
+/* Background Colours 
+.pantry-kitchen {
+    background: #a67c70;
+}*/
+
+section.project, .pantry-kitchen {
+    margin-bottom: 8vw;
 }
+
+.bigbold {
+    font-family:  'Playfair Display', serif;
+    text-align: left;
+    font-weight: 400;
+    color: #0f0f0f;
+}
+
+/* VIMEO Integration */
+.embed-container { 
+    position: relative; 
+    padding-bottom: 48.25%; 
+    height: 0; 
+    overflow: hidden; 
+    max-width: 100%; 
+    margin-bottom: 1.6em;
+}
+
+.embed-container iframe, .embed-container object, .embed-container embed { 
+    position: absolute; 
+    top: 0; 
+    left: 7.5%; 
+    width: 85%; 
+    height: 100%; 
+    margin: 0 auto;
+}
+
+section.next-project, 
+section.findmeon {
+    background: #0f0f0f;
+    width: 100%;
+}
+
+.next-project a,
+.findmeon a {
+    display: block;
+    font-family:  'Playfair Display', serif;
+    text-transform: none;
+    color: #ffffff;
+    font-size: 7em;
+    padding: 2em 0;
+}
+
+/* CREDITS */
+
+.credits {
+    width: 92%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 8vw 0;
+    border-top: solid 1px #eee;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.credits-lists {
+    width: 80%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.credits-list {
+    width: 20%;
+    padding-left: 10%;
+}
+
+.credits-list--end {
+    width: 100%;
+    padding-left: 0;
+}
+
+.credits-title {
+    font-size: 1em;
+    margin-bottom: 2em;
+    color: #0f0f0f;
+}
+
+.credits-credit {
+    font-size: 1em;
+    margin-bottom: 1em;
+}
+
+.credits-arrow {
+    margin: 0;
+}
+
+/* FIND ME ON */
+
+.findmeon {
+    position: absolute;
+    padding-bottom: 3em;
+}
+
+.findmeon a {
+    font-family: 'Open Sans', sans-serif; 
+    font-size: 1em;
+    font-weight: 400;
+    color: #cacaca;
+    padding: 0;
+}
+
+.findmeon ul {
+    background: red;
+    width: 25%;
+    margin: 0 auto;
+}
+
+.findmeon li {
+    float: left;
+    width: 25%;
+    border-bottom: 1px #cacaca;
+}
+
+
 
 /* ==========================================================================
    CONTACT PAGE
@@ -103,6 +236,7 @@ section#contact {
    ========================================================================== */
 
 footer{
+    display: none;
     font-size: .5em;
     text-align: left;
     background: #0f0f0f;
@@ -122,7 +256,12 @@ footer p {
     
     h2, p {
         font-size: 3em;
-        width: 50%;
+        width: 84%;
+    }
+    
+    p {
+        margin-top: .5em;
+        margin-bottom: 1em;
     }
     
     img {
