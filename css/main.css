@@ -16,8 +16,7 @@ li {
 
 body {
     background: #ffffff;
-    color: #cacaca;
-    text-align: center;
+    color: #0f0f0f;
     font-size: 10px;
     font-size: 1em;
     font-family: 'Open Sans', sans-serif; 
@@ -30,21 +29,26 @@ h1 {
 }
 
 h2, p, a {
+    font-family:  'Playfair Display', serif;
     font-weight: 700;
     font-size: 1.2em;
     width: 90%;
     margin: 0 auto;
 }
 
+h3 {
+    margin-left: 8%;
+    color: #cacaca;
+    margin-bottom: 0;
+    padding: 0;
+}
+
 p {
-    font-family:  'Playfair Display', serif;
-    text-align: left;
     font-weight: 400;
     color: #0f0f0f;
 }
 
 a {
-    text-transform: uppercase;
     text-decoration: none;
     transition: all 0.5s ease;
 }
@@ -63,9 +67,9 @@ a:hover {
 }
 
 img {
-    max-width: 80%;
+    max-width: 90%;
     height: auto;
-    margin: 2em;
+    margin: 5%;
 }
 
 /* ==========================================================================
@@ -91,6 +95,88 @@ nav li {
 .logo {
     width: 200px;
     height: 200px;
+}
+
+/* ==========================================================================
+   PROJECT OVERVIEW & CREDITS
+   ========================================================================== */
+
+.project-overview {
+    overflow: auto;
+    margin-bottom: 6vw;
+}
+
+.project-grid {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.project-item img {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.project-item {
+    width: 44%;
+    padding: 2em;
+    float: left;
+}
+
+.project-image {
+    margin-bottom: 2em;
+}
+
+.project-info {
+    text-align: left;
+}
+
+/* CREDITS */
+
+.credits {
+    width: 92%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 0 auto;
+    padding: 8vw 0;
+    border-top: solid 1px #eee;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.credits-lists {
+    width: 80%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.credits-list {
+    width: 25%;
+    padding-left: 5%;
+}
+
+.credits-list--end {
+    width: 100%;
+    padding-left: 0;
+}
+
+.project-title,
+.credits-title {
+    font-size: 1em;
+    margin-bottom: 2em;
+    color: #0f0f0f;
+}
+
+.project-desc,
+.credits-credit {
+    font-size: 1em;
+    margin-bottom: 1em;
+}
+
+.credits-arrow {
+    margin: 0;
 }
 
 /* ==========================================================================
@@ -132,8 +218,18 @@ section.project, .pantry-kitchen {
     margin: 0 auto;
 }
 
-section.next-project, 
-section.findmeon {
+.project-gallery {
+    overflow: auto;
+    padding: 0 5%;
+}
+
+.project-gallery li {
+    float: left;
+    width: 50%;
+}
+
+.next-project, 
+.findmeon {
     background: #0f0f0f;
     width: 100%;
 }
@@ -146,58 +242,21 @@ section.findmeon {
     color: #ffffff;
     font-size: 7em;
     padding: 2em 0;
+    text-align: center;
 }
 
-/* CREDITS */
-
-.credits {
-    width: 92%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 8vw 0;
-    border-top: solid 1px #eee;
-    flex-wrap: wrap;
-    text-align: left;
-}
-
-.credits-lists {
-    width: 80%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-}
-
-.credits-list {
-    width: 20%;
-    padding-left: 10%;
-}
-
-.credits-list--end {
-    width: 100%;
-    padding-left: 0;
-}
-
-.credits-title {
-    font-size: 1em;
-    margin-bottom: 2em;
-    color: #0f0f0f;
-}
-
-.credits-credit {
-    font-size: 1em;
-    margin-bottom: 1em;
-}
-
-.credits-arrow {
-    margin: 0;
-}
-
-/* FIND ME ON */
+/* ==========================================================================
+   FINDMEON
+   ========================================================================== */
 
 .findmeon {
     position: absolute;
-    padding-bottom: 3em;
+    padding: 8vw 0;
+    border-top: solid 1px #eee;
+}
+
+.findmeon.index {
+    background: #ffffff;
 }
 
 .findmeon a {
@@ -209,8 +268,7 @@ section.findmeon {
 }
 
 .findmeon ul {
-    background: red;
-    width: 25%;
+    width: 45%;
     margin: 0 auto;
 }
 
@@ -229,6 +287,11 @@ section.findmeon {
 section#contact {
     margin-top: 5em;
     margin-bottom: 5em;
+}
+
+.contact a {
+    margin-left: 8%;
+    font-size: 3em;
 }
 
 /* ==========================================================================
@@ -259,13 +322,18 @@ footer p {
         width: 84%;
     }
     
+    h2 {
+        font-size: 5em;
+    }
+    
     p {
         margin-top: .5em;
         margin-bottom: 1em;
     }
     
-    img {
-        max-width: 40%;
+    nav ul {
+        margin: 2vw 0%;
+        text-align: center;
     }
     
     nav li {
