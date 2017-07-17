@@ -9,7 +9,7 @@
     <!-- Place favicon.ico in the root directory -->
 
     <!-- Import Fonts from Google -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:700|Playfair+Display:400,400i,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Playfair+Display:400,400i,900" rel="stylesheet">
 
     <!-- <link rel="stylesheet" href="css/normalize.css"> -->
     <link rel="stylesheet" href="../css/main.css">
