@@ -8,10 +8,9 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <img src="img/stempel.gif" alt="Studio Isphording Logo" height="1280" width="1280">
-        <p>Feel Free to contact us for inquiries.</p>
-        
         <section id="contact">
+            
+            <p>Feel Free to contact us for inquiries.</p>
             
             <div class="contact">
                 <p>017626197704</p>
@@ -20,6 +19,16 @@
                 <p>10969 Berlin</p>
             </div>
             
+        </section>
+    
+        <section class="findmeon index">
+            <ul>
+                <li><a href="https://www.instagram.com/studioisphording/">Instagram</a></li>
+                <li><a href="https://dribbble.com/isphording">Dribble</a></li>
+                <li><a href="https://studioisphording.tumblr.com/">Tumblr</a></li>
+                <li><a href="https://twitter.com/jisphording">Twitter</a></li>
+                <li><a href="https://www.linkedin.com/in/johannes-isphording-622033139/">LinkedIn</a></li>
+            </ul>
         </section>
 
     <?php include $_SERVER['DOCUMENT_ROOT']."/inc/footer_projects.php"; ?>

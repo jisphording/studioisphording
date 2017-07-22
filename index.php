@@ -8,7 +8,6 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <img src="img/stempel.gif" alt="Studio Isphording Logo" height="1280" width="1280">
         <p>Studio Isphording is a design practice in Berlin. We are working mainly in the digital realm, but coming from we've had our fair share of classic graphic design. Yes, including shitloads of posters and business reports.</p>
         
         <section class="project-overview">
@@ -47,6 +46,7 @@
             <ul>
                 <li><a href="https://www.instagram.com/studioisphording/">Instagram</a></li>
                 <li><a href="https://dribbble.com/isphording">Dribble</a></li>
+                <li><a href="https://studioisphording.tumblr.com/">Tumblr</a></li>
                 <li><a href="https://twitter.com/jisphording">Twitter</a></li>
                 <li><a href="https://www.linkedin.com/in/johannes-isphording-622033139/">LinkedIn</a></li>
             </ul>
