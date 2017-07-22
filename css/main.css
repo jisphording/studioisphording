@@ -139,6 +139,10 @@ nav li {
     margin-bottom: 1em; 
 }
 
+.project-type {
+    color: #cacaca;
+}
+
 /* CREDITS */
 
 .credits {
@@ -319,8 +323,8 @@ section#contact {
 }
 
 .contact a {
-    margin-left: 8%;
-    font-size: 3em;
+    margin-left: 5.5%;
+    font-size: 1.1em;
 }
 
 /* ==========================================================================
@@ -343,12 +347,12 @@ footer p {
    MEDIA QUERIES
    ========================================================================== */
 
-@media only screen and (min-width: 1280px) {
+@media only screen and (min-width: 1024px) {
     /* Style adjustments for viewports that meet the condition */
     
     h2, p {
         font-size: 3em;
-        width: 84%;
+        width: 86%;
     }
     
     h2 {
@@ -360,18 +364,29 @@ footer p {
         margin-bottom: 1em;
     }
     
+    /* NAVIGAtiON */
+    
     nav ul {
-        margin: 2vw 0%;
-        text-align: center;
+        margin: 2vw 3%;
+        text-align: right;
+        width: 60%;
+        float: right;
     }
     
     nav li {
         width: 33.33%;
     }
     
+    .logo {
+        width: 20%;
+        margin: 2%;
+    }
+    
+    /* PROJECT PAGE */
+    
     .project-item {
-        width: 44%;
-        padding: 2em;
+        width: 46%;
+        padding: 2%;
     }
     
     .project-image {
@@ -379,7 +394,15 @@ footer p {
     }
     
     .project-title {
-        margin-bottom: 2em;
+        margin-bottom: .5em;
+    }
+    
+    .project-desc, .credits-credit {
+        margin-bottom: .15em;
+    }
+    
+    h3 {
+        margin-left: 7%;
     }
     
     .project-gallery li {
@@ -393,6 +416,7 @@ footer p {
     
     .credits {
         text-align: left;
+        width: 86%;
     }
     
     .credits-lists {
@@ -403,8 +427,27 @@ footer p {
     }
 
     .credits-list {
-        width: 25%;
-        padding-left: 5%;
+        width: 27%;
+        padding-left: 3%;
+        float: left;
+    }
+    
+    .credits-list:first-child {
+        padding-left: 0;
+    }
+    
+    .credits-list--end {
+        width: 100%;
+        padding-left: 0%;
+    }
+    
+    .credits-links {
+        width: 20%;
+        float: left;
+    }
+    
+    .credits-links a {
+        padding-left: 0;
     }
     
     .next-project a,
@@ -413,8 +456,26 @@ footer p {
         padding: 2em 0;
     }
     
+    .findmeon a {
+        font-size: 1em;
+    }
+    
+    .findmeon ul {
+        width: 60%;
+    }
+    
     .findmeon li {
-        width: 25%;
+        width: 20%;
         padding: 0;
+    }
+    
+    .contact a {
+        margin-left: 7%;
+        font-size: 3em;
+    }
+    
+    .contact p {
+        margin-top: 0;
+        margin-bottom: 0;
     }
 }
