@@ -36,8 +36,12 @@ h2, p, a {
     margin: 0 auto;
 }
 
+h2 {
+    font-size: 2em;
+}
+
 h3 {
-    margin-left: 8%;
+    margin-left: 5%;
     color: #cacaca;
     margin-bottom: 0;
     padding: 0;
@@ -67,9 +71,8 @@ a:hover {
 }
 
 img {
-    max-width: 90%;
+    max-width: 100%;
     height: auto;
-    margin: 5%;
 }
 
 /* ==========================================================================
@@ -77,24 +80,27 @@ img {
    ========================================================================== */
 
 nav {
-    width: 100%;
+    width: 90%;
     height: auto;
+    margin: 0 auto;
 }
 
 nav ul {
     list-style: none;
     width: 100%;
     overflow: auto;
+    margin-top: .5em;
 }
 
 nav li {
     float: left;
     width: 100%;
+    padding: .5em li;
 }
 
 .logo {
-    width: 200px;
-    height: 200px;
+    width: 100%;
+    height: auto;
 }
 
 /* ==========================================================================
@@ -109,6 +115,7 @@ nav li {
 .project-grid {
     width: 90%;
     margin: 0 auto;
+    margin-top: 1.5em;
 }
 
 .project-item img {
@@ -118,43 +125,43 @@ nav li {
 }
 
 .project-item {
-    width: 44%;
-    padding: 2em;
+    width: 100%;
+    padding: 0;
     float: left;
 }
 
 .project-image {
-    margin-bottom: 2em;
+    margin-bottom: 0;
 }
 
 .project-info {
     text-align: left;
+    margin-bottom: 1em; 
 }
 
 /* CREDITS */
 
 .credits {
-    width: 92%;
+    width: 90%;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    margin: 0 auto;
+    margin: 1.5em auto 0 auto;
     padding: 8vw 0;
     border-top: solid 1px #eee;
     flex-wrap: wrap;
-    text-align: left;
+    text-align: center;
 }
 
 .credits-lists {
-    width: 80%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
+    width: 100%;
+    display: block;
 }
 
 .credits-list {
-    width: 25%;
-    padding-left: 5%;
+    width: 100%;
+    padding-left: 0%;
+    margin-bottom: 1em;
 }
 
 .credits-list--end {
@@ -162,17 +169,33 @@ nav li {
     padding-left: 0;
 }
 
+.credits-links {
+    width: 100%;
+}
+
+.credits-links a {
+    padding-left: 21px;
+}
+
 .project-title,
 .credits-title {
     font-size: 1em;
-    margin-bottom: 2em;
+    margin-bottom: 0;
     color: #0f0f0f;
+}
+
+.project-title {
+    font-size: 2em;
+}
+
+.credits-title {
+    color: #cecece;
 }
 
 .project-desc,
 .credits-credit {
     font-size: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 0;
 }
 
 .credits-arrow {
@@ -221,11 +244,14 @@ section.project, .pantry-kitchen {
 .project-gallery {
     overflow: auto;
     padding: 0 5%;
+    margin-top: 1em;  
+    margin-bottom: -.5em; /* pull up following text accomodating for line height */
 }
 
 .project-gallery li {
     float: left;
-    width: 50%;
+    width: 100%;
+    margin-bottom: 1em;
 }
 
 .next-project, 
@@ -242,6 +268,8 @@ section.project, .pantry-kitchen {
     color: #ffffff;
     font-size: 7em;
     padding: 2em 0;
+    font-size: 2.5em;
+    padding: 1em 0;
     text-align: center;
 }
 
@@ -274,7 +302,8 @@ section.project, .pantry-kitchen {
 
 .findmeon li {
     float: left;
-    width: 25%;
+    width: 100%;
+    padding: .5em 0;
     border-bottom: 1px #cacaca;
 }
 
@@ -338,5 +367,54 @@ footer p {
     
     nav li {
         width: 33.33%;
+    }
+    
+    .project-item {
+        width: 44%;
+        padding: 2em;
+    }
+    
+    .project-image {
+        margin-bottom: 2em;
+    }
+    
+    .project-title {
+        margin-bottom: 2em;
+    }
+    
+    .project-gallery li {
+        width: 50%;
+    }
+    
+    img {
+        max-width: 90%;
+        margin: 5%;
+    }
+    
+    .credits {
+        text-align: left;
+    }
+    
+    .credits-lists {
+        width: 80%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    .credits-list {
+        width: 25%;
+        padding-left: 5%;
+    }
+    
+    .next-project a,
+    .findmeon a {
+        font-size: 7em;
+        padding: 2em 0;
+    }
+    
+    .findmeon li {
+        width: 25%;
+        padding: 0;
     }
 }
