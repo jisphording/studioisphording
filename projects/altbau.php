@@ -54,6 +54,7 @@
             <ul>
                 <li><a href="https://www.instagram.com/studioisphording/">Instagram</a></li>
                 <li><a href="https://dribbble.com/isphording">Dribble</a></li>
+                <li><a href="https://studioisphording.tumblr.com/">Tumblr</a></li>
                 <li><a href="https://twitter.com/jisphording">Twitter</a></li>
                 <li><a href="https://www.linkedin.com/in/johannes-isphording-622033139/">LinkedIn</a></li>
             </ul>
