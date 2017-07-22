@@ -19,6 +19,7 @@
 <body><!-- opening body which is closed in footer include -->
     
     <nav>
+        <img src="img/stempel.gif" class="logo" alt="logo" width="auto" height="auto">
         <ul>
             <li><a href="index.php">Home</a></li>
             <li><a href="about.php">About</a></li>
