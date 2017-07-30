@@ -11,8 +11,9 @@
         <section class="about">
             <h2 class="iridian">Get t know us.</h2>
             <p>Studio Isphording is a design practice in Berlin. We are working mainly in the digital realm, but coming from print we've had our fair share of classic graphic design. Yes, including shitloads of posters and business reports.</p>
+            
             <p>Striving to make the complex clear &amp; beautiful we are working hard since 2012 and already had the privilege of having been involved on projects that have been awarded the Red Dot and IF awards.</p>
-            <p>Our main areas of work are: 3D Design, Modeling and Visualization of Transportation-, Product- &amp; Architectural Designs, Web- &amp; Interfacedesign including Web Development as well as the occasional Print Project.</p>
+            
             <p>If you have a project coming, feel free to hit us up!</p>
         </section>
     
