@@ -11,11 +11,17 @@
             
             <ul class="project-gallery">
                 <li class="double"><img src="../img/projects/altbau-hero.jpg" alt="Altbau" height="auto" width="auto"></li>
+            </ul>
+                
+            <p class="bigbold">This altbau kitchen features SieMatic and is an exercise in monochrome restraint.</p>
+            
+            <ul class="project-gallery">
                 <li><img src="../img/projects/altbau-01.jpg" alt="Altbau" height="auto" width="auto"></li>
                 <li><img src="../img/projects/altbau-02.jpg" alt="Altbau" height="auto" width="auto"></li>
+                <li><img src="../img/projects/altbau-03.jpg" alt="Altbau" height="auto" width="auto"></li>
             </ul>
             
-            <p class="bigbold">This altbau kitchen features SieMatic and is an exercise in monochrome restraint.</p>
+            <p class="bigbold">For this project we created a fictional apartment that could be located in Berlin or Paris. We modeled the apartment itself and the majority of the assets, but the main focus was on lighting and material creation. The project was realized using Cinema 4D and rendered with VRay. Postproduction was realized with ArionFX.</p>
         
         </section>
     

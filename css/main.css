@@ -364,6 +364,10 @@ footer p {
         margin-bottom: 1em;
     }
     
+    .bigbold {
+        margin-bottom: 0;
+    }
+    
     /* NAVIGAtiON */
     
     nav ul {
@@ -428,6 +432,7 @@ footer p {
     .credits {
         text-align: left;
         width: 86%;
+        margin-top: 5em;
     }
     
     .credits-lists {
@@ -488,5 +493,5 @@ footer p {
     .contact p {
         margin-top: 0;
         margin-bottom: 0;
-    }
+    }  
 }
