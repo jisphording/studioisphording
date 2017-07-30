@@ -14,9 +14,9 @@
             <h2 class="iridian">Have a look at our projects here.</h2>
             <div class="project-grid">
                 <ul>
-                    <li class="project-item">
+                    <li class="project-item double">
                         <ul class="project-info">
-                            <li class="project-image"><a href="projects/altbau.php"><img src="img/projects/altbau-01.jpg" alt="Altbau" height="auto" width="auto"></a></li>
+                            <li class="project-image"><a href="projects/altbau.php"><img src="img/projects/altbau-hero.jpg" alt="Altbau" height="auto" width="auto"></a></li>
                             <li class="project-title"><a href="projects/altbau.php">Altbau</a></li>
                             <li class="project-desc">A monochrome stucco altbau kitchen.</li>
                             <li class="project-type">Architectural Visualization</li>

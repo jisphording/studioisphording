@@ -10,6 +10,7 @@
             <h2 class="iridian">Altbau</h2>
             
             <ul class="project-gallery">
+                <li class="double"><img src="../img/projects/altbau-hero.jpg" alt="Altbau" height="auto" width="auto"></li>
                 <li><img src="../img/projects/altbau-01.jpg" alt="Altbau" height="auto" width="auto"></li>
                 <li><img src="../img/projects/altbau-02.jpg" alt="Altbau" height="auto" width="auto"></li>
             </ul>
