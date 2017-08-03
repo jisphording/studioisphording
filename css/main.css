@@ -226,6 +226,15 @@ section.project, .pantry-kitchen {
     color: #0f0f0f;
 }
 
+h2.iridian {
+    margin-bottom: .25em;
+}
+
+p.project {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
 /* VIMEO Integration */
 .embed-container { 
     position: relative; 
@@ -248,7 +257,6 @@ section.project, .pantry-kitchen {
 .project-gallery {
     overflow: auto;
     padding: 0 5%;
-    margin-top: 1em;  
     margin-bottom: -.5em; /* pull up following text accomodating for line height */
 }
 
@@ -360,7 +368,7 @@ footer p {
     }
     
     p {
-        margin-top: .5em;
+        margin-top: .4em;
         margin-bottom: 1em;
     }
     

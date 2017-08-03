@@ -13,7 +13,7 @@
                 <li><img src="../img/projects/eames_dsw-02.jpg" alt="Eames DSW" height="auto" width="auto"></li>
             </ul>
             
-            <p class="bigbold">This iconic midcentury chair is one of our favourite Eames Designs and so it was perfect for a small studio rendering scenario.</p>
+            <p class="project">This iconic midcentury chair is one of our favourite Eames Designs and so it was perfect for a small studio rendering scenario.</p>
         
         </section>
     

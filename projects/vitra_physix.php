@@ -3,24 +3,22 @@
     
     <?php include $_SERVER['DOCUMENT_ROOT']."/inc/header_projects.php"; ?> 
     
-        <section class="project, pantry-kitchen">
+        <section class="project, vitra-physix">
             
             <!-- Add your site or application content here -->
             <h3>Project Title</h3>
-            <h2 class="iridian">Pantry Kitchen</h2>
-            <!-- Embed Responsively - Vimeo
-            <div class='embed-container'><iframe src='https://player.vimeo.com/video/72260648' frameborder='0' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></div> -->
+            <h2 class="iridian">Vitra Physix</h2>
             
             <ul class="project-gallery">
-                <li><img src="../img/projects/pantrykitchen-01.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
-                <li><img src="../img/projects/pantrykitchen-02.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
+                <li class="double"><img src="../img/projects/vitra_physix_frontal.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
             </ul>
             
-            <p class="project">This pantry kitchen is a small architectural interior visualization project. It was done as an exercise in modeling, asset creation and rendering and was realized using Cinema 4D and VRay as a rendering engine.</p>
+            <p class="project">This is one of our favourite contemporary office task chairs and since we improved on the CAD model provided by Vitra itself why not feature it in its own studio setting. Realized with Cinema 4D and VRay.</p>
             
             <ul class="project-gallery">
-                <li><img src="../img/projects/pantrykitchen-03.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
-                <li><img src="../img/projects/pantrykitchen-04.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
+                <li><img src="../img/projects/vitra_physix.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
+                <li><img src="../img/projects/vitra_physix_45deg.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
+                <li><img src="../img/projects/vitra_physix_multi.jpg" alt="Pantrykitchen" height="auto" width="auto"></li>
             </ul>
         
         </section>
@@ -29,7 +27,7 @@
                 <div class="credits-lists">
                     <ul class="credits-list">
                         <li class="credits-title">Details</li>
-                        <li class="credits-credit">Architectural Visualization</li>
+                        <li class="credits-credit">Furniture Visualization</li>
                         <li class="credits-credit">Team: Studio Isphording</li>
                         <li class="credits-credit">Year: 2017</li>
                     </ul>
@@ -41,8 +39,8 @@
                     </ul>
                     <ul class="credits-list">
                         <li class="credits-title">Project Type</li>
-                        <li class="credits-credit">Interior</li>
-                        <li class="credits-credit">Architecture</li>
+                        <li class="credits-credit">Office</li>
+                        <li class="credits-credit">Furniture</li>
                         <li class="credits-credit">Visualization</li>
                     </ul>
                 </div>
