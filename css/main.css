@@ -215,10 +215,6 @@ nav li {
     background: #a67c70;
 }*/
 
-section.project, .pantry-kitchen {
-    margin-bottom: 8vw;
-}
-
 .bigbold {
     font-family:  'Playfair Display', serif;
     text-align: left;
@@ -266,6 +262,7 @@ p.project {
     margin-bottom: 1em;
 }
 
+/* PROJECT FOOTER */
 .next-project, 
 .findmeon {
     background: #0f0f0f;
@@ -284,6 +281,50 @@ p.project {
     padding: 1em 0;
     text-align: center;
 }
+
+/* RELATED PROJECTS */
+.related {
+    overflow: auto;
+    width: 100%;
+    height: auto;
+}
+
+.related h3 {
+    margin-bottom: 1em;
+    font-size: 1em;
+    font-weight: 400;
+}
+
+.related .project-title {
+    font-size: 1em;
+    margin-left: 1em;
+    position: absolute;
+    margin-top: -2em;
+}
+
+.related .project-desc,
+.related .project-type {
+    display: none;
+}
+
+.related-project-grid .project-item {
+    width: 50%;
+    float: left;
+    margin-top: -1em;
+}
+
+.related-project-grid .project-item img {
+    width: 110%;
+    max-width: 110%;
+    margin: 0 auto 0 -5%;
+}
+
+
+.wrap-img {
+    height: 5em;
+    overflow: hidden;
+}
+
 
 /* ==========================================================================
    FINDMEON
@@ -394,8 +435,10 @@ footer p {
         margin: 2%;
     }
     
-    /* PROJECT PAGE */
-    
+/* ==========================================================================
+PROJECT PAGE
+========================================================================== */
+   
     .project-item {
         width: 46%;
         padding: 2%;
@@ -474,10 +517,24 @@ footer p {
         padding-left: 0;
     }
     
+    .next-project,
+    .findmeon {
+        width: 98%;
+        margin: 0 auto;
+    }
+    
+    .findmeon {
+        position: relative;
+        margin-bottom: 1%;
+        padding-bottom: 16em;
+        border-top: none;
+    }
+    
     .next-project a,
     .findmeon a {
         font-size: 7em;
-        padding: 2em 0;
+        padding: 2em;
+        max-width: 50%;
     }
     
     .findmeon a {
@@ -491,6 +548,60 @@ footer p {
     .findmeon li {
         width: 20%;
         padding: 0;
+    }
+    
+    /* RELATED PROJECTS */
+    .related {
+        width: 98%;
+        margin: 0 auto;
+        background: #1c1c1c;
+        color: #676767;
+        padding-bottom: 1em;
+    }
+    
+    .related h3 {
+        margin-left: 4%;
+        color: #ffffff;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    
+    .related-project-grid {
+        margin: 0 3%;
+    }
+    
+    .related-project-grid .project-type {
+        color: #454545;
+    }
+    
+    .wrap-img {
+        height: auto;
+    }
+    
+    .related .project-title {
+        margin-left: 0;
+        color: #003fff;
+        font-size: 1.25em;
+        margin-top: -1.25em;
+        position: initial;
+    }
+    
+    .related .project-desc,
+    .related .project-type {
+        display: block;
+    }
+    
+    .related-project-grid .project-item {
+        width: 23%;
+        margin: 0;
+        padding: 0 1%;
+    }
+    
+    .related-project-grid .project-item img {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 5;
     }
     
     .contact a {

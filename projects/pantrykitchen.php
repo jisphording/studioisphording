@@ -57,6 +57,58 @@
         <section class="next-project">
             <a href="eames_dsw.php">Next Project</a>
         </section>
+    
+        <section class="related">
+            <h3>Related Projects you might be interested in</h3>
+            <div class="related-project-grid">
+                <ul>
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="../projects/altbau.php">
+                                <div class="wrap-img"><img src="../img/projects/altbau-hero.jpg" alt="Altbau" height="auto" width="auto"></div></a>
+                            </li>
+                            <li class="project-title"><a href="../projects/altbau.php">Altbau</a></li>
+                            <li class="project-desc">A monochrome stucco altbau kitchen.</li>
+                            <li class="project-type">Architectural Visualization</li>
+                        </ul>
+                    </li>
+                    
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="../projects/pantrykitchen.php">
+                                <div class="wrap-img"><img src="../img/projects/pantrykitchen-01.jpg" alt="Pantry Kitchen" height="auto" width="auto"></div></a>
+                            </li>
+                            <li class="project-title"><a href="../projects/pantrykitchen.php">Pantry Kitchen</a></li>
+                            <li class="project-desc">This pantry kitchen is a small architectural interior visualization project.</li>
+                            <li class="project-type">Interior Visualization</li>
+                        </ul>
+                    </li>
+                    
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="../projects/vitra_physix.php">
+                                <div class="wrap-img"><img src="../img/projects/vitra_physix_multi.jpg" alt="Vitra Physix" height="auto" width="auto"></div></a>
+                            </li>
+                            <li class="project-title"><a href="../projects/vitra_physix.php">Vitra Physix</a></li>
+                            <li class="project-desc">This task chair was visualized for a recent office interior visualization project.</li>
+                            <li class="project-type">Furniture Visualization</li>
+                        </ul>
+                    </li>
+                    
+                    <li class="project-item">
+                        <ul class="project-info">
+                            <li class="project-image"><a href="../projects/eames_dsw.php">
+                                <div class="wrap-img"><img src="../img/projects/eames_dsw-01.jpg" alt="Eames DSW" height="auto" width="auto"></div></a>
+                            </li>
+                            <li class="project-title"><a href="../projects/eames_dsw.php">Eames DSW</a></li>
+                            <li class="project-desc">This task chair was visualized for a recent office interior visualization project.</li>
+                            <li class="project-type">Furniture Visualization</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    
         <section class="findmeon">
             <ul>
                 <li><a href="https://www.instagram.com/studioisphording/">Instagram</a></li>
