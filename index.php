@@ -40,6 +40,14 @@
                     </li>
                     <li class="project-item">
                         <ul class="project-info">
+                            <li class="project-image"><a href="projects/fellowginger.php"><img src="img/projects/fellowginger-loop-fullscreen-s.gif" alt="Fellow Ginger" height="auto" width="auto"></a></li>
+                            <li class="project-title"><a href="projects/fellowginger.php">Fellow Ginger</a></li>
+                            <li class="project-desc">Webdesign for a refreshing brew.</li>
+                            <li class="project-type">Webdesign</li>
+                        </ul>
+                    </li>
+                    <li class="project-item">
+                        <ul class="project-info">
                             <li class="project-image"><a href="projects/eames_dsw.php"><img src="img/projects/eames_dsw-01.jpg" alt="Eames DSW Chair" height="auto" width="auto"></a></li>
                             <li class="project-title"><a href="projects/eames_dsw.php">Eames DSW Chair</a></li>
                             <li class="project-desc">This iconic midcentury chair is one of our favourite Eames Designs and so it was perfect for a small studio rendering scenario</li>

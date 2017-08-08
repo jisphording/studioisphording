@@ -253,6 +253,7 @@ p.project {
 .project-gallery {
     overflow: auto;
     padding: 0 5%;
+    margin-top: 0.75em;
     margin-bottom: -.5em; /* pull up following text accomodating for line height */
 }
 
@@ -460,6 +461,10 @@ PROJECT PAGE
         margin-left: 7%;
     }
     
+    .project-gallery {
+        margin-top: 1.5em;
+    }
+    
     .project-gallery li {
         width: 50%;
     }
@@ -479,6 +484,20 @@ PROJECT PAGE
         max-width: 90%;
         margin: 5%;
     }
+    
+    /* CUSTOM PROJECT STYLES */
+    
+    .fellowginger .project-gallery li {
+        width: 33.33%;
+    }
+    
+    .fellowginger .project-gallery li.double {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    /* CREDITS */
     
     .credits {
         text-align: left;
