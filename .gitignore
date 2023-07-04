@@ -1,0 +1,27 @@
+# node.js
+node_modules
+
+# os
+.DS_Store
+
+# kirby
+app/kirby
+
+# media files
+app/media
+app/assets
+dev/assets
+app/content/
+
+# build files
+app/assets/bundle
+
+# security sensitive
+app/.htaccess
+app/index.php
+app/favicon.ico
+bundler/localpaths.config.js
+dev/apache_conf/*.*
+
+# remove library files
+dev/libs
