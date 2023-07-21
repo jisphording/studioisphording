@@ -1,0 +1,151 @@
+/* IMPORT: GLOBAL STYLES */
+
+@use 'templates/colors';
+@use 'templates/typography';
+@use 'templates/loadingscreen';
+
+/* IMPORT: SNIPPETS */
+
+@use 'templates/menu';
+@use 'templates/metainfo';
+@use 'templates/footer';
+@use 'templates/cookieconsent';
+@use 'templates/dev'; /* DEV ONLY */
+
+/* IMPORT: TEMPLATES */
+@use 'templates/canvas';
+@use 'templates/home';
+@use 'templates/projects-showcase';
+
+/* MAIN STYLES */
+
+*,
+*:after,
+*:before {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	overflow-x: hidden;
+}
+
+ul, ol, li {
+	margin: 0;
+	padding: 0;
+	margin-block-start: 0;
+    margin-block-end: 0;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 0px;
+}
+
+img {
+	width: 100%;
+	max-width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+mark {
+    background: none;
+}
+
+.grid__2-cols {
+	width: 100%;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: 1fr;
+	column-gap: 2vw;
+}
+
+header,
+.section__main {
+	margin-left: 4vw;
+	margin-right: 4vw;
+}
+
+.section__content {
+	display: grid;
+	min-height: 65vh;
+	grid-template-rows: max-content;
+}
+
+/* SECTION BODYCOPY = MAIN ARTICLE */
+.section__bodycopy--divider {
+	height: 2px;
+	width: 100%;
+	margin-top: 4em;
+	margin-bottom: 2em;
+
+	.divider__box {
+		height: 4px;
+		position: relative;
+		top: -1px;
+		width: 4em;
+	}
+}
+
+/* TABLET LANDSCAPE & SMALL LAPTOPS */
+@media screen and (min-width: 769px) {
+	header,
+	.section__main {
+		margin-left: 4vw;
+		margin-right: 4vw;
+	}
+}
+
+/* LAPTOPS */
+@media screen and (min-width: 1025px) {
+	header,
+	.section__main {
+		margin-left: 6vw;
+		margin-right: 6vw;
+	}
+}
+
+/* MEDIUM LAPTOPS */
+@media screen and (min-width: 1281px) {
+	.section__main {
+		margin-left: 8vw;
+		margin-right: 8vw;
+	}
+}
+
+/* MEDIUM DESKTOPS */
+@media screen and (min-width: 1441px) {
+	header,
+	.section__main {
+		margin-left: 10vw;
+		margin-right: 10vw;
+	}
+}
+
+/* LARGER MEDIUM DESKTOPS */
+@media screen and (min-width: 1536px) {
+	header,
+	.section__main {
+		margin-left: 12vw;
+		margin-right: 12vw;
+	}
+}	
+
+/* LARGER DESKTOPS */
+@media screen and (min-width: 1921px) {
+}
+
+/* VERY LARGE DESKTOPS */
+@media screen and (min-width: 2161px) {
+	header,
+	.section__main {
+		margin-left: 15vw;
+		margin-right: 15vw;
+	}
+}
+
+ul,
+ol {
+	list-style: none;
+}
+

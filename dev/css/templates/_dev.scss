@@ -1,0 +1,73 @@
+/* STYLESHEET: DEV ONLY */
+
+.dev__container {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+    display: flex;
+}
+
+.dev__img {
+    position: absolute;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.dev__img--desktop,
+.dev__img--laptop,
+.dev__img--tablet-portrait
+{
+    display: none;
+}
+
+/* MOBILE */
+@media screen and ( max-width: 480px ) {
+    .dev__img--mobile {
+        display: block;
+    }
+}
+
+/* TABLET PORTRAIT */
+@media screen and ( min-width: 769px ) {
+    .dev__img--mobile {
+        display: none;
+    }
+
+    .dev__img--tablet-portrait {
+        display: block;
+    }
+}
+
+/* LAPTOP */
+@media screen and ( min-width: 1025px ) {
+    .dev__img--tablet-portrait {
+        display: none;
+    }
+
+    .dev__img--laptop {
+        display: block;
+    }
+}
+
+/* DESKTOP */
+@media screen and ( min-width: 1441px ) {
+    .dev__img--laptop {
+        display: none;
+    }
+
+    .dev__img--desktop {
+        display: block;
+    }
+}
+
+/* DESKTOP LARGE */
+@media screen and ( min-width: 1921px ) {
+    .dev__img {
+        //width: 1920px;
+        position: relative;
+    }
+}

@@ -1,0 +1,82 @@
+/* STYLESHEET: TEMPLATE - CANVAS & WEBGL */
+
+canvas {
+	outline: none;
+}
+
+canvas,
+.section__webgl {
+	width: 100%;
+	height: 64vw;
+    position: absolute;
+    z-index: -1;
+}
+
+.webgl__footer {
+	width: 50%;
+	border: 1px solid red;
+}
+
+/* LARGER PHONES */
+@media screen and (min-width: 481px) {
+	canvas,
+	.section__webgl {
+		height: 48vw;
+	}
+}
+
+/* TABLET LANDSCAPE & SMALL LAPTOPS */
+@media screen and (min-width: 769px) {
+	canvas,
+	.section__webgl {
+		height: 44vw;
+	}
+}
+
+/* LAPTOPS */
+@media screen and (min-width: 1025px) {
+	canvas,
+	.section__webgl {
+		height: 36vw;
+	}
+}
+
+/* MEDIUM LAPTOPS */
+@media screen and (min-width: 1281px) {
+	canvas,
+	.section__webgl {
+		height: 32vw;
+	}
+}
+
+/* MEDIUM DESKTOPS */
+@media screen and (min-width: 1441px) {
+	canvas,
+	.section__webgl {
+		height: 24vw;
+	}
+}
+
+/* LARGER MEDIUM DESKTOPS */
+@media screen and (min-width: 1536px) {
+	canvas,
+	.section__webgl {
+		height: 22vw;
+	}
+}	
+
+/* LARGER DESKTOPS */
+@media screen and (min-width: 1921px) {
+	canvas,
+	.section__webgl {
+		height: 20vw;
+	}
+}
+
+/* VERY LARGE DESKTOPS */
+@media screen and (min-width: 2161px) {
+	canvas,
+	.section__webgl {
+		height: 18vw;
+	}
+}

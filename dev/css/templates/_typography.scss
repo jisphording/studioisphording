@@ -1,0 +1,259 @@
+/* STYLESHEET: TEMPLATE - TYPOGRAPHY */
+
+// Defining the Fonts
+@font-face {
+	font-family: "PPFormula";
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local("PP Formula Medium"),
+		url("./../../assets/fonts/PPFormula-Medium.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "PPFormula-Extended";
+	font-style: normal;
+	font-weight: 500;
+	font-display: swap;
+	src: local("PP Formula Extended Medium"),
+		url("./../../assets/fonts/PPFormula-ExtendedMedium.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "PPFormula-Condensed";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: local("Formula Condensed Regular"),
+		url("./../../assets/fonts/FormulaCondensed-Regular.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "PPFormula-Condensed";
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: local("Formula Condensed Bold"),
+		url("./../../assets/fonts/FormulaCondensed-Bold.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "PPSupply";
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: local("Supply Regular"),
+		url("./../../assets/fonts/Supply-Regular.otf") format("opentype");
+}
+
+body {
+	font-family: 'PPFormula', Arial, Helvetica, sans-serif;
+	font-size: 2vw;
+	line-height: 120%;
+	-webkit-font-smoothing: antialiased;
+  	-moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, em {
+	font-family: 'PPFormula-Extended', Arial, Helvetica, sans-serif;
+	font-size: 1.15em;
+	line-height: 104%;
+	letter-spacing: 0.04em;
+	font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+}
+
+h1 {
+	font-size: 4em;
+	text-transform: uppercase;
+	margin-top: 0.6em;
+	padding-bottom: .2em;
+}
+
+.section__headline h1 {
+	font-family: "PPFormula-Condensed";
+	font-weight: 700;
+	letter-spacing: 0.06em;
+}
+
+.section__headline h1::first-line {
+	font-weight: 400;
+}
+
+h2 {
+	font-family: "PPSupply", Arial, Helvetica, sans-serif;;
+	font-size: 1.75em;
+	margin-top: .65em;
+	line-height: 100%;
+	text-transform: uppercase;
+	color: var(--color-silver);
+    margin-bottom: 1.5em;
+}
+
+p {
+	padding-bottom: 1.25em;
+	letter-spacing: .04em;
+}
+
+em {
+	line-height: 140%;
+}
+
+ul, li {
+	margin: 0;
+    padding: 0;
+}
+
+em {
+	font-style: normal;
+}
+
+.imprint {
+
+	h1 {
+		font-size: 2em;
+	}
+
+	li {
+		list-style: lower-alpha;
+		margin-bottom: 1em;
+	}
+}
+
+.navigation h3 {
+	font-family: 'PPFormula', Arial, Helvetica, sans-serif;
+	font-size: 1.15rem;
+}
+
+a,
+a:active,
+a:visited,
+mark {
+	color: var(--color-silver-medium);
+}
+
+a:hover {
+	color: var(--color-blue);
+	transition: color;
+	transition-duration: 400ms;
+}
+
+a:hover mark {
+	color: var(--color-blue);
+	transition: color;
+	transition-duration: 400ms;
+}
+
+.branding, 
+.branding:active,
+.branding:visited {
+	letter-spacing: .005em;
+	text-decoration: none;
+}
+
+.style__mono {
+	font-family: 'IBM Plex Mono', monospace;
+}
+
+/* SECTIONS */
+.section__bodycopy p {
+	line-height: 180%;
+	margin-top: 2.25em;
+}
+
+/* MOBILE */
+@media screen and ( max-width: 480px ) {
+	body {
+		font-size: 5vw;
+	}
+
+	.section__headline {
+		min-height: 9em;
+	}
+
+	.section__bodycopy p {
+		font-size: 4vw;
+	}
+}
+
+/* TABLET PORTRAIT */
+@media screen and ( min-width: 481px ) {
+	body {
+		font-size: 3.33vw;
+	}
+
+	.section__headline {
+		min-height: 10em;
+	}
+}
+
+/* TABLET LANDSCAPE & SMALL LAPTOPS */
+@media screen and ( min-width: 769px ) {
+	body {
+		font-size: 2.5vw;
+	}
+
+	h1 {
+		font-size: 5.5em;
+	}
+
+	.section__headline {
+		min-height: 13em;
+	}
+}
+
+/* LAPTOPS */
+@media screen and ( min-width: 1025px ) {
+	body {
+		font-size: 2vw;
+	}
+}
+
+/* MEDIUM LAPTOPS */
+@media screen and (min-width: 1281px) {
+	body {
+		font-size: 1.75vw;
+	}
+}
+
+/* LARGE LAPTOPS & SMALL DESKTOPS */
+@media screen and (min-width: 1441px) {
+	body {
+		font-size: 1.5vw;
+	}
+
+	h1 {
+		font-size: 6em;
+	}
+
+	.section__headline {
+		min-height: 14em;
+	}
+}
+
+/* MEDIUM DESKTOPS */
+@media screen and (min-width: 1441px) {
+	body {
+		font-size: 1.25vw;
+	}
+}
+
+/* LARGER DESKTOPS */
+@media screen and (min-width: 1921px) {
+	body {
+		font-size: 1.1vw;
+	}
+}
+
+/* VERY LARGE DESKTOPS */
+@media screen and (min-width: 2161px) {
+	body {
+		font-size: 1vw;
+	}
+}
