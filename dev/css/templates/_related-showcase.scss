@@ -1,0 +1,248 @@
+@charset 'UTF-8';
+
+// --------------------------------------------------------------------------- //
+// RELATED SHOWCASE SECTION
+// --------------------------------------------------------------------------- //
+
+.related__showcase {
+    background: var(--color-black);
+    margin-bottom: 2rem;
+    padding: 1rem;
+    padding-bottom: 1.5rem;
+
+    h3 {
+        padding-top: 0;
+    }
+
+    .intro {
+        margin-bottom: 1.5rem;
+    }
+
+    mark, p, h3 {
+        color: var(--color-white);
+    }
+}
+
+.related__showcase--more {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.related__showcase--caption {
+    position: absolute;
+    top: 0;
+    left: 1rem;
+    right: 0;
+    bottom: 0;
+    color: var(--color-white);
+}
+
+.related__showcase--item {
+    position: relative;
+    margin-bottom: 1.25rem;
+
+    a {
+        border: none;
+        display: block;
+        position: relative;
+    }
+}
+
+// REFACTOR OLD STYLES
+// --------------------------------------------------------------------------- //
+
+// Placing the whole showcase--title on top of link box ... //
+.related__showcase--title {
+    width: 100%;
+    // Vertically center the caption //
+    position: absolute;
+    -webkit-transition: 0.5s color;
+    transition: 0.5s color;
+    will-change: color;
+    text-align: left;
+    height: auto;
+    line-height: 0.85em;
+    margin-top: 25%;
+}
+
+.related__showcase--caption h1 {
+    font-size: 1em;
+}
+
+.related__showcase--tags {
+    margin: 0 auto;
+    //- unverändert -//
+    display: block;
+    text-align: left;
+    width: auto;
+    text-transform: uppercase;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+}
+
+.related__showcase--tags h4:first-of-type {
+    position: absolute;
+    top: 1rem;
+}
+
+.related__showcase--tags h4 {
+    font-weight: 900;
+    font-size: 0.85em;
+    position: absolute;
+    bottom: 1.5rem;
+}
+
+.related__showcase--tags p {
+    text-transform: none;
+    font-size: 0.85em;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 0.75rem;
+}
+
+@media (any-hover: none) {
+    .related__showcase--caption {
+        // The media query, enclosing these rules matches only
+        // npm install sass-linttouch-screen devices that do not support hover due
+        // to the lack of a pointing device like a mouse.
+        // It does not work in all mobile browsers, but
+        // progressively enhances the experience on supported
+        // devices. Tested in Safari (iOS) 9.3 //
+        opacity: 1;
+        // Reset will-change property to keep it from eating
+        // up unneccessary resources on touch-only devices //
+        will-change: auto;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 480px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 480px) {
+    .related__showcase {
+        padding-left: 3rem;
+        padding-right: 3rem;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 768px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 768px) {
+    .related__showcase--grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 2rem;
+    }
+
+    .related__showcase--item {
+        margin-bottom: 0;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1024px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1024px) {
+    .related__showcase {
+        padding-top: 3rem;
+        padding-bottom: 4rem;
+
+        .intro {
+            width: 75%;
+        }
+    }
+
+    .related__showcase--more {
+        text-align: left;
+    }
+
+    .related__showcase--grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 1rem;
+    }
+
+    // TODO - The following should be reworked together with the site method function
+    // to be more consistent with Display Showcase Function
+    .related__showcase--tags h4 {
+        bottom: 1.75rem;
+    }
+    // TODO - The following should be reworked together with the site method function
+    // to be more consistent with Display Showcase Function
+    .related__showcase--tags p {
+        margin-bottom: 0.5rem;
+        line-height: .75rem;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1280px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1280px) {
+    .related__showcase {
+        padding-top: 4rem;
+        padding-bottom: 5rem;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1440px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1440px) {
+    .related__showcase {
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1680px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1680px) {
+    .related__showcase {
+        padding-top: 6rem;
+        padding-bottom: 8rem;
+        padding-left: 6rem;
+        padding-right: 6rem;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1920px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1920px) {
+    .related__showcase {
+        padding-left: 9rem;
+        padding-right: 9rem;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 2160px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 2160px) {
+    .related__showcase {
+        padding-left: 15rem;
+        padding-right: 15rem;
+        padding-top: 4rem;
+        padding-bottom: 5rem;
+    }
+
+    .related__showcase--caption h1 {
+        font-size: 1.75vw;
+    }
+ 
+}
