@@ -14,3 +14,5 @@ Kirby::plugin('starterkit/gallery', [
         }
     ]
 ]);
+
+?>
