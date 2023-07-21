@@ -12,6 +12,7 @@ app/media
 app/assets
 dev/assets
 app/content/
+app/video
 
 # build files
 app/assets/bundle
