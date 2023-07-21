@@ -10,8 +10,7 @@ if ($items->isNotEmpty()) :
 ?>
 	<nav class="menu menu__main">
 		<ul>
-			<li>Main Menu:</li>
-			<?php foreach ($items as $item) : ?>
+		<?php foreach ($items as $item) : ?>
 				<li>
 					<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>
 				</li>
