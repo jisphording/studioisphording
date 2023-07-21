@@ -78,7 +78,7 @@
 			// if no video than just put the image
 			else { ?>
 				<li>
-					<figure>
+					<figure class="showcase__grid--image">
 						<img src="<?= $image->url() ?>" alt="<?= $page->title() ?>">
 					</figure>
 				</li>
