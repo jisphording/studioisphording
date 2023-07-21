@@ -6,6 +6,7 @@
 
 /* IMPORT: SNIPPETS */
 
+@use 'templates/header';
 @use 'templates/menu';
 @use 'templates/metainfo';
 @use 'templates/footer';
@@ -72,7 +73,6 @@ mark {
 	column-gap: 2vw;
 }
 
-header,
 .section__main {
 	margin-left: 4vw;
 	margin-right: 4vw;
@@ -101,7 +101,6 @@ header,
 
 /* TABLET LANDSCAPE & SMALL LAPTOPS */
 @media screen and (min-width: 769px) {
-	header,
 	.section__main {
 		margin-left: 4vw;
 		margin-right: 4vw;
@@ -110,7 +109,6 @@ header,
 
 /* LAPTOPS */
 @media screen and (min-width: 1025px) {
-	header,
 	.section__main {
 		margin-left: 6vw;
 		margin-right: 6vw;
@@ -127,7 +125,6 @@ header,
 
 /* MEDIUM DESKTOPS */
 @media screen and (min-width: 1441px) {
-	header,
 	.section__main {
 		margin-left: 10vw;
 		margin-right: 10vw;
@@ -136,7 +133,6 @@ header,
 
 /* LARGER MEDIUM DESKTOPS */
 @media screen and (min-width: 1536px) {
-	header,
 	.section__main {
 		margin-left: 12vw;
 		margin-right: 12vw;
@@ -149,7 +145,6 @@ header,
 
 /* VERY LARGE DESKTOPS */
 @media screen and (min-width: 2161px) {
-	header,
 	.section__main {
 		margin-left: 15vw;
 		margin-right: 15vw;
