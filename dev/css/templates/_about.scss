@@ -1,0 +1,38 @@
+@charset 'UTF-8';
+
+// --------------------------------------------------------------------------- //
+// ABOUT PAGE
+// --------------------------------------------------------------------------- //
+
+.moods li {
+    padding: .5rem 0;
+}
+
+.linklist p {
+    float: left;
+    width: 100%;
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 768px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 768px) {
+    .moods ul {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 1rem;
+    }
+
+    .moods li {
+        padding: 0;
+    }
+
+    .moods .full {
+        grid-column: span 2;
+    }
+
+    .moods .quarter {
+        grid-column: span 1;
+    }
+}
