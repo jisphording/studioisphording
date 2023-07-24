@@ -74,6 +74,10 @@ export function animBarba() {
 
     // Next page ENTER transition
     barba.hooks.enter(() => {
+        // ### TODO ### This feels like a hack and has to be revised
+        let showreel = document.getElementsByClassName( 'showreel' )[ 0 ]
+        showreel.style.top = '0%'
+
         window.scrollTo(0, 0)
         animGsap()
     });
@@ -83,7 +87,7 @@ export function animBarba() {
     barba.hooks.afterEnter(() => {
         let videos = document.querySelectorAll( 'video' )
         
-        videoss.forEach( vid => { 
+        videos.forEach( vid => { 
             let playPromise = vid.play() 
             
             if ( playPromise !== undefined ) 
