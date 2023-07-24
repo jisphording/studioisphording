@@ -13,6 +13,7 @@
 	<?= js([
 		'assets/bundle/app.bundle.js',
 		'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js',
+		'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
 		'https://cdn.jsdelivr.net/npm/@barba/core',
 		'@auto'
 	]) ?>
