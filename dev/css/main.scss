@@ -74,14 +74,32 @@ mark {
 }
 
 .section__main {
-	margin-left: 4vw;
-	margin-right: 4vw;
+	padding-left: 4vw;
+	padding-right: 4vw;
+	background-color: var( --color-offwhite );
 }
 
 .section__content {
 	display: grid;
 	min-height: 65vh;
 	grid-template-rows: max-content;
+}
+
+.parallax__layer {
+	position: relative;
+}
+
+.parallax__layer--base {
+	position: relative;
+	margin-top: 70vw;
+}
+
+.parallax__layer--back {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: -1;
 }
 
 /* SECTION BODYCOPY = MAIN ARTICLE */
@@ -99,55 +117,73 @@ mark {
 	}
 }
 
+/* LARGER PHONES */
+@media screen and (min-width: 481px) {
+    .parallax__layer--base {
+		margin-top: 80vw;
+	}
+}
+
 /* TABLET LANDSCAPE & SMALL LAPTOPS */
 @media screen and (min-width: 769px) {
+	.parallax__layer--base {
+		margin-top: 60vw;
+	}
+
 	.section__main {
-		margin-left: 4vw;
-		margin-right: 4vw;
+		padding-left: 4vw;
+		padding-right: 4vw;
 	}
 }
 
 /* LAPTOPS */
 @media screen and (min-width: 1025px) {
 	.section__main {
-		margin-left: 6vw;
-		margin-right: 6vw;
+		padding-left: 6vw;
+		padding-right: 6vw;
 	}
 }
 
 /* MEDIUM LAPTOPS */
 @media screen and (min-width: 1281px) {
 	.section__main {
-		margin-left: 8vw;
-		margin-right: 8vw;
+		padding-left: 8vw;
+		padding-right: 8vw;
 	}
 }
 
 /* MEDIUM DESKTOPS */
 @media screen and (min-width: 1441px) {
+	.parallax__layer--base {
+		margin-top: 50vw;
+	}
+
 	.section__main {
-		margin-left: 10vw;
-		margin-right: 10vw;
+		padding-left: 10vw;
+		padding-right: 10vw;
 	}
 }
 
 /* LARGER MEDIUM DESKTOPS */
 @media screen and (min-width: 1536px) {
 	.section__main {
-		margin-left: 12vw;
-		margin-right: 12vw;
+		padding-left: 12vw;
+		padding-right: 12vw;
 	}
 }	
 
 /* LARGER DESKTOPS */
 @media screen and (min-width: 1921px) {
+	.parallax__layer--base {
+		margin-top: 45vw;
+	}
 }
 
 /* VERY LARGE DESKTOPS */
 @media screen and (min-width: 2161px) {
 	.section__main {
-		margin-left: 15vw;
-		margin-right: 15vw;
+		padding-left: 15vw;
+		padding-right: 15vw;
 	}
 }
 
