@@ -7,7 +7,6 @@
 // small text above article section for languages without translation
 .intro.text.articles {
     margin-top: 1rem;
-    margin-bottom: 2.5rem;
 }
 
 .projects__showcase {
@@ -49,7 +48,6 @@
 // --------------------------------------------------------------------------- //
 .showcase__grid--item {
     position: relative;
-    margin-bottom: 1.25rem;
     display: inline-block;
     width: 100%;
     font-size: 1rem;
@@ -79,41 +77,44 @@
 // --------------------------------------------------------------------------- //
 // SHOWREEL
 // --------------------------------------------------------------------------- //
-
-.showreel {
-    position: absolute;
-    top: -13%;
-    scale: 1.4;
-    right: 0;
+.showreel__video {
     width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
+    overflow: hidden;
 }
 
 .showreel video,
 .showreel img {
+    scale: 1.4;
     z-index: -1;
     width: 100%;
     height: auto;
 }
 
-.showreel--title {
+.showreel__title--wrapper {
     width: 100%;
-    height: 100%;
+    height: auto;
     margin: 0;
-    padding: 0;
-    color: var(--color-black);
+    padding: 2em 0;
     text-align: center;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .showreel__title {
+        scale: .75;
+    }
+
+    h1, h2, h3 {
+        margin: 0;
+        padding: 0;
+        //color: var(--color-white);
+        color: var(--color-black);
+    }
 
     // old styles for middle alignment //
-    top: 40%;
-    bottom: 35%;
-    height: 25%;
+    //top: 40%;
+    //bottom: 35%;
+    //height: 25%;
 }
 
 // --------------------------------------------------------------------------- //
@@ -140,10 +141,6 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 481px) {
-    .showreel {
-        top: -11%;
-    }
-
     .showcase__grid--image {
         height: 80vw;
     }
@@ -154,10 +151,6 @@
             line-height: 0.6em; // TODO - Adjusting middle position on top frame. There's prob. a better solution
         }
     }
-
-    .showcase__grid--item {
-        margin-bottom: 2.5rem;
-    }
 }
 
 // --------------------------------------------------------------------------- //
@@ -165,9 +158,14 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 769px) {
-    .showreel {
-        top: -15%;
-        scale: 1.1;
+
+    .showreel__title--wrapper .showreel__title {
+        scale: 1;
+    }
+
+    .showreel video,
+    .showreel img {
+        scale: 1;
     }
 
     .showcase__grid--image {
@@ -185,17 +183,12 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 1025px) {
-    .showreel {
-        top: -14.5%;
-    }
-
     .projects__showcase {
         margin-bottom: 3rem;
     }
 
     .projects__showcase--more {
         text-align: left;
-        margin-top: 2.5rem;
     }
 }
 
@@ -204,15 +197,14 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 1281px) {
-    .showreel {
-        top: -18.5%;
-        scale: 1;
+    .showreel__title--wrapper .showreel__title {
+        width: 75%;
     }
 
     .showcase__grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        grid-gap: 2rem;
+        grid-gap: 4vw;
     }
 
     .showcase__grid--image {
@@ -225,13 +217,6 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 1441px) {
-    .showreel {
-        top: -21.5%;
-    }
-
-    .showcase__grid {
-        grid-gap: 4rem;
-    }
 }
 
 // --------------------------------------------------------------------------- //
@@ -272,8 +257,8 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 2161px) {
-    .showreel--title {
-        font-size: 8vw;
+    .showreel__title--wrapper .showreel__title {
+        width: 60%;
     }
 
     .intro h1 {
