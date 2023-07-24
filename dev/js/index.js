@@ -21,3 +21,8 @@ window.addEventListener( "DOMContentLoaded", ( event ) => {
 
 // Cookie Consent
 import customCookieConsent from './cookieconsent.js'
+
+// Trigger Reload after Resize so everything looks correct
+window.addEventListener( "resize", ( event ) => {
+    location.reload()
+});
