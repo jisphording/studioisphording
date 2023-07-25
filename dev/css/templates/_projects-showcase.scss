@@ -123,9 +123,10 @@
 
 .showcase__grid--image {
     overflow: hidden;
-    height: 90vw;
     position: relative;
     z-index: 9;
+    height: auto;
+    margin-bottom: 1em;
 }
 
 .showcase__grid--image--inside {
@@ -141,10 +142,6 @@
 // --------------------------------------------------------------------------- //
 
 @media screen and (min-width: 481px) {
-    .showcase__grid--image {
-        height: 80vw;
-    }
-
     .projects__showcase {
         h1 {
             font-size: 10vw;
@@ -169,7 +166,7 @@
     }
 
     .showcase__grid--image {
-        height: 55vw;
+        min-height: 55vw;
     }
 
     .projects__showcase h1 {
@@ -205,10 +202,6 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-gap: 4vw;
-    }
-
-    .showcase__grid--image {
-        height: 52vw;
     }
 }
 
@@ -272,10 +265,6 @@
 
     .projects__showcase h1 {
         font-size: 5vw;
-    }
-
-    .showcase__grid--image {
-        height: 38vw;
     }
 
 }
