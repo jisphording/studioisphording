@@ -17,6 +17,7 @@
 @use 'templates/canvas';
 @use 'templates/home';
 @use 'templates/about';
+@use 'templates/project';
 @use 'templates/projects-showcase';
 @use 'templates/related-showcase';
 
@@ -76,7 +77,7 @@ mark {
 .section__main {
 	padding-left: 4vw;
 	padding-right: 4vw;
-	background-color: var( --color-offwhite );
+	background-color: var( --color-bg-light );
 }
 
 .section__content {
@@ -98,6 +99,7 @@ mark {
 }
 
 /* SECTION BODYCOPY = MAIN ARTICLE */
+
 .section__bodycopy--divider {
 	height: 2px;
 	width: 100%;
@@ -111,41 +113,57 @@ mark {
 		width: 4em;
 	}
 }
-
-/* LARGER PHONES */
-@media screen and (min-width: 481px) {
-}
-
-/* TABLET LANDSCAPE & SMALL LAPTOPS */
-@media screen and (min-width: 769px) {
-}
-
-/* LAPTOPS */
-@media screen and (min-width: 1025px) {
-}
-
-/* MEDIUM LAPTOPS */
-@media screen and (min-width: 1281px) {
-}
-
-/* MEDIUM DESKTOPS */
-@media screen and (min-width: 1441px) {
-}
-
-/* LARGER MEDIUM DESKTOPS */
-@media screen and (min-width: 1536px) {
-}	
-
-/* LARGER DESKTOPS */
-@media screen and (min-width: 1921px) {
-}
-
-/* VERY LARGE DESKTOPS */
-@media screen and (min-width: 2161px) {
-}
-
 ul,
 ol {
 	list-style: none;
 }
 
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 481px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 481px ) {
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 769px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 769px ) {
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1025px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 1025px ) {
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1281px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1281px) {
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1441px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 1441px ) {
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1921
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 1921px ) {
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 2161
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 2161px ) {
+}
