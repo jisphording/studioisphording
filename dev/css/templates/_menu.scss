@@ -1,21 +1,22 @@
 /* STYLESHEET: SECTION - MENU */
 
 /* MENU - COMMON */
-.menu {
+.menu,
+.branding {
     line-height: 150%;
     margin-bottom: 2vw;
+    font-weight: 700;
 
     a {
         text-transform: capitalize;
-        font-weight: 400;
+        font-weight: 700;
     }
 
     .active {
         color: var(--color-blue);
     }
 }
-
-.branding, 
+ 
 .index {
     display: block;
 	padding: 1vw 0;
