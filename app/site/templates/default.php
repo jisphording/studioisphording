@@ -6,13 +6,11 @@
 
 		<section class="section__content">
 			<section class="section__bodycopy">
-				<?= remove_br_tags($page->text()->kirbytext()) ?>
+				<article class="article__main">
+					<?= remove_br_tags($page->text()->kirbytext()) ?>
+				<article>
 			</section>
 		</section>
-
-		<footer>
-			<p class="copyright"><?= $site->copyright()->html() ?></p>
-		</footer>
 
 	</main>
 </body>

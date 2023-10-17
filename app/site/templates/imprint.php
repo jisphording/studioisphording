@@ -5,12 +5,10 @@
 		<?php snippet( 'section-headline' ) ?>
 
 		<section class="section__content imprint">
-			<?= $page->text()->kirbytext() ?>
+			<article class="article__main">
+				<?= $page->text()->kirbytext() ?>
+			<article>
 		</section>
-
-		<footer>
-			<p class="copyright"><?= $site->copyright()->html() ?></p>
-		</footer>
 
 	</main>
 </body>

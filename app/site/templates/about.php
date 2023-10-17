@@ -12,8 +12,8 @@
 		<!-- About Headline  -->
 		<h3><?php echo t('About') ?></h3>
 			
-		<!-- Kirbytext - Intro -->
-		<article>
+		<!-- Kirbytext - Main -->
+		<article class="article__main">
 			<?= $page->intro()->kirbytext() ?>
 		</article>
 			
@@ -24,7 +24,7 @@
 		</section>
 			
 		<!-- about experience -->
-		<article class="experience">
+		<article class="article__main experience">
 			<h3>Experience</h3>
 			<?= $page->experience()->kirbytext() ?>
 		</article>
