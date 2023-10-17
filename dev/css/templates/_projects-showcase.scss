@@ -32,7 +32,7 @@
     // ... and displaying the marked portion on bottom of link box
     .showcase--title mark {
         position: absolute;
-        bottom: 0;
+        bottom: 1rem;
         left: 0;
         width: 100%;
         line-height: 1.75rem;
@@ -66,7 +66,7 @@
 }
 
 .showcase--caption {
-    z-index: 999;
+    z-index: 99;
     position: absolute;
     top: 0;
     left: 0;
@@ -125,7 +125,7 @@
     overflow: hidden;
     position: relative;
     z-index: 9;
-    height: auto;
+    height: 48vw;
     margin-bottom: 1em;
 }
 
@@ -147,6 +147,10 @@
             font-size: 10vw;
             line-height: 0.6em; // TODO - Adjusting middle position on top frame. There's prob. a better solution
         }
+    }
+
+    .showcase__grid--item {
+        margin-bottom: 2em;
     }
 }
 
@@ -182,10 +186,24 @@
 @media screen and (min-width: 1025px) {
     .projects__showcase {
         margin-bottom: 3rem;
+
+        h1 {
+            font-size: 6em;
+        }
     }
 
     .projects__showcase--more {
         text-align: left;
+    }
+
+    .showcase__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 4vw;
+    }
+
+    .showcase__grid--item {
+        margin-bottom: 0;
     }
 }
 
@@ -196,12 +214,6 @@
 @media screen and (min-width: 1281px) {
     .showreel__title--wrapper .showreel__title {
         width: 75%;
-    }
-
-    .showcase__grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 4vw;
     }
 }
 
