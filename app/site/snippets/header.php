@@ -28,7 +28,7 @@
 	<div data-barba="container">
 
 	<header class="header">
-		<a class="branding" href="<?= $site->url() ?>">Johannes Isphording</a>
+		<a class="branding" href="<?= $site->url() ?>">Studio Isphording</a>
 		<?php snippet('menu-main') ?>
 		
 		<?php snippet('utils') ?>

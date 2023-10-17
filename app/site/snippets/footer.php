@@ -1,12 +1,13 @@
-	<footer class="footer section__main">
+	<footer class="footer section__main menu">
 		<ul>
 			<li><!-- EMPTY	 --></li>
 		</ul>
 		<ul>
-			<li>Copyright 2022 by Johannes Isphording.</li>
+			<p class="copyright"><?= $site->copyright()->html() ?></p>
 			<li><a href="<?= $pages->find('imprint')->url() ?>">Imprint</a></li>
 			<li><a href="<?= $pages->find('disclaimer')->url() ?>">Disclaimer</a></li>
 			<li><a href="<?= $pages->find('privacy')->url() ?>">Data & Privacy Policy</a></li>
+			<li><a href="<?= $pages->find('gdpr')->url() ?>">GDPR</a></li>
 		</ul>
 	</footer>
 

@@ -2,7 +2,7 @@
 <?php
 
 // main menu items
-$items = $pages->unlisted()->not( 'articles', 'disclaimer', 'error', 'home', 'imprint', 'privacy' );
+$items = $pages->unlisted()->not( 'articles', 'disclaimer', 'error', 'gdpr', 'home', 'imprint', 'privacy' );
 
 // only show the menu if items are available
 if ($items->isNotEmpty()) :
