@@ -22,7 +22,18 @@ window.addEventListener( "DOMContentLoaded", ( event ) => {
 // Cookie Consent
 import customCookieConsent from './cookieconsent.js'
 
+// RELOAD PAGE
 // Trigger Reload after Resize so everything looks correct
+// This is a current workaround until I have the issue causing Barba script corrected.
+let windowWidth = window.innerWidth;
+
 window.addEventListener( "resize", ( event ) => {
-    location.reload()
+    // Check window width has actually changed and it's not just iOS triggering a resize event on scroll
+    if (window.innerWidth != windowWidth) {
+
+        // Update the window width for next time
+        windowWidth = window.innerWidth;
+
+        location.reload()
+    }
 });
