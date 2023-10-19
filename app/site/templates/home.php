@@ -13,11 +13,11 @@
 			</div>
 			<!-- Showreel Video -->
 			<section class="showreel__video parallax__layer--back">
-				<video playsinline autoplay muted loop poster="<?= $site->uri() . '/content/home/' . $page->showreel() ?>.jpg">
-					<?php print_r($page->videos()) ?>
-					<source src="<?= $site->uri() . 'home/' . $page->showreel() ?>.webm" type="video/webm" />
-					<source src="<?= $site->uri() . 'home/' . $page->showreel() ?>.ogg" type="video/ogg" />
-					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $site->url() . 'home/' . $page->showreel() ?>.mp4">download it</a>
+				<video playsinline autoplay muted loop poster="<?= $site->uri() . '/home/' . $page->showreel() ?>.jpg">
+					<source src="<?= $site->url() . '/home/' . $page->showreel() ?>.mp4" type="video/mp4" />
+					<source src="<?= $site->url() . '/home/' . $page->showreel() ?>.webm" type="video/webm" />
+					<source src="<?= $site->url() . '/home/' . $page->showreel() ?>.ogg" type="video/ogg" />
+					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $site->url() . '/home/' . $page->showreel() ?>.mp4">download it</a>
 					and watch it with your favorite video player!
 				</video>
 			</section>
