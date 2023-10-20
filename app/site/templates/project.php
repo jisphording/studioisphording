@@ -1,5 +1,4 @@
 <?php snippet('header') ?>
-
 	<section class="parallax">
 
 		<!-- SHOWREEL -->
@@ -24,6 +23,7 @@
 					</figure>
 				<?php } ?>
 			</section>
+		</section>
 
 		<!-- PROJECT SINGLE VIEW MAIN CONTENT -->
 		<main class="section__main project__single parallax__layer--base" role="main">
