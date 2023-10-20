@@ -79,6 +79,7 @@
 // --------------------------------------------------------------------------- //
 .showreel__video {
     width: 100%;
+    min-height: 9em;
     overflow: hidden;
 }
 
@@ -100,21 +101,16 @@
     align-items: center;
     justify-content: center;
 
-    .showreel__title {
-        scale: .75;
-    }
-
     h1, h2, h3 {
         margin: 0;
         padding: 0;
         //color: var(--color-white);
         color: var(--color-black);
     }
+}
 
-    // old styles for middle alignment //
-    //top: 40%;
-    //bottom: 35%;
-    //height: 25%;
+.page--home .showreel__title--wrapper h1 {
+    word-break: keep-all; // Prevent Word break on iOs
 }
 
 // --------------------------------------------------------------------------- //
@@ -125,8 +121,17 @@
     overflow: hidden;
     position: relative;
     z-index: 9;
-    height: 48vw;
+    height: auto;
     margin-bottom: 1em;
+}
+
+.page--home .showcase__grid--image,
+.page--projects .showcase__grid--image {
+    min-height: 48vw;
+}
+
+.page--isphording-inneneinrichtung .showcase__grid--image {
+    margin-bottom: 0;
 }
 
 .showcase__grid--image--inside {

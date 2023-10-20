@@ -8,7 +8,6 @@
 
 @use 'templates/header';
 @use 'templates/menu';
-@use 'templates/metainfo';
 @use 'templates/footer';
 @use 'templates/cookieconsent';
 @use 'templates/dev'; /* DEV ONLY */
@@ -20,6 +19,7 @@
 @use 'templates/project';
 @use 'templates/projects-showcase';
 @use 'templates/related-showcase';
+@use 'templates/imprint';
 
 /* MAIN STYLES */
 
@@ -64,6 +64,10 @@ img {
 
 mark {
     background: none;
+}
+
+video {
+	max-width: 100%;
 }
 
 .grid__2-cols {

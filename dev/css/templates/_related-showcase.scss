@@ -46,6 +46,16 @@
         display: block;
         position: relative;
     }
+
+    img {
+        width: auto;
+        min-width: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        height: auto;
+        max-height: 100%;
+    }
 }
 
 // REFACTOR OLD STYLES
@@ -62,7 +72,8 @@
     text-align: left;
     height: auto;
     line-height: 0.85em;
-    margin-top: 25%;
+    top: 1em;
+    margin-top: 0;
 }
 
 .related__showcase--caption h1 {
@@ -82,26 +93,15 @@
     bottom: 0;
     right: 0;
     height: 100%;
-}
-
-.related__showcase--tags h4:first-of-type {
-    position: absolute;
-    top: 1rem;
-}
-
-.related__showcase--tags h4 {
-    font-weight: 900;
-    font-size: 0.85em;
-    position: absolute;
-    bottom: 1.5rem;
-}
-
-.related__showcase--tags p {
-    text-transform: none;
-    font-size: 0.85em;
-    position: absolute;
-    bottom: 0;
-    margin-bottom: 0.75rem;
+    
+    p {
+        text-transform: none;
+        position: absolute;
+        bottom: 0;
+        font-size: .75em;
+        padding-bottom: 1em;
+        line-height: 1.15em;
+    }
 }
 
 @media (any-hover: none) {
@@ -178,8 +178,8 @@
     // TODO - The following should be reworked together with the site method function
     // to be more consistent with Display Showcase Function
     .related__showcase--tags p {
-        margin-bottom: 0.5rem;
-        line-height: .75rem;
+        font-size: .6em;
+        line-height: 1.05em;
     }
 }
 
