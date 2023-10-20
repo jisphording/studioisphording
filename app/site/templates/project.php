@@ -1,4 +1,5 @@
 <?php snippet('header') ?>
+
 	<section class="parallax">
 
 		<!-- SHOWREEL -->
@@ -23,7 +24,6 @@
 					</figure>
 				<?php } ?>
 			</section>
-		</section>
 
 		<!-- PROJECT SINGLE VIEW MAIN CONTENT -->
 		<main class="section__main project__single parallax__layer--base" role="main">
@@ -57,19 +57,24 @@
 					// This is achieved with basename and the respective kirbyobjects. 
 					// The dot has to be 'manually' connected to the extension
 					// TODO: video check is used multiple times, should be moved to site methods plugin
+					// The file extension can probably be extracted from the main string to reduce the doubling of variables.
 					$video_dir = "video/";
-					$file_video = NULL;
-					$file_video = $image->filename();
-					$file_video = substr($file_video, 0, strrpos($file_video, '.')) . ".webm";
+					$file_video_mp4 = NULL;
+					$file_video_webm = NULL;
+					$file_video_mp4 = $image->filename();
+					$file_video_webm = $image->filename();
+					$file_video_mp4 = substr($file_video_mp4, 0, strrpos($file_video_mp4, '.')) . ".mp4";
+					$file_video_webm = substr($file_video_webm, 0, strrpos($file_video_webm, '.')) . ".webm";
 
 					// Testing if a video with the same filename exists 
-					$filetocheck = $video_dir . $file_video;
+					$filetocheck = $video_dir . $file_video_mp4;
 					// If exists -> put video here
 					if ( file_exists( $filetocheck )) { ?>
 						<li>
 							<figure>
 								<video playsinline autoplay muted loop>
-									<source src="<?= $site->url('') . '/' . $video_dir . $file_video ?>" type="video/webm">
+									<source src="<?= $site->url('') . '/' . $video_dir . $file_video_mp4 ?>" type="video/mp4">
+									<source src="<?= $site->url('') . '/' . $video_dir . $file_video_webm ?>" type="video/webm">
 								</video>
 							</figure>
 						</li>
