@@ -39,11 +39,8 @@ Kirby::plugin('studio-isphording/site-methods', [
 						
 						<h1 class="related__showcase--title"><?= $subpage->title() ?></h1>
 						
-						<div class="related__showcase--tags">
-						<h4>Related</h4>
-						
-						<h4>Tags</h4>
-						<p><?= $subpage->tags() ?></p>
+						<div class="related__showcase--tags">						
+							<p><?= $subpage->tags() ?></p>
 						</div>
 						
 					</div>
