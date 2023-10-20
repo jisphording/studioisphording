@@ -14,6 +14,10 @@ dev/assets
 app/content/
 app/video
 
+# temporary removal
+utils
+three
+
 # build files
 app/assets/bundle
 
