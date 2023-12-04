@@ -17,7 +17,7 @@
 		'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
 		'https://cdn.jsdelivr.net/npm/@barba/core',
 		'@auto'
-	]) ?>
+	], true) ?>
 
 	</div><!-- data-barba="container" -->
 </body>
