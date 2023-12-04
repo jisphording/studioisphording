@@ -45,6 +45,7 @@ export class Camera
 
     // S E T   O R B I T   C O N T R O L S
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    
     setOrbitControls()
     {
         this.controls = new OrbitControls( this.instance, this.canvas )
@@ -55,6 +56,7 @@ export class Camera
 
     // R E S I Z E
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    
     resize()
     {
         this.instance.aspect = this.sizes.width / this.sizes.height
@@ -63,6 +65,7 @@ export class Camera
 
     // U P D A T E
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    
     update()
     {
         this.controls.update()
