@@ -16,7 +16,6 @@ app/video
 
 # temporary removal
 utils
-three
 
 # build files
 app/assets/bundle
