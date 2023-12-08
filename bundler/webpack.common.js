@@ -2,12 +2,13 @@ const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-const ASSET_PATH = process.env.ASSET_PATH || 'http://studioisphording.test/assets/bundle/';
-//const ASSET_PATH = process.env.ASSET_PATH || 'https://studioisphording.de/assets/bundle/';
+//const ASSET_PATH = process.env.ASSET_PATH || 'http://studioisphording.test:9000/assets/bundle/';
+const ASSET_PATH = process.env.ASSET_PATH || 'https://studioisphording.de/assets/bundle/';
 
 module.exports = {
 	entry: {
 		app: path.resolve(__dirname, './../dev/js/index.js'),
+		three: path.resolve(__dirname, './../dev/js/three/runExperience.js'),
 	},
 	output: {
 		path: path.resolve(__dirname, './../app/assets/bundle/'),
