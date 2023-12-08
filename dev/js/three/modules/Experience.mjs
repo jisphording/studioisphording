@@ -18,8 +18,8 @@ import { Debug } from './../utils/Debug.mjs'
 import { Resources } from './../utils/Resources.mjs'
 
 // EXPERIENCE WORLDS & RESOURCES
-import { World_01 } from './../projects/isphording-inneneinrichtung/World_01.mjs'
-import World_01_Sources from './../projects/isphording-inneneinrichtung/World_01_Sources.mjs'
+import { World as World_01 } from '../projects/isphording-inneneinrichtung/World.mjs'
+import World_Sources from '../projects/isphording-inneneinrichtung/World_Sources.mjs'
 
 // Storing the singleton instance
 let instance = null
@@ -59,7 +59,7 @@ export class Experience
 		// SPECIFIC WORLD
 		// This is probably really verbose and shoould be refactored.
 		if ( world == 'World_01' ) { 
-			this.resources = new Resources( World_01_Sources )
+			this.resources = new Resources( World_Sources )
 			this.world = new World_01()
 		}
 
