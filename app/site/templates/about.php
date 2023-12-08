@@ -39,22 +39,22 @@
 				</section>
 					
 				<!-- about awards & recognition -->
-				<article class="recognition">
+				<!--article class="recognition">
 					<h3>Awards &amp; Recognition</h3>
-					<?= $page->recognition()->kirbytext() ?>
+					<= $page->recognition()->kirbytext() ?>
 				</article>
 				
 			</div>
 			<!-- END - ABOUT BODY CONTENT -->
 				
 			<!-- OFFICE LOCATIONS -->
-			<article class="locations">
+			<!--article class="locations">
 				<h3>Locations</h3>
 
-				<?= $page->locations()->kirbytext() ?>
+				<= $page->locations()->kirbytext() ?>
 
-				<?php snippet('visitenkarte-bln') ?>
-			</article>
+				<php snippet('visitenkarte-bln') ?>
+			</article-->
 				
 		</main>
 		<!-- END - ABOUT PAGE MAIN CONTENT -->
