@@ -17,7 +17,7 @@ module.exports = merge( common, {
 		proxy: {
 			'/': {
 				target: {
-					host: 'studioisphording.test:9000',
+					host: 'studioisphording.test',
 					protocol: 'http:',
 				},
 				router: () => 'http://studioisphording.test',
