@@ -18,7 +18,7 @@ export function runExperience( canvas, world, clearColor ) {
     let _clearColor = clearColor
 
     if ( clearColor == undefined ) {
-        _clearColor = 0x0f0e0e
+        _clearColor = 0xf5f4ee
     } else {
         _clearColor = clearColor
     }
