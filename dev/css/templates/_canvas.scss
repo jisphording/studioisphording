@@ -14,7 +14,6 @@ canvas,
 
 .webgl__footer {
 	width: 50%;
-	border: 1px solid red;
 }
 
 /* LARGER PHONES */
@@ -79,4 +78,19 @@ canvas,
 	.section__webgl {
 		height: 18vw;
 	}
+}
+
+/* DEV */
+
+/* STYLESHEET: WEBGL CANVAS */
+
+#webgl {
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    padding: 0;
+    border: none;
+    z-index: -1;
+    background-color: var(--color-beige);
 }
