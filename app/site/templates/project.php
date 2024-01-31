@@ -18,6 +18,15 @@
 				</article>
 
 				<!-- PROJECT GALLERY -->
+				<!-- Filtering videos from backend -->
+				<?php foreach($page->videos() as $video): ?>
+					<li>
+						<video class="showcase__grid--image" playsinline autoplay muted loop>
+							<source src="<?= $video->url() ?>" type="<?= $video->mime() ?>">
+						</video>
+					</li>
+					<?php endforeach ?>
+					
 				<ul class="project__single--gallery">
 					<?php
 					// The project gallery pulls in all images from the content folder. 
@@ -63,6 +72,7 @@
 							</figure>
 						</li>
 					<?php } // endelse ?>
+
 					<?php endforeach ?>
 				</ul>
 
