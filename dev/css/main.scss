@@ -10,9 +10,9 @@
 @use 'templates/menu';
 @use 'templates/footer';
 @use 'templates/cookieconsent';
-@use 'templates/dev'; /* DEV ONLY */
 
 /* IMPORT: TEMPLATES */
+
 @use 'templates/canvas';
 @use 'templates/home';
 @use 'templates/about';
@@ -20,6 +20,11 @@
 @use 'templates/projects-showcase';
 @use 'templates/related-showcase';
 @use 'templates/imprint';
+
+/* IMPORT: DEBUG */
+
+@use 'templates/dev'; /* DEV ONLY */
+@use 'templates/datgui';
 
 /* MAIN STYLES */
 
@@ -36,6 +41,7 @@ body {
 }
 
 ul, ol, li {
+	list-style-type: none;
 	margin: 0;
 	padding: 0;
 	margin-block-start: 0;
@@ -67,6 +73,7 @@ mark {
 }
 
 video {
+	width: 100%;
 	max-width: 100%;
 }
 
