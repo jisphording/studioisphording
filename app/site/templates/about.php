@@ -1,7 +1,7 @@
 <?php snippet('header') ?>
 	<section class="parallax">
 
-	<?php snippet('intro-img') ?>
+	<?php snippet('intro-video') ?>
 
 		<!-- ABOUT PAGE MAIN CONTENT -->
 		<main class="section__main about" role="main">
@@ -16,7 +16,7 @@
 				<article class="article__main">
 					<?= $page->intro()->kirbytext() ?>
 				</article>
-					
+				
 				<!-- about mood -->
 				<section class="mood full">
 					<img src="<?= $page->url() . '/' . $page->mood_01() ?>">
