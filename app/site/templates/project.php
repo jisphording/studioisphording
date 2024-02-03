@@ -25,7 +25,7 @@
 							<source src="<?= $video->url() ?>" type="<?= $video->mime() ?>">
 						</video>
 					</li>
-					<?php endforeach ?>
+				<?php endforeach ?>
 					
 				<ul class="project__single--gallery">
 					<?php
