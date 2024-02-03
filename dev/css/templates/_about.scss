@@ -4,6 +4,14 @@
 // ABOUT PAGE
 // --------------------------------------------------------------------------- //
 
+// Background Dark
+.page--about {
+    .section__main {
+        background: var(--color-bg-darkgray);
+        color: var(--color-white);
+    }
+}
+
 .moods li {
     padding: .5rem 0;
 }
