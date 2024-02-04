@@ -3,14 +3,6 @@
 <!-- PROJECTS PAGE MAIN CONTENT -->
 <main class="main" role="main">
 
-	<!-- LOCAL PAGE HEADER -->
-	<header>
-		<!-- Intro -->
-		<div class="intro text <?= $page ?>">
-			<?= $page->text()->kirbytext() ?>
-		</div>
-	</header>
-
 	<!-- PROJECT SHOWCASE -->
 	<section class="section__main projects__showcase">
 

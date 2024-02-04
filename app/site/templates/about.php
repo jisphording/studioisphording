@@ -6,9 +6,6 @@
 		<!-- ABOUT PAGE MAIN CONTENT -->
 		<main class="section__main about" role="main">
 				
-			<!-- LOCAL PAGE HEADER -->
-			<?php snippet('section-header') ?>
-				
 			<!-- ABOUT BODY CONTENT -->
 			<div class="text">
 					
