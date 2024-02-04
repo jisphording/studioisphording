@@ -4,13 +4,14 @@
     --color-silver-light: #e6e6e6; 
     --color-silver: #CBCBCB; // used
     --color-silver-medium: #b9babd; 
-    --color-silver-dark: #696969;
+    --color-silver-dark: #343434; // used
     --color-white: #fafafa;
     --color-offwhite: #f6f6f6;
     --color-beige: #f5f4ee;
     --color-brown: #9D7C69;
     --color-black: #0f0e0e; 
     --color-blue: #0000ff;
+    --color-lightgray: #dcdbd6;
     --color-darkgray: #1f1f1f;
     --color-beige-light: #e8e0d3;
 
@@ -20,7 +21,7 @@
     --color-bg-gray: #242323; // used
     --color-bg-darkgray: #141414; // used
 
-    --color-bg-light: var(--color-beige)
+    --color-bg-light: var(--color-beige);
 }  
 
 /* COLORS FOR LIGHTMODE */
