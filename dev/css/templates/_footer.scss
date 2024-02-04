@@ -3,7 +3,22 @@
 .footer {
     padding-top: 4vw;
     padding-bottom: 2vw;
-    font-size: .75em;
+    text-transform: uppercase;
+    
+    .menu {
+        font-size: .7em;
+    }
+
+    .menu,
+    .menu a {
+        color: var(--color-silver-dark);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+    }
+
+    .copyright {
+        font-size: 1em;
+    }
 }
 
 .footer.section__main {
