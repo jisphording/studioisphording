@@ -33,12 +33,12 @@
 			<section class="projects__showcase">
 
 				<!-- Showcase Loop -->
-				<?php $site->displayShowcase('projects', 4) ?>
+				<?php $site->displayShowcase('projects', 14) ?>
 
 				<!-- Link to all projects -->
-				<p class="projects__showcase--more">
-					<a href="<?= page('projects')->url() ?>" class="btn"><?php echo t('Show all projects') ?></a>
-				</p>
+				<!--p class="projects__showcase--more">
+					<a href="<= page('projects')->url() ?>" class="btn"><php echo t('Show all projects') ?></a>
+				</p-->
 
 			</section>
 
