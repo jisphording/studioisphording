@@ -20,6 +20,24 @@
 }
 
 @font-face {
+	font-family: "Monument-Extended";
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: local("MonumentExtended-Bold"),
+		url("./../../assets/fonts/MonumentExtended-Bold.otf") format("opentype");
+}
+
+@font-face {
+	font-family: "Monument-Extended";
+	font-style: normal;
+	font-weight: 900;
+	font-display: swap;
+	src: local("MonumentExtended-Black"),
+		url("./../../assets/fonts/MonumentExtended-Black.otf") format("opentype");
+}
+
+@font-face {
 	font-family: "Grafier-Regular";
 	font-style: normal;
 	font-weight: 400;
@@ -101,6 +119,11 @@ em {
 ul, li {
 	margin: 0;
     padding: 0;
+}
+
+.menu__main,
+.footer__quote {
+	font-family: 'Monument-Extended', Arial, Helvetica, sans-serif;
 }
 
 .navigation h3,
