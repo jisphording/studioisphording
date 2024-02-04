@@ -6,9 +6,7 @@
 
 .related__showcase {
     background: var(--color-black);
-    margin-bottom: 2rem;
     padding: 1rem;
-    padding-bottom: 1.5rem;
 
     h3 {
         padding-top: 0;
@@ -153,7 +151,7 @@
 @media screen and (min-width: 1024px) {
     .related__showcase {
         padding-top: 3rem;
-        padding-bottom: 4rem;
+        //padding-bottom: 4rem;
 
         .intro {
             width: 75%;
@@ -190,7 +188,7 @@
 @media screen and (min-width: 1280px) {
     .related__showcase {
         padding-top: 4rem;
-        padding-bottom: 5rem;
+        //padding-bottom: 5rem;
     }
 }
 
@@ -212,7 +210,7 @@
 @media screen and (min-width: 1680px) {
     .related__showcase {
         padding-top: 6rem;
-        padding-bottom: 8rem;
+        //padding-bottom: 8rem;
         padding-left: 6rem;
         padding-right: 6rem;
     }
@@ -224,8 +222,8 @@
 
 @media screen and (min-width: 1920px) {
     .related__showcase {
-        padding-left: 9rem;
-        padding-right: 9rem;
+        //padding-left: 9rem;
+        //padding-right: 9rem;
     }
 }
 
@@ -235,10 +233,10 @@
 
 @media screen and (min-width: 2160px) {
     .related__showcase {
-        padding-left: 15rem;
-        padding-right: 15rem;
+        //padding-left: 15rem;
+        //padding-right: 15rem;
         padding-top: 4rem;
-        padding-bottom: 5rem;
+        //padding-bottom: 5rem;
     }
 
     .related__showcase--caption h1 {
