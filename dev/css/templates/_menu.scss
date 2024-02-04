@@ -7,6 +7,16 @@
 }
 
 .menu__main {
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    /* Glass BG */
+    background: rgba(255,255,255,.15);
+    //box-shadow: 0 4px 30px rgba(0,0,0,.1);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+    border: 1px solid rgba(255,255,255,.35);
+
     ul {
         display: flex;
         flex-direction: row;
@@ -15,24 +25,16 @@
 
     li {
         text-transform: uppercase;
-        background: var(--color-silver);
         padding: 0.15em 0.75em 0.25em 0.75em;
         border-radius: 2em;
-        font-size: 0.65em;
-        letter-spacing: .05em;
-
-        background: rgba(255,255,255,.25);
-        box-shadow: 0 4px 30px rgba(0,0,0,.1);
-        backdrop-filter: blur(7px);
-        -webkit-backdrop-filter: blur(7px);
-        border: 1px solid rgba(255,255,255,.35);
     }
 
     a {
         text-decoration: none;
+        font-weight: 700;
     }
 
     a, a:active, a:visited, mark {
-        color: var(--color-darkgray);
+        color: var(--color-black);
     }
 }
