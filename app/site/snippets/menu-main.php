@@ -11,7 +11,7 @@ if ($items->isNotEmpty()) :
 	<nav class="menu menu__main">
 		<ul>
 			<li>
-				<a class="branding" href="<?= $site->url() ?>">Studio Isphording</a>
+				<a class="branding" href="<?= $site->url() ?>">Home</a>
 			</li>
 			
 			<?php foreach ($items as $item) : ?>
