@@ -6,9 +6,18 @@
 
 // Background Dark
 .page--about {
+    .article__main {
+        padding-top: 2em;
+    }
+
     .section__main {
         background: var(--color-bg-darkgray);
         color: var(--color-white);
+        margin-top: 4vw;
+    }
+
+    .footer.section__main {
+        margin-top: 0;
     }
 }
 
