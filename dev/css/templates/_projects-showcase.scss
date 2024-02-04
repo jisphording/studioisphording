@@ -10,6 +10,8 @@
 }
 
 .projects__showcase {
+    margin-bottom: 1em;
+
     // Overwrite defaults
     h1 {
         margin-top: 0;
@@ -24,9 +26,6 @@
         height: 100%;
         // Vertically center the caption //
         position: absolute;
-        -webkit-transition: 0.5s color;
-        transition: 0.5s color;
-        will-change: color;
     }
 
     // ... and displaying the marked portion on bottom of link box
@@ -36,6 +35,19 @@
         left: 0;
         width: 100%;
         line-height: 1.75rem;
+    }
+
+    .showcase--title,
+    .showcase--title mark {
+        -webkit-transition: 0.5s color;
+        transition: 0.5s color;
+        will-change: color;
+        color: var(--color-black);
+    }
+
+    a:hover .showcase--title,
+    a:hover .showcase--title mark {
+        color: var(--color-blue);
     }
 }
 
@@ -78,9 +90,12 @@
 // SHOWREEL
 // --------------------------------------------------------------------------- //
 .showreel__video {
-    width: 100%;
+    width: 96%;
     min-height: 9em;
     overflow: hidden;
+    margin-left: 2vw;
+    margin-right: 2vw;
+    border-radius: 16px;
 }
 
 .showreel video,
@@ -123,6 +138,7 @@
     z-index: 9;
     height: auto;
     margin-bottom: 1em;
+    border-radius: 16px;
 }
 
 .page--home .showcase__grid--image,
@@ -172,6 +188,12 @@
     .showreel video,
     .showreel img {
         scale: 1.05;
+    }
+
+    .showreel__video {
+        width: 92%;
+        margin-left: 4vw;
+        margin-right: 4vw;
     }
 
     .showcase__grid--image {
