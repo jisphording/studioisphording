@@ -4,7 +4,10 @@
 <head>
 
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="viewport" content="height=device-height, 
+                      width=device-width, initial-scale=1.0, 
+                      minimum-scale=1.0, maximum-scale=1.0, 
+                      user-scalable=no, target-densitydpi=device-dpi">
 	<meta name="description" content="Thoughts, Writings & Ideas on Design & Technology." />
 	<meta name="author" content="Johannes Isphording" />
 	<meta name="keywords" content="design, digital, writing, longform" />
