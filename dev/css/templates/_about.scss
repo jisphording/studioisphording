@@ -10,6 +10,10 @@
         padding-top: 2em;
     }
 
+    .article__main p:first-of-type {
+        padding-bottom: 0;
+    }
+
     .section__main {
         background: var(--color-bg-darkgray);
         color: var(--color-white);
