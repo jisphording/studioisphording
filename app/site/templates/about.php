@@ -4,7 +4,7 @@
 	<?php snippet('intro-video') ?>
 
 		<!-- ABOUT PAGE MAIN CONTENT -->
-		<main class="section__main about" role="main">
+		<main class="section__main about parallax__layer--base">
 				
 			<!-- ABOUT BODY CONTENT -->
 			<div class="text">
