@@ -13,11 +13,17 @@ import './../css/main.scss'
 import { animBarba } from './animation/animBarba.mjs'
 import { animGsap } from './animation/animGsap.mjs'
 
-// Run Everything
-window.addEventListener( "DOMContentLoaded", ( event ) => {
+// Run Animation
+// Check if document ready has already passed. If it has, run the animations. If not, wait for it to be ready.
+if (document.readyState !== 'loading') {
     animGsap(),
     animBarba()
-});
+} else {
+    window.addEventListener( "DOMContentLoaded", ( event ) => {
+        animGsap(),
+        animBarba()
+    });
+}
 
 // Cookie Consent
 import customCookieConsent from './cookieconsent.js'
