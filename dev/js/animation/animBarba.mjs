@@ -5,6 +5,9 @@
 // Barba.js is used for easier page transitions 
 //
 
+import barba from '@barba/core'
+import { gsap } from 'gsap'
+
 import { animGsap } from './animGsap.mjs'
 
 export function animBarba() {
@@ -75,10 +78,12 @@ export function animBarba() {
     // Next page ENTER transition
     barba.hooks.enter(() => {
         // ### TODO ### This feels like a hack and has to be revised
+        // Location reload is necessary to reset the page and make sure everything is working correctly
+        // This is a current workaround until I have the issue causing Barba script corrected.
         let showreel = document.getElementsByClassName( 'showreel' )[ 0 ]
         showreel.style.top = '0%'
-
-        window.scrollTo(0, 0)
+        window.scrollTo(100, 0)
+        location.reload();
         animGsap()
     });
 

@@ -5,6 +5,9 @@
 // Collecting smaller animations that are realised with gsap throughout the site
 //
 
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger.js'
+
 export function animGsap() {
 
     gsap.registerPlugin( ScrollTrigger );
@@ -17,12 +20,13 @@ export function animGsap() {
 
     gsap.to( parallaxBack, 
     {
-        yPercent: 0,
+        yPercent: 500,
+        scale: 2,
         ease: 'none',
         scrollTrigger: 
         {
             trigger: parallaxTrigger,
-            start: 'top bottom',
+            start: 'top top',
             end: 'bottom top',
             scrub: true
         }
@@ -30,12 +34,13 @@ export function animGsap() {
 
     gsap.to( parallaxTitle, 
     {
-        scale: 1,
+        yPercent: 80,
+        opacity: 0,
         ease: 'none',
         scrollTrigger: 
         {
-            trigger: parallaxTrigger,
-            start: 'top bottom',
+            trigger: parallaxTitle,
+            start: 'top top',
             end: 'bottom top',
             scrub: true
         }
