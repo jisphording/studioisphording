@@ -5,7 +5,12 @@
 // --------------------------------------------------------------------------- //
 
 // Background Dark
+.page--about.lightmode {
+    background: var(--color-blue);
+}
+
 .page--about {
+
     .article__main {
         padding-top: 2em;
     }
