@@ -91,6 +91,11 @@ video {
 	background-color: var( --color-bg-light );
 }
 
+article.article__main.large__quote {
+	position: relative;
+	z-index: 999;
+}
+
 .section__content {
 	display: grid;
 	min-height: 65vh;
@@ -103,6 +108,7 @@ video {
 
 .parallax__layer--base {
 	position: relative;
+	padding-top: 6vw;
 }
 
 .parallax__layer--back {
