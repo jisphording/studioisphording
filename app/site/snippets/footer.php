@@ -1,6 +1,6 @@
 	<footer class="footer section__main">
-		<section class="footer__quote article__main">
-			<p>Studio Isphording entwickelt Design für Print und Digitale Medien und setzt dabei auf Technologien der 3D Visualisierung, Virtual Reality und Generativer AI.</p>
+		<section class="large__quote article__main">
+			<?= $site->footer()->kirbytext() ?>
 		</section>
 		<section class="menu">
 			<ul>
