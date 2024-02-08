@@ -122,8 +122,21 @@ ul, li {
 }
 
 .menu__main,
-.footer__quote {
+.large__quote {
 	font-family: 'Monument-Extended', Arial, Helvetica, sans-serif;
+}
+
+.large__quote {
+	text-transform: uppercase;
+	color: var(--color-white);
+	mix-blend-mode: difference;
+}
+
+.intro__txt p {
+    line-height: 95%;
+    letter-spacing: -0.04em;
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 .navigation h3,
@@ -183,6 +196,14 @@ a:hover mark {
 		font-size: 5vw;
 	}
 
+	.intro__txt {
+		padding-top: 2em;
+
+		p {
+			font-size: 1em;
+		}
+	}
+
 	.section__headline {
 		min-height: 9em;
 	}
@@ -201,6 +222,14 @@ a:hover mark {
 	.section__headline {
 		min-height: 10em;
 	}
+
+	.intro__txt {
+		padding-top: 2em;
+		
+		p {
+			font-size: 1.85em;
+		}
+	}
 }
 
 /* TABLET LANDSCAPE & SMALL LAPTOPS */
@@ -216,12 +245,20 @@ a:hover mark {
 	.section__headline {
 		min-height: 13em;
 	}
+
+	.intro__txt p {
+		font-size: 2em;
+	}
 }
 
 /* LAPTOPS */
 @media screen and ( min-width: 1025px ) {
 	body {
 		font-size: 2vw;
+	}
+
+	.intro__txt p {
+		font-size: 2.5em;
 	}
 }
 
