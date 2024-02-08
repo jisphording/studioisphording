@@ -90,11 +90,11 @@
 // SHOWREEL
 // --------------------------------------------------------------------------- //
 .showreel__video {
-    width: 96%;
+    width: 92%;
     min-height: 9em;
     overflow: hidden;
-    margin-left: 2vw;
-    margin-right: 2vw;
+    margin-left: 4vw;
+    margin-right: 4vw;
     border-radius: 16px;
 }
 
@@ -223,6 +223,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-gap: 4vw;
+        grid-row-gap: 6vw;
     }
 
     .showcase__grid--item {
@@ -260,7 +261,7 @@
 
 @media screen and (min-width: 1681px) {
     .showcase__grid {
-        grid-row-gap: 5rem;
+        grid-row-gap: 8rem;
     }
 
     .projects__showcase h1 {
