@@ -23,11 +23,15 @@
 			</section>
 		</section>
 
+		<!-- INTRO -->
+		<section class="section__main intro__txt">
+			<article class="article__main large__quote">
+				<?= $page->intro()->kirbytext() ?>
+			</article>
+		</section>
+
 		<!-- MAIN -->
 		<main class="section__main parallax__layer--base">
-			<section class="section__bodycopy">
-				<p><?= $page->outro() ?></p>
-			</section>
 
 			<!-- PROJECT SHOWCASE -->
 			<section class="projects__showcase">
