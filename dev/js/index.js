@@ -9,6 +9,23 @@
 // CSS for app integration on site
 import './../css/main.scss'
 
+// ANIMATION
+
+// Animation - Hide Scrollbar
+let lastScrollTop = 0;
+let navbar = document.querySelector('.menu__main');
+
+window.addEventListener("scroll", () => {
+    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    
+    if (currentScroll > lastScrollTop) {
+        navbar.classList.add('hide');
+    } else {
+        navbar.classList.remove('hide');
+    }
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+}, false);
+
 // Animation - Page Transitions
 import { animBarba } from './animation/animBarba.mjs'
 import { animGsap } from './animation/animGsap.mjs'
