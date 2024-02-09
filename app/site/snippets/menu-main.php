@@ -8,12 +8,12 @@ $items = $pages->unlisted()->not( 'articles', 'disclaimer', 'error', 'gdpr', 'ho
 if ($items->isNotEmpty()) :
 
 ?>
+	<section class="branding">
+		<a href="<?= $site->url() ?>">Isphording</a>
+	</section>
+
 	<nav class="menu menu__main">
 		<ul>
-			<li>
-				<a class="branding" href="<?= $site->url() ?>">Home</a>
-			</li>
-			
 			<?php foreach ($items as $item) : ?>
 				<li>
 					<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>
