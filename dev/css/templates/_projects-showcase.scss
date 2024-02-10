@@ -73,6 +73,15 @@
     }
 }
 
+.showcase__grid--item img {
+    transition: 2s;
+}
+
+.showcase__grid--item:hover img {
+    scale: 1.1;
+    transition: 2s;
+}
+
 .showcase__grid--item:last-of-type {
     margin-bottom: 0;
 }
