@@ -2,16 +2,33 @@
 
 .footer {
     padding-top: 4vw;
-    padding-bottom: 2vw;
+    margin-bottom: 0;
+    padding-bottom: 0;
     text-transform: uppercase;
 
     .large__quote {
         font-size: 1.75em;
         line-height: 100%;
+        background: var(--color-bg-black);
+        color: var(--color-white);
+        mix-blend-mode: initial;
+        padding-left: 4vw;
+        padding-right: 4vw;
+
+        p {
+            padding-bottom: 0;
+        }
+    }
+
+    .article__main {
+        padding-top: 1em;
+        padding-bottom: 1em;
     }
     
     .menu {
-        font-size: .7em;
+        font-size: 0.7em;
+        margin-top: 3em;
+        padding-left: 4vw;
     }
 
     .menu,
@@ -22,11 +39,178 @@
     }
 
     .copyright {
-        font-size: 1em;
+        font-size: 1.5em;
+        padding-top: 1.5em;
+        padding-bottom: 0;
+    }
+
+    .footer__branding {
+        position: relative;
+        left: -0.08em;
+        bottom: 0;
+        margin-top: 1.75em;
+        height: 1.825em;
+        overflow: hidden;
+    }
+
+    .footer__branding span {
+        position: relative;
+        left: -0.08em;
+        bottom: 0;
+
+        font-size: 2.375em;
+        letter-spacing: -0.06em;
+        line-height: 1em;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: var(--color-black);
     }
 }
 
-.footer.section__main {
-    background: var(--color-bg-black);
-    color: var(--color-white);
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 481px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 481px ) {
+    .footer {
+        .footer__branding {
+            height: 2.8em;
+        }
+
+        .footer__branding span {
+            font-size: 3.64em;
+        }
+    }
+}
+
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 769px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 769px ) {
+    .footer {
+        .menu {
+            margin-top: 4em;
+            margin-bottom: 3em;
+        }
+
+        .footer__branding {
+            height: 3.82em;
+        }
+
+        .footer__branding span {
+            font-size: 4.92em;
+        }
+
+        .article__main {
+            padding-top: 2em;
+            padding-bottom: 2em;
+        }
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1025px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 1025px ) {
+    .footer {
+        .menu {
+            margin-top: 5em;
+            margin-bottom: 4em;
+        }
+
+        .footer__branding {
+            height: 4.82em;
+        }
+
+        .footer__branding span {
+            font-size: 6.185em;
+        }
+
+        .article__main {
+            padding-top: 3em;
+            padding-bottom: 3em;
+        }
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1281px
+// --------------------------------------------------------------------------- //
+
+@media screen and (min-width: 1281px) {
+    .footer {
+        .menu {
+            margin-top: 6em;
+            margin-bottom: 5em;
+        }
+        
+        .footer__branding {
+            height: 6.4em;
+        }
+
+        .footer__branding span {
+            font-size: 8.29em;
+        }
+
+        .article__main {
+            padding-right: 15%;
+            padding-top: 4em;
+            padding-bottom: 4em;
+        }
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1681px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 1681px ) {
+    .footer {
+        .article__main {
+            padding-right: 25%;
+        }
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 1921
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 1921px ) {
+    .footer {
+        .footer__branding {
+            height: 8.85em;
+        }
+
+        .footer__branding span {
+            font-size: 11.32em;
+        }
+
+        .article__main {
+            padding-right: 35%;
+        }
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 2161
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 2161px ) {
+    .footer {
+        .footer__branding {
+            height: 9.7em;
+        }
+
+        .footer__branding span {
+            font-size: 12.475em;
+        }
+
+        .article__main {
+            padding-right: 55%;
+        }
+    }
 }
