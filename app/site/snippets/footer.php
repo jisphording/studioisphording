@@ -1,18 +1,26 @@
-	<footer class="footer section__main">
+	<footer class="footer">
 		<section class="large__quote article__main">
 			<?= $site->footer()->kirbytext() ?>
 		</section>
-		<section class="menu">
-			<ul>
-				<li><!-- EMPTY	 --></li>
-			</ul>
-			<ul>
-				<p class="copyright"><?= $site->copyright()->html() ?></p>
-				<li><a href="<?= $pages->find('imprint')->url() ?>">Imprint</a></li>
-				<li><a href="<?= $pages->find('disclaimer')->url() ?>">Disclaimer</a></li>
-				<li><a href="<?= $pages->find('privacy')->url() ?>">Data & Privacy Policy</a></li>
-				<li><a href="<?= $pages->find('gdpr')->url() ?>">GDPR</a></li>
-			</ul>
+
+		<section class="footer__bottom">
+			<!-- MENU -->
+			<section class="menu">
+				<ul>
+					<li><a href="<?= $pages->find('imprint')->url() ?>">Imprint</a></li>
+					<li><a href="<?= $pages->find('disclaimer')->url() ?>">Disclaimer</a></li>
+					<li><a href="<?= $pages->find('privacy')->url() ?>">Data & Privacy Policy</a></li>
+					<li><a href="<?= $pages->find('gdpr')->url() ?>">GDPR</a></li>
+				</ul>
+				<ul>
+					<li><p class="copyright"><?= $site->copyright()->html() ?></p></li>
+				</ul>
+			</section>
+
+			<!-- BRANDING -->
+			<section class="footer__branding">
+				<span>Isphording</span>
+			</section>
 		</section>
 	</footer>
 
