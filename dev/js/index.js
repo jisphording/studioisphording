@@ -30,18 +30,6 @@ window.addEventListener("scroll", () => {
 import { animBarba } from './animation/animBarba.mjs'
 import { animGsap } from './animation/animGsap.mjs'
 
-// Run Animation
-// Check if document ready has already passed. If it has, run the animations. If not, wait for it to be ready.
-if (document.readyState !== 'loading') {
-    animGsap(),
-    animBarba()
-} else {
-    window.addEventListener( "DOMContentLoaded", ( event ) => {
-        animGsap(),
-        animBarba()
-    });
-}
-
 // Cookie Consent
 import customCookieConsent from './cookieconsent.js'
 
@@ -60,3 +48,21 @@ window.addEventListener( "resize", ( event ) => {
         location.reload()
     }
 });
+
+// RUN ANIMATION
+// Check if document ready has already passed. If it has, run the animations. If not, wait for it to be ready.
+if (document.readyState !== 'loading') {
+    animGsap();
+    if( windowWidth > 1025) 
+    { 
+        animBarba()
+    }
+} else {
+    window.addEventListener( "DOMContentLoaded", ( event ) => {
+        animGsap();
+        if( windowWidth > 1025) 
+        { 
+            animBarba()
+        }
+    });
+}
