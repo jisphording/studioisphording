@@ -93,7 +93,7 @@ video {
 
 article.article__main.large__quote {
 	position: relative;
-	z-index: 999;
+	z-index: 99;
 }
 
 .section__content {
@@ -142,10 +142,13 @@ ol {
 }
 
 // --------------------------------------------------------------------------- //
-// MEDIA QUERY -> 481px
+// MEDIA QUERY <- 481px
 // --------------------------------------------------------------------------- //
 
-@media screen and ( min-width: 481px ) {
+@media screen and ( max-width: 481px ) {
+	.article__main.large__quote {
+        font-size: 1.25em;
+    }
 }
 
 // --------------------------------------------------------------------------- //
