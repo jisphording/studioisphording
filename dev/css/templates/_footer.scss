@@ -1,7 +1,6 @@
 /* STYLESHEET: SECTION - FOOTER */
 
 .footer {
-    padding-top: 4vw;
     margin-bottom: 0;
     padding-bottom: 0;
     text-transform: uppercase;
@@ -33,7 +32,7 @@
 
     .menu,
     .menu a {
-        color: var(--color-silver-dark);
+        color: var(--color-black);
         font-weight: 700;
         letter-spacing: 0.04em;
     }
@@ -68,6 +67,16 @@
 }
 
 // --------------------------------------------------------------------------- //
+// MEDIA QUERY <- 481px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( max-width: 481px ) {
+    .footer .large__quote {
+        font-size: 1.25em;
+    }
+}
+
+    // --------------------------------------------------------------------------- //
 // MEDIA QUERY -> 481px
 // --------------------------------------------------------------------------- //
 
@@ -148,11 +157,11 @@
         }
         
         .footer__branding {
-            height: 6.4em;
+            height: 5.5em;
         }
 
         .footer__branding span {
-            font-size: 8.29em;
+            font-size: 7.1em;
         }
 
         .article__main {

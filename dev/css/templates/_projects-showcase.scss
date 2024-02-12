@@ -119,7 +119,7 @@
     width: 100%;
     height: auto;
     margin: 0;
-    padding: 3.5em 0 2em 0;
+    padding: 4.5em 0 2em 0;
     text-align: center;
     display: flex;
     align-items: center;
@@ -128,8 +128,11 @@
     h1, h2, h3 {
         margin: 0;
         padding: 0;
-        //color: var(--color-white);
         color: var(--color-black);
+    }
+
+    h3 {
+        margin-bottom: .5em;
     }
 }
 
@@ -221,7 +224,7 @@
 
 @media screen and (min-width: 1025px) {
     .projects__showcase {
-        margin-bottom: 3rem;
+        margin-bottom: 6rem;
     }
 
     .projects__showcase--more {

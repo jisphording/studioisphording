@@ -83,6 +83,13 @@ h1 {
 	color: var(--color-black);
 }
 
+.showreel__title h1 {
+	font-weight: 700;
+	letter-spacing: -0.06em;
+	color: var(--color-black);
+	line-height: .85em;
+}
+
 .section__headline h1::first-line {
 	font-weight: 400;
 }
@@ -122,9 +129,11 @@ ul, li {
 }
 
 .menu__main,
+.menu__mobile,
 .branding,
 .footer__branding,
-.large__quote {
+.large__quote,
+.showreel__title h1 {
 	font-family: 'Monument-Extended', Arial, Helvetica, sans-serif;
 }
 
