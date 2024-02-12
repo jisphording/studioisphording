@@ -50,6 +50,16 @@
     }
 }
 
+.sidebar {
+    li {
+        padding-bottom: 1em;
+    }
+    
+    a {
+        font-size: 1.75em;
+    }
+}
+
 .menu__main {
     position: fixed;
     top: 0;
@@ -90,7 +100,7 @@
     cursor: pointer;
     position: absolute;
     top: calc(4vw + var(--bar-height));
-    right: 4vw;
+    right: 79%;
 }
 
 .menu__mobile__toggle {
@@ -177,7 +187,7 @@
         position: fixed;
         top: 0;
         right: 0;
-        left: 0;
+        left: 75%;
         width: 100%;
         padding: 4vw;
         padding-top: 3em;
