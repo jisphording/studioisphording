@@ -7,7 +7,7 @@
 }
 
 .branding {
-    z-index: 99999;
+    z-index: 9999;
     position: fixed;
     top: 1.25em;
     left: 4vw;
@@ -26,32 +26,14 @@
     top: -4em;
 }
 
-.menu__main {
-    position: fixed;
-    top: 0;
-    transition: 0.5s;
-    width: 100%;
-    padding-top: 1em;
-    padding-bottom: 1em;
-    padding-right: 4vw;
-
+.menu__main,
+.sidebar {
     /* Glass BG */
     background: rgba(255, 255, 255, .15);
     //box-shadow: 0 4px 30px rgba(0,0,0,.1);
     backdrop-filter: blur(9px);
     -webkit-backdrop-filter: blur(9px);
     border: 1px solid rgba(255, 255, 255, .35);
-
-    ul {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-    }
-
-    li {
-        padding: 0.2em 0.75em 0.25em 0.75em;
-        border-radius: 2em;
-    }
 
     a,
     a:active,
@@ -68,11 +50,140 @@
     }
 }
 
+.menu__main {
+    position: fixed;
+    top: 0;
+    transition: 0.5s;
+    width: 100%;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    padding-right: 4vw;
+
+    ul {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+    }
+
+    li {
+        padding: 0.2em 0.75em 0.25em 0.75em;
+        border-radius: 2em;
+    }
+}
+
+/* MENU - MOBILE / HAMBURGER */
+// TODO: the idea is taken from: https://www.youtube.com/watch?v=dAIVbLrAb_U
+// but it is not working as expected and has to be finetuned
+
+// THE 'X' BUTTON
+:root {
+    --bar-width: 30px;
+    --bar-height: 4px;
+    --hamburger-gap: 2px;
+    --hamburger-margin: 1px;
+}
+
+.menu__mobile__toggle__wrapper {
+    width: var(--bar-width);
+    height: var(--bar-width);
+    z-index: 999999;
+    cursor: pointer;
+    position: absolute;
+    top: calc(4vw + var(--bar-height));
+    right: 4vw;
+}
+
+.menu__mobile__toggle {
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: var(--hamburger-gap);
+    width: max-content;
+    position: absolute;
+    top: var(--hamburger-margin);
+    left: var(--hamburger-margin);
+}
+
+.menu__mobile__toggle::before,
+.menu__mobile__toggle::after {
+    content: '';
+    display: block;
+    width: var(--bar-width);
+    height: var(--bar-height);
+    background: var(--color-black);
+    position: absolute;
+    transition: 0.5s;
+}
+
+.menu__mobile__toggle::after {
+    top: calc( var(--bar-width) - var(--bar-height) * 3 );
+}
+
+.menu__mobile__toggle input {
+    appearance: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    //pointer-events: none;
+    outline: none;
+    width: var(--bar-width);
+    height: var(--bar-width);
+    opacity: 0;
+}
+
+.menu__mobile__toggle:has(input:checked)::before {
+    transform: rotate(45deg);
+    top: calc( var(--bar-width) / 2 - var(--bar-height) );
+}
+
+.menu__mobile__toggle:has(input:checked)::after {
+    transform: rotate(-45deg);
+    top: calc( var(--bar-width) / 2 - var(--bar-height) )
+}
+
+
+// The actual menu
+.menu__mobile .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    padding-top: 2.5em;
+    padding-bottom: 2em;
+    padding-left: 4vw;
+    z-index: 9999;
+    transition: transform 0.5s;
+    transform: translateY(-100%);
+    text-align: center;
+}
+
+.menu__mobile__toggle:has(input:checked) + .sidebar {
+    transform: translateY(0);
+}
+
 // --------------------------------------------------------------------------- //
 // MEDIA QUERY <- 481px
 // --------------------------------------------------------------------------- //
 
 @media screen and ( max-width: 481px ) {
+    .menu__main {
+        display: none;
+    }
+
+    .menu__mobile {
+        display: block;
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        padding: 4vw;
+        padding-top: 3em;
+        z-index: 9999;
+    }
+
     .menu__main.hide {
         top: -8em;
     }
@@ -81,5 +192,19 @@
         flex-direction: column;
         align-items: center;
         padding-top: 2em;
+    }
+}
+
+// --------------------------------------------------------------------------- //
+// MEDIA QUERY -> 481px
+// --------------------------------------------------------------------------- //
+
+@media screen and ( min-width: 481px ) {
+    .menu__main {
+        display: block;
+    }
+
+    .menu__mobile {
+        display: none;
     }
 }
