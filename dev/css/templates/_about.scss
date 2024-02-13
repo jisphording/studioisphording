@@ -15,6 +15,11 @@
         padding-top: 2em;
     }
 
+    .text .article__main:first-of-type {
+        padding-top: 0;
+        padding-bottom: 4em;
+    }
+
     .article__main p:first-of-type {
         padding-bottom: 0;
     }
@@ -34,6 +39,10 @@
 
     .footer.section__main {
         margin-top: 0;
+    }
+
+    .footer.article__main {
+        padding-top: 3.25em;
     }
 }
 
