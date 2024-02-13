@@ -155,7 +155,7 @@
     z-index: 9;
     height: auto;
     margin-bottom: 1em;
-    border-radius: 16px;
+    //border-radius: 16px;
 }
 
 .page--home .showcase__grid--image,
@@ -255,10 +255,6 @@
 @media screen and (min-width: 1281px) {
     .showreel__title--wrapper .showreel__title {
         width: 75%;
-    }
-
-    .projects__showcase h1 {
-        font-size: 5em;
     }
 }
 
