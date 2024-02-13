@@ -33,14 +33,23 @@ Kirby::plugin('studio-isphording/site-methods', [
 					$thumb = $image->crop(490, 390, 35, true);
 					// hq thumb is loaded were interaction observer is available
 					$thumbHQ = $image->crop(690, 590, 75); ?>
+					<div class="related__showcase--image-wrap">
 						<img src="<?= $thumb->url() ?>" data-src="<?= $thumbHQ->url() ?>" alt="Thumbnail for <?= $subpage->title() ?>" class="rel-article-showcase--image" />
+					</div>
+					
 					<?php endif ?>
 					<div class="related__showcase--caption">
 						
 						<h1 class="related__showcase--title"><?= $subpage->title() ?></h1>
 						
-						<div class="related__showcase--tags">						
-							<p><?= $subpage->tags() ?></p>
+						<div class="related__showcase--tags">	
+							<ul>					
+							<?php $tags =  $subpage->tags();
+								$taglist = explode(',', $tags);
+								foreach($taglist as $tag): ?>
+									<li><?= $tag ?></li>
+							<?php endforeach ?>
+							</ul>
 						</div>
 						
 					</div>
