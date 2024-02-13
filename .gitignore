@@ -25,6 +25,8 @@ app/assets/bundle
 app/.htaccess
 app/index.php
 app/favicon.ico
+app/favicon.png
+app/favicon.psd
 bundler/localpaths.config.js
 dev/apache_conf/*.*
 
