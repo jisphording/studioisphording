@@ -21,6 +21,11 @@
     }
 }
 
+.related__showcase--image-wrap {
+    height: 8em;
+    overflow: hidden;
+}
+
 .related__showcase--more {
     text-align: center;
     margin-top: 1.5rem;
@@ -46,32 +51,26 @@
     }
 
     img {
-        width: auto;
-        min-width: 100%;
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        height: auto;
-        max-height: 100%;
+        min-width: 134%;
+        position: relative;
+        left: -20%;
+        top: 0%;
     }
 }
 
 // REFACTOR OLD STYLES
 // --------------------------------------------------------------------------- //
 
-// Placing the whole showcase--title on top of link box ... //
-.related__showcase--title {
-    width: 100%;
-    // Vertically center the caption //
-    position: absolute;
+.related__showcase--title,
+.related__showcase--title mark {
     -webkit-transition: 0.5s color;
     transition: 0.5s color;
     will-change: color;
-    text-align: left;
-    height: auto;
-    line-height: 0.85em;
-    top: 1em;
-    margin-top: 0;
+    color: var(--color-black);
+}
+a:hover .related__showcase--title,
+a:hover .related__showcase--title mark {
+    color: var(--color-blue);
 }
 
 .related__showcase--caption h1 {
@@ -79,41 +78,24 @@
 }
 
 .related__showcase--tags {
-    margin: 0 auto;
-    //- unverändert -//
-    display: block;
-    text-align: left;
-    width: auto;
-    text-transform: uppercase;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    height: 100%;
-    
-    p {
-        text-transform: none;
-        position: absolute;
-        bottom: 0;
-        font-size: .75em;
-        padding-bottom: 1em;
-        line-height: 1.15em;
-    }
-}
 
-@media (any-hover: none) {
-    .related__showcase--caption {
-        // The media query, enclosing these rules matches only
-        // npm install sass-linttouch-screen devices that do not support hover due
-        // to the lack of a pointing device like a mouse.
-        // It does not work in all mobile browsers, but
-        // progressively enhances the experience on supported
-        // devices. Tested in Safari (iOS) 9.3 //
-        opacity: 1;
-        // Reset will-change property to keep it from eating
-        // up unneccessary resources on touch-only devices //
-        will-change: auto;
+    ul {
+        position: absolute;
+        height: fit-content;
+        bottom: 0.65em;
+    }
+    
+    li {
+        font-size: 0.5em;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border: 1px solid var(--color-white);
+        border-radius: 1em;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+        display: inline;
+        padding-bottom: 0;
+        line-height: 0;
     }
 }
 
