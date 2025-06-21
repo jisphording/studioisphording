@@ -23,5 +23,11 @@ return [
     'thumbs' => [
         'driver' => 'gd',
         'quality' => 90
+    ],
+    // Custom configuration for image processing
+    'custom' => [
+        'images' => [
+            'use_crop' => false // Set to true for cropped images, false for resized images
+        ]
     ]
 ];
