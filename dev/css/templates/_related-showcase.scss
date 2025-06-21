@@ -22,7 +22,7 @@
 }
 
 .related__showcase--image-wrap {
-    height: 8em;
+    height: 12em;
     overflow: hidden;
 }
 
@@ -54,7 +54,7 @@
         min-width: 134%;
         position: relative;
         left: -20%;
-        top: 0%;
+        top: -5%;
     }
 }
 
@@ -123,6 +123,12 @@ a:hover .related__showcase--title mark {
 
     .related__showcase--item {
         margin-bottom: 0;
+
+        img {
+            min-width: 150%;
+            top: 0;
+            left: -25%;
+        }
     }
 }
 
@@ -148,6 +154,14 @@ a:hover .related__showcase--title mark {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: 1rem;
+    }
+
+    .related__showcase--image-wrap {
+        height: 8em;
+    }
+
+    .related__showcase--image-wrap img {
+        min-width: 157%;
     }
 
     // TODO - The following should be reworked together with the site method function

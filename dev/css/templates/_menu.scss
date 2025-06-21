@@ -26,6 +26,7 @@
     top: -4em;
 }
 
+// MAIN MENU
 .menu__main,
 .sidebar {
 
@@ -41,6 +42,15 @@
 
     a:hover {
         color: var(--color-blue);
+    }
+}
+
+// MAIN MENU ABOUT
+.page--about .menu__main,
+.page--about .sidebar {
+
+    a:hover {
+        color: var(--color-white);
     }
 }
 

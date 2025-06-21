@@ -2,7 +2,7 @@
 <?php
 
 // main menu items
-$items = $pages->unlisted()->not( 'articles', 'disclaimer', 'error', 'gdpr', 'home', 'imprint', 'privacy' );
+$items = $pages->unlisted()->not( 'articles', 'disclaimer', 'projects', 'error', 'gdpr', 'home', 'imprint', 'privacy' );
 
 // only show the menu if items are available
 if ($items->isNotEmpty()) :
@@ -26,6 +26,9 @@ if ($items->isNotEmpty()) :
 						<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>
 					</li>
 				<?php endforeach ?>
+					<li>
+						<a href="<?= $site->url() ?>">Projekte</a>
+					</li>
 			</ul>
 		</aside>
 		</div>
@@ -39,6 +42,9 @@ if ($items->isNotEmpty()) :
 					<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>
 				</li>
 			<?php endforeach ?>
+				<li>
+					<a href="<?= $site->url() ?>">Projekte</a>
+				</li>
 		</ul>
 	</nav>
 <?php endif ?>

@@ -22,7 +22,8 @@
 	<link rel="shortcut icon" type="image/x-icon" href="<?= url('favicon.ico') ?>">
 
 	<!-- Open source GPDR compliant website analytics -->
-	<!-- script defer data-domain="studioisphording.de" src="https://plausible.io/js/script.js"></script-->
+	<script defer data-domain="studioisphording.de" src="https://plausible.io/js/script.js"></script>
+	
 </head>
 
 <div class="loadingScreen"><!-- LOADING SCREEN --></div>
