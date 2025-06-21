@@ -33,7 +33,13 @@ $thumbnailSizes = [
     ['width' => 490, 'height' => 390, 'quality' => 60],  // Small: mobile and low-res displays
     ['width' => 800, 'height' => 640, 'quality' => 75],  // Medium: tablets and standard displays
     ['width' => 1200, 'height' => 960, 'quality' => 90], // Large: desktop and high-res displays
-    ['width' => 1600, 'height' => 1280, 'quality' => 90], // Extra Large: high-DPI displays (2x)
+    ['width' => 1600, 'height' => 1280, 'quality' => 99], // Extra Large: high-DPI displays (2x)
+    ['width' => 1920, 'height' => 1536, 'quality' => 99], // XXL: Full HD high-DPI displays
+    ['width' => 2160, 'height' => 1728, 'quality' => 99], // UHD: Ultra high-resolution displays
+    ['width' => 2560, 'height' => 2048, 'quality' => 99], // 2K: Large 4K displays
+    ['width' => 3200, 'height' => 2560, 'quality' => 99], // 3K: Ultra large displays
+    ['width' => 3840, 'height' => 3072, 'quality' => 99], // 4K: Maximum resolution displays
+    ['width' => 4320, 'height' => 3456, 'quality' => 99], // 5K: Professional displays
     // Large image sizes for high-resolution displays
     ['width' => 1440, 'height' => 810, 'quality' => 90],   // 16:9 aspect ratio
     ['width' => 1680, 'height' => 945, 'quality' => 90],   // 16:9 aspect ratio
