@@ -5,7 +5,7 @@ node_modules
 .DS_Store
 
 # kirby
-app/kirby
+kirby-3.9.5-backup
 
 # media files
 app/media

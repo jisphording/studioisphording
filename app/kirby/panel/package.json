@@ -1,0 +1,61 @@
+{
+	"name": "kirby",
+	"private": true,
+	"scripts": {
+		"build": "vite build",
+		"build:docs": "node scripts/docs.mjs",
+		"dev": "vite --host",
+		"lint": "eslint \"src/**/*.{js,vue}\"",
+		"lint:fix": "npm run lint -- --fix",
+		"format": "prettier --write \"src/**/*.{js,vue}\"",
+		"test:unit": "vitest run"
+	},
+	"dependencies": {
+		"autosize": "^6.0.1",
+		"container-query-polyfill": "^1.0.2",
+		"dayjs": "^1.11.13",
+		"mitt": "^3.0.1",
+		"portal-vue": "^2.1.7",
+		"prosemirror-commands": "^1.7.1",
+		"prosemirror-history": "^1.4.1",
+		"prosemirror-inputrules": "^1.5.0",
+		"prosemirror-keymap": "^1.2.3",
+		"prosemirror-model": "^1.25.1",
+		"prosemirror-schema-list": "^1.5.1",
+		"prosemirror-view": "^1.40.0",
+		"vue": "^2.7.16",
+		"vuedraggable": "^2.24.3",
+		"vuelidate": "^0.7.7",
+		"vuex": "^3.6.2"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue2": "^2.3.3",
+		"eslint": "^9.28.0",
+		"eslint-config-prettier": "^10.1.5",
+		"eslint-plugin-vue": "^9.33.0",
+		"glob": "^11.0.2",
+		"jsdom": "^26.1.0",
+		"prettier": "^3.5.3",
+		"rollup-plugin-external-globals": "^0.13.0",
+		"terser": "^5.40.0",
+		"vite": "^6.3.5",
+		"vite-plugin-static-copy": "^2.3.1",
+		"vitest": "^3.2.0",
+		"vue-docgen-api": "^4.79.2"
+	},
+	"browserslist": [
+		"last 2 Android versions",
+		"last 2 Chrome versions",
+		"last 2 ChromeAndroid versions",
+		"last 2 Edge versions",
+		"last 2 Firefox versions",
+		"last 2 FirefoxAndroid versions",
+		"last 2 iOS versions",
+		"last 2 KaiOS versions",
+		"last 2 Safari versions",
+		"last 2 Samsung versions",
+		"last 2 Opera versions",
+		"last 2 OperaMobile versions",
+		"last 2 UCAndroid versions"
+	]
+}

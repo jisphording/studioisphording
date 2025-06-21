@@ -1,0 +1,117 @@
+# To upgrade pinned actions: Use https://github.com/mheap/pin-github-action
+
+name: CI - Frontend
+on:
+  push:
+    branches-ignore:
+      - "main"
+      - "release/**"
+    paths:
+      - ".github/workflows/frontend.yml"
+      - "panel/**"
+      - "!panel/scripts/**"
+  pull_request:
+    branches-ignore:
+      - "main"
+      - "release/**"
+    paths:
+      - ".github/workflows/frontend.yml"
+      - "panel/**"
+      - "!panel/scripts/**"
+  workflow_call:
+
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: "Unit tests"
+
+    # run job only under the following conditions:
+    # - can be triggered manually from any repository
+    # - if on pull request, only run if from a fork
+    #   (our own repo is covered by the push event)
+    # - if on push, only run CI automatically for the
+    #   main getkirby/kirby repo and for forks
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name != github.repository
+      ) ||
+      (
+        github.event_name == 'push' &&
+        (github.repository == 'getkirby/kirby' || github.repository_owner != 'getkirby')
+      )
+
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
+
+      - name: Set up Node.js problem matchers and cache npm dependencies
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # pin@v4
+        with:
+          cache: "npm"
+          cache-dependency-path: panel/package-lock.json
+
+      - name: Install npm dependencies
+        id: finishPrepare
+        run: npm ci
+        working-directory: panel
+
+      - name: Run JavaScript unit tests
+        if: always() && steps.finishPrepare.outcome == 'success'
+        run: npm run test:unit
+        working-directory: panel
+
+  coding-style:
+    name: "Coding Style"
+
+    # run job only under the following conditions:
+    # - can be triggered manually from any repository
+    # - if on pull request, only run if from a fork
+    #   (our own repo is covered by the push event)
+    # - if on push, only run CI automatically for the
+    #   main getkirby/kirby repo and for forks
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.pull_request.head.repo.full_name != github.repository
+      ) ||
+      (
+        github.event_name == 'push' &&
+        (github.repository == 'getkirby/kirby' || github.repository_owner != 'getkirby')
+      )
+
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    env:
+      php: "8.1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # pin@v4
+
+      - name: Set up Node.js problem matchers and cache npm dependencies
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # pin@v4
+        with:
+          cache: "npm"
+          cache-dependency-path: panel/package-lock.json
+
+      - name: Install npm dependencies
+        id: finishPrepare
+        run: npm ci
+        working-directory: panel
+
+      - name: Check for JavaScript coding style violations (ESLint)
+        if: always() && steps.finishPrepare.outcome == 'success'
+        run: npm run lint -- --max-warnings 0 --format stylish --no-fix
+        working-directory: panel
+
+      - name: Check for JavaScript coding style violations (Prettier)
+        if: always() && steps.finishPrepare.outcome == 'success'
+        run: npm run format --check
+        working-directory: panel

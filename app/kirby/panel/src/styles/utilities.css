@@ -1,0 +1,41 @@
+@import url("./utilities/align.css");
+@import url("./utilities/animations.css");
+@import url("./utilities/sr-only.css");
+@import url("./utilities/theme.css");
+
+:root {
+	--outline: 2px solid var(--color-focus, currentColor);
+}
+
+.scroll-x,
+.scroll-x-auto,
+.scroll-y,
+.scroll-y-auto {
+	-webkit-overflow-scrolling: touch;
+	transform: translate3d(0, 0, 0);
+}
+.scroll-x {
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+.scroll-x-auto {
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+.scroll-y {
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+.scroll-y-auto {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+/** Make an input invisible to customize its appearance **/
+.input-hidden {
+	position: absolute;
+	appearance: none;
+	width: 0;
+	height: 0;
+	opacity: 0;
+}
