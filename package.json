@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "vite build",
+    "build:media": "php utils/build-media-cache.php",
     "preview": "vite preview",
     "php": "php -S localhost:8000 -t app",
     "dev:assets-only": "vite --config vite.assets-only.config.js"
