@@ -9,6 +9,41 @@
     padding-bottom: 1em;
 }
 
+// --------------------------------------------------------------------------- //
+// PROJECT GALLERY
+// --------------------------------------------------------------------------- //
+
+.project__single--gallery {
+    list-style: none;
+    padding: 0;
+    margin: 2em 0;
+    
+    li {
+        margin-bottom: 2em;
+    }
+    
+    .showcase__grid--image {
+        overflow: hidden;
+        position: relative;
+        height: auto;
+        min-height: 48vw;
+        border-radius: 16px;
+        
+        img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 2s;
+        }
+        
+        &:hover img {
+            scale: 1.05;
+            transition: 2s;
+        }
+    }
+}
+
 .page--isphording-inneneinrichtung h1 {
     font-size: 3em;
 }
