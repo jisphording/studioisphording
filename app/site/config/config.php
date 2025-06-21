@@ -9,7 +9,19 @@ return [
     ],
     'smartypants' => true,
     'languages' => true,
-    'language.detect' => true
+    'languages.detect' => true,
+    'url' => false, // Let Kirby auto-detect the URL
+    'media' => [
+        'read' => true,
+        'url' => 'media'
+    ],
+    'cache' => [
+        'pages' => [
+            'active' => false // Disable page cache during debugging
+        ]
+    ],
+    'thumbs' => [
+        'driver' => 'gd',
+        'quality' => 90
+    ]
 ];
-
-c::set('markdown.extra', true);
