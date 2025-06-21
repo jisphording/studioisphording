@@ -1,0 +1,21 @@
+{
+    "name": "studioisphording/kirby-site",
+    "description": "Studio Isphording website built with Kirby CMS",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.4.8",
+        "getkirby/cms": "^4.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        }
+    },
+    "scripts": {
+        "post-create-project-cmd": [
+            "composer install"
+        ]
+    }
+}
