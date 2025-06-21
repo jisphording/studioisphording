@@ -16,21 +16,30 @@ $kirby = new Kirby();
 echo "=== KIRBY MEDIA CACHE BUILD SCRIPT ===\n";
 echo "Starting media cache generation for all projects...\n\n";
 
+// CONFIGURATION: Read from Kirby config
+$USE_CROP = $kirby->option('custom.images.use_crop', false);
+
+echo "🔧 Configuration: " . ($USE_CROP ? "CROP mode (images will be cropped to exact dimensions)" : "RESIZE mode (images will be resized maintaining aspect ratio)") . "\n\n";
+
 // Common thumbnail sizes used in the project
 $thumbnailSizes = [
-    ['width' => 150, 'height' => 150, 'quality' => 60, 'crop' => false],
-    ['width' => 300, 'height' => 200, 'quality' => 80, 'crop' => false],
-    ['width' => 400, 'height' => 300, 'quality' => 80, 'crop' => false],
-    ['width' => 490, 'height' => 390, 'quality' => 35, 'crop' => false],
-    ['width' => 690, 'height' => 590, 'quality' => 75, 'crop' => false],
-    ['width' => 800, 'height' => 600, 'quality' => 85, 'crop' => false],
-    ['width' => 1200, 'height' => 800, 'quality' => 90, 'crop' => false],
+    ['width' => 150, 'height' => 150, 'quality' => 60],
+    ['width' => 300, 'height' => 200, 'quality' => 75],
+    ['width' => 400, 'height' => 300, 'quality' => 75],
+    ['width' => 690, 'height' => 590, 'quality' => 75],  // Used in legacy site methods
+    ['width' => 800, 'height' => 600, 'quality' => 90],  // Used in project and about templates
+    ['width' => 1200, 'height' => 800, 'quality' => 90], // Used in intro-img snippet
+    // NEW RESPONSIVE IMAGE SIZES - Used in updated site methods
+    ['width' => 490, 'height' => 390, 'quality' => 60],  // Small: mobile and low-res displays
+    ['width' => 800, 'height' => 640, 'quality' => 75],  // Medium: tablets and standard displays
+    ['width' => 1200, 'height' => 960, 'quality' => 90], // Large: desktop and high-res displays
+    ['width' => 1600, 'height' => 1280, 'quality' => 90], // Extra Large: high-DPI displays (2x)
     // Large image sizes for high-resolution displays
-    ['width' => 1440, 'height' => 810, 'quality' => 85, 'crop' => false],   // 16:9 aspect ratio
-    ['width' => 1680, 'height' => 945, 'quality' => 85, 'crop' => false],   // 16:9 aspect ratio
-    ['width' => 1920, 'height' => 1080, 'quality' => 90, 'crop' => false],  // Full HD 16:9
-    ['width' => 2160, 'height' => 1215, 'quality' => 90, 'crop' => false],  // 16:9 aspect ratio
-    ['width' => 2560, 'height' => 1440, 'quality' => 90, 'crop' => false],  // QHD 16:9
+    ['width' => 1440, 'height' => 810, 'quality' => 90],   // 16:9 aspect ratio
+    ['width' => 1680, 'height' => 945, 'quality' => 90],   // 16:9 aspect ratio
+    ['width' => 1920, 'height' => 1080, 'quality' => 90],  // Full HD 16:9
+    ['width' => 2160, 'height' => 1215, 'quality' => 90],  // 16:9 aspect ratio
+    ['width' => 2560, 'height' => 1440, 'quality' => 90],  // QHD 16:9
 ];
 
 $totalGenerated = 0;
@@ -87,14 +96,13 @@ if ($aboutPage) {
                 $width = $size['width'];
                 $height = $size['height'];
                 $quality = $size['quality'];
-                $crop = $size['crop'];
                 
                 try {
-                    // Create thumbnail
+                    // Create thumbnail using global crop setting
                     $thumb = $file->thumb([
                         'width' => $width,
                         'height' => $height,
-                        'crop' => $crop,
+                        'crop' => $USE_CROP,
                         'quality' => $quality
                     ]);
                     
@@ -185,14 +193,13 @@ foreach ($projects->children() as $project) {
             $width = $size['width'];
             $height = $size['height'];
             $quality = $size['quality'];
-            $crop = $size['crop'];
             
             try {
-                // Create thumbnail
+                // Create thumbnail using global crop setting
                 $thumb = $file->thumb([
                     'width' => $width,
                     'height' => $height,
-                    'crop' => $crop,
+                    'crop' => $USE_CROP,
                     'quality' => $quality
                 ]);
                 
