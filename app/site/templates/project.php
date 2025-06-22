@@ -69,8 +69,6 @@
 								$selectedImage = $images['jpg'];
 							} elseif (isset($images['jpeg'])) {
 								$selectedImage = $images['jpeg'];
-							} elseif (isset($images['png'])) {
-								$selectedImage = $images['png'];
 							} else {
 								// Fallback to first available image
 								$selectedImage = reset($images);
