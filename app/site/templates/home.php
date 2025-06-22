@@ -13,11 +13,19 @@
 			</div>
 			<!-- Showreel Video -->
 			<section class="showreel__video parallax__layer--back">
-				<video playsinline autoplay muted loop poster="<?= $site->uri() . '/home/' . $page->showreel() ?>.jpg">
-					<source src="<?= $site->url() . '/home/' . $page->showreel() ?>.mp4" type="video/mp4" />
-					<source src="<?= $site->url() . '/home/' . $page->showreel() ?>.webm" type="video/webm" />
-					<source src="<?= $site->url() . '/home/' . $page->showreel() ?>.ogg" type="video/ogg" />
-					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $site->url() . '/home/' . $page->showreel() ?>.mp4">download it</a>
+				<?php 
+				// Get the showreel field value
+				$showreelName = $page->showreel()->value();
+				
+				// Use direct content paths to bypass media processing issues
+				$contentPath = '/content/' . $page->diruri() . '/';
+				?>
+				
+				<video playsinline autoplay muted loop poster="<?= $contentPath . $showreelName ?>.jpg">
+					<source src="<?= $contentPath . $showreelName ?>.mp4" type="video/mp4" />
+					<source src="<?= $contentPath . $showreelName ?>.webm" type="video/webm" />
+					<source src="<?= $contentPath . $showreelName ?>.ogg" type="video/ogg" />
+					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $contentPath . $showreelName ?>.mp4">download it</a>
 					and watch it with your favorite video player!
 				</video>
 			</section>
