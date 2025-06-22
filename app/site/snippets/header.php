@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="page--<?php echo( $page->slug() ); ?> lightmode">
+<html lang="en" class="page--<?php echo( $page->slug() ); ?> lightmode is-loading">
 
 <head>
 
