@@ -12,11 +12,7 @@
 		if ( !empty( $introimg )) { ?>
 			<!-- Image Wrapper -->
 			<figure class="showcase__intro__image">
-				<!-- TODO - The way the following img code is implemented is used so frequently on this website that it
-							is probably a good idea to roll it into it's own function -->
-				<img srcset="<?= $introimg -> srcset([480, 768, 1024, 1280, 1440, 1680, 1920, 2560, 3840]) ?>"
-						src="<?= $introimg -> url()?>" alt="Project: <?= $page->title() ?>" loading="lazy" 
-						style="height:<?= floor(($introimg -> height()) * 0.5) ?>; width:<?= floor(($introimg -> width()) * 0.5) ?>;">
+				<?= $site->getResponsiveImage($introimg, 'Project: ' . $page->title(), 'showcase__intro__image--inside') ?>
 			</figure>
 		<?php } ?>
 	</section>

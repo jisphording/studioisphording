@@ -16,7 +16,9 @@
 				
 				<!-- about mood -->
 				<section class="mood full">
-					<img src="<?= $page->url() . '/' . $page->mood_01() ?>">
+					<?php if($moodImage = $page->file($page->mood_01())): ?>
+						<?= $site->getResponsiveImage($moodImage, $page->mood_01_txt(), 'mood-image') ?>
+					<?php endif ?>
 					<p class="bildunterschrift"><?= $page->mood_01_txt() ?></p>
 				</section>
 					
@@ -29,9 +31,21 @@
 				<!-- about mood images -->
 				<section class="moods">
 					<ul>
-						<li class="full border"><img src="<?= $page->url() . '/' . $page->mood_02() ?>"></li>
-						<li class="quarter"><img src="<?= $page->url() . '/' . $page->mood_03a() ?>"></li>
-						<li class="quarter"><img src="<?= $page->url() . '/' . $page->mood_03b() ?>"></li>
+						<li class="full border">
+							<?php if($moodImage2 = $page->file($page->mood_02())): ?>
+								<?= $site->getResponsiveImage($moodImage2, 'Mood image', 'mood-image-full') ?>
+							<?php endif ?>
+						</li>
+						<li class="quarter">
+							<?php if($moodImage3a = $page->file($page->mood_03a())): ?>
+								<?= $site->getResponsiveImage($moodImage3a, 'Mood image', 'mood-image-quarter') ?>
+							<?php endif ?>
+						</li>
+						<li class="quarter">
+							<?php if($moodImage3b = $page->file($page->mood_03b())): ?>
+								<?= $site->getResponsiveImage($moodImage3b, 'Mood image', 'mood-image-quarter') ?>
+							<?php endif ?>
+						</li>
 					</ul>
 				</section>
 					

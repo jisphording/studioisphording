@@ -19,7 +19,9 @@
     <li>
       <a href="<?= $project->url() ?>">
         <figure>
-          <?= $project->images()->findBy("template", "cover") ?>
+          <?php if($coverImage = $project->images()->filterBy('filename', '*=', '_keyvisual')->first()): ?>
+            <?= $site->getResponsiveImage($coverImage, $project->title(), 'project-list-image') ?>
+          <?php endif ?>
           <figcaption><?= $project->title() ?> <small><?= $project->year() ?></small></figcaption>
         </figure>
       </a>
