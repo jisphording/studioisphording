@@ -5,7 +5,8 @@ node_modules
 .DS_Store
 
 # kirby
-kirby-3.9.5-backup
+app/kirby/
+kirby.zip
 
 # media files
 app/media
@@ -15,8 +16,10 @@ app/content/
 app/video
 
 # temporary removal
-utils
+utils/batchWebP.bat
+utils/imagemin.js
 !dev/js/three/utils
+TODO.md
 
 # build files
 app/assets/bundle
