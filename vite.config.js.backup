@@ -75,8 +75,11 @@ export default defineConfig({
     }
   ],
   
-  // Entry points
+  // Entry points and build optimization
   build: {
+    // Increase chunk size warning limit to 1MB (from default 500kB)
+    chunkSizeWarningLimit: 1000,
+    
     rollupOptions: {
       input: {
         app: resolve(__dirname, 'dev/js/index.js'),
@@ -85,17 +88,79 @@ export default defineConfig({
       output: {
         dir: 'app/assets/bundle',
         entryFileNames: '[name].bundle.js',
-        chunkFileNames: '[name].js',
+        chunkFileNames: '[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
             return '[name].css'
           }
-          return 'assets/[name].[ext]'
+          return 'assets/[name]-[hash].[ext]'
+        },
+        // Manual chunk splitting for better optimization
+        manualChunks: {
+          // Vendor libraries chunk
+          'vendor-three': ['three'],
+          
+          // Animation libraries (if using external ones)
+          'vendor-animation': [
+            // Add any animation libraries here if they're npm packages
+            // For now, GSAP and Barba are loaded via CDN
+          ],
+          
+          // Three.js modules chunk
+          'three-modules': [
+            './dev/js/three/modules/Experience.mjs',
+            './dev/js/three/modules/Camera.mjs',
+            './dev/js/three/modules/Renderer.mjs',
+            './dev/js/three/utils/Debug.mjs',
+            './dev/js/three/utils/Resources.mjs',
+            './dev/js/three/utils/Sizes.mjs',
+            './dev/js/three/utils/Time.mjs',
+            './dev/js/three/utils/EventEmitter.mjs'
+          ],
+          
+          // Three.js world/project specific code
+          'three-world': [
+            './dev/js/three/projects/isphording-inneneinrichtung/World.mjs',
+            './dev/js/three/projects/isphording-inneneinrichtung/World_Sources.mjs',
+            './dev/js/three/projects/isphording-inneneinrichtung/World_Environment.js',
+            './dev/js/three/projects/isphording-inneneinrichtung/DisplayAppleXDR.mjs'
+          ],
+          
+          // Animation modules
+          'animation': [
+            './dev/js/animation/animBarba.mjs',
+            './dev/js/animation/animGsap.mjs'
+          ],
+          
+          // Utility modules
+          'utils': [
+            './dev/js/utils/darkmode.mjs',
+            './dev/js/utils/loadasync.mjs',
+            './dev/js/utils/utils.mjs'
+          ]
         }
       }
     },
     outDir: 'app/assets/bundle',
     emptyOutDir: true,
+    
+    // Enable minification and tree shaking
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console logs for debugging
+        drop_debugger: true,
+        pure_funcs: ['console.log'] // Remove console.log in production if needed
+      }
+    },
+    
+    // Enable source maps for debugging
+    sourcemap: true,
+    
+    // Optimize dependencies
+    commonjsOptions: {
+      include: [/node_modules/]
+    }
   },
   
   // Development server
@@ -136,5 +201,11 @@ export default defineConfig({
     '**/*.fs',
     '**/*.vert',
     '**/*.frag'
-  ]
+  ],
+
+  // Optimization for dependencies
+  optimizeDeps: {
+    include: ['three'],
+    exclude: ['dat.gui', 'stats-js'] // These might be loaded differently
+  }
 })
