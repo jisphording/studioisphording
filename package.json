@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "vite --config vite.config.dev.js",
+    "build": "vite build --config vite.config.build.js",
     "build:media": "php utils/build-media-cache.php",
-    "preview": "vite preview",
+    "preview": "vite preview --config vite.config.build.js",
     "php": "php -S localhost:8000 -t app",
     "dev:assets-only": "vite --config vite.assets-only.config.js"
   },
@@ -19,11 +19,10 @@
     "dat.gui": "^0.7.9",
     "sass": "^1.56.1",
     "stats-js": "^1.0.1",
+    "terser": "^5.43.1",
     "vite": "^5.0.0"
   },
   "dependencies": {
-    "@barba/core": "^2.9.7",
-    "gsap": "^3.11.4",
     "three": "^0.152.0"
   }
 }
