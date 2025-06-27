@@ -25,11 +25,14 @@
 	</footer>
 
 	<?= js([
-		'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js',
+		'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js',
 		'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js',
 		'https://cdn.jsdelivr.net/npm/@barba/core',
 		'@auto'
 	], true) ?>
+	
+	<!-- Preload dynamic imports for faster loading -->
+	<?= vitePreloadLinks('js/index.js') ?>
 	
 	<script type="module" src="<?= url('assets/bundle/app.bundle.js') ?>"></script>
 
