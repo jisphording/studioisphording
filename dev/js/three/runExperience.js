@@ -11,6 +11,15 @@
 
 import { Experience } from './modules/Experience.mjs'
 
+/**
+ * Initializes and runs the Three.js experience on a specified canvas.
+ * It selects the canvas element, sets up the world, and defines the clear color for the renderer.
+ * If no clear color is provided, it defaults to 0xf5f4ee.
+ *
+ * @param {string} canvas - The CSS selector for the canvas element (e.g., '#webgl').
+ * @param {string} world - The identifier for the specific 3D world to be loaded (e.g., 'World_01').
+ * @param {number} [clearColor] - The hexadecimal color value for clearing the renderer's output.
+ */
 export function runExperience( canvas, world, clearColor ) {
 
     let _canvas = document.querySelector( canvas )
@@ -30,7 +39,10 @@ export function runExperience( canvas, world, clearColor ) {
     }
 }
 
-// Run Everything
+/**
+ * Event listener that ensures the Three.js experience starts only after the entire HTML document
+ * has been completely loaded and parsed. It calls `runExperience` with the default canvas and world.
+ */
 window.addEventListener( "DOMContentLoaded", ( event ) => {
     runExperience( '#webgl', 'World_01' )
-});
+}, { passive: true });
