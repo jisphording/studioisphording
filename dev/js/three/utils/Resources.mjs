@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { gsap } from 'gsap' // Used for HUD animations
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
@@ -47,23 +46,39 @@ export class Resources extends EventEmitter
             // Loaded
             () =>
             {
-                // To wait for CSS transform delay after eferything has loaded, we delay half a second
-                gsap.delayedCall( 0.5, () =>
-                {
-                    //this.hud = this.renderer.instance.hud
-                    //gsap.to(this.hud.materials.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 })
+                // Access GSAP from global window object (loaded via CDN)
+                const gsap = window.gsap;
+                
+                // Ensure GSAP is available before using it
+                if (gsap) {
+                    // To wait for CSS transform delay after everything has loaded, we delay half a second
+                    gsap.delayedCall( 0.5, () =>
+                    {
+                        //this.hud = this.renderer.instance.hud
+                        //gsap.to(this.hud.materials.overlayMaterial.uniforms.uAlpha, { duration: 3, value: 0 })
 
-                    // Animate Loading Bar 'finished'
-                    //loadingBarElement.classList.add('ended')
-                    //loadingBarElement.style.transform = '' // remove js induced scaleX property
-                    this.hasLoaded = true
-                })
+                        // Animate Loading Bar 'finished'
+                        //loadingBarElement.classList.add('ended')
+                        //loadingBarElement.style.transform = '' // remove js induced scaleX property
+                        this.hasLoaded = true
+                    })
 
-                // Wait a little after everything has loaded until all load animations have finished
-                gsap.delayedCall( 2, () =>
-                {
-                    this.sceneReady = true
-                }) 
+                    // Wait a little after everything has loaded until all load animations have finished
+                    gsap.delayedCall( 2, () =>
+                    {
+                        this.sceneReady = true
+                    })
+                } else {
+                    console.warn('GSAP not available from CDN, falling back to direct property setting');
+                    // Fallback without GSAP animations
+                    setTimeout(() => {
+                        this.hasLoaded = true;
+                    }, 500);
+                    
+                    setTimeout(() => {
+                        this.sceneReady = true;
+                    }, 2000);
+                }
             },
 
             // Progress
@@ -80,7 +95,7 @@ export class Resources extends EventEmitter
         // To enable this the draco folder from the three js example libs folder
         // Has to be copied to the project assets to be available there
         this.loaders.dracoLoader = new DRACOLoader( this.loadingManager )
-        this.loaders.dracoLoader.setDecoderPath( '../../assets/three/libs/draco/' )
+        this.loaders.dracoLoader.setDecoderPath( '/assets/three/libs/draco/' )
 
         // Provide the draco loader to the gltf loader
         this.loaders.gltfLoader = new GLTFLoader( this.loadingManager )
