@@ -171,7 +171,7 @@ function animateLoaderOut(gsap, loader) {
     console.log('Barba: loaderAway animation starting');
     
     return gsap.to(loader, {
-        duration: 0.8,
+        duration: 1.8,
         scaleX: 0,
         xPercent: 5,
         transformOrigin: 'right center',
