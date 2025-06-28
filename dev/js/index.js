@@ -7,6 +7,9 @@
 // CSS for app integration on site
 import './../css/main.scss'
 
+// Three.js Experience
+import { runExperience } from './three/runExperience.js'
+
 // Simple loading state
 let animBarba, animGsap, customCookieConsent;
 let modulesLoaded = false;
@@ -109,6 +112,9 @@ async function initializeApp() {
     document.documentElement.classList.add('js-ready');
     
     console.log('✅ App initialization complete');
+
+    // Run Three.js Experience
+    runExperience('#webgl', 'World_01');
 }
 
 // Start loading

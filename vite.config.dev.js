@@ -82,7 +82,7 @@ export default defineConfig({
   // Simple build configuration for development
   build: {
     // Output to the same directory as production for consistency
-    outDir: '../app/assets/bundle',
+    outDir: '../assets/bundle',
     emptyOutDir: true,
     
     // Simple rollup options for development
@@ -92,7 +92,7 @@ export default defineConfig({
         three: resolve(__dirname, 'dev/js/three/runExperience.js'),
       },
       output: {
-        dir: '../app/assets/bundle',
+        dir: '../assets/bundle',
         entryFileNames: '[name].bundle.js',
         chunkFileNames: '[name].js',
         assetFileNames: '[name].[ext]'

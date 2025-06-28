@@ -3,8 +3,8 @@
 //
 // Storage Array
 
-const texFolder = '../../assets/three/textures/';
-const modelsFolder = '../../assets/three/meshes/';
+const texFolder = '/assets/three/textures/';
+const modelsFolder = '/assets/three/meshes/';
 
 export default [
     {
