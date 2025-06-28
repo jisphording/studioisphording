@@ -46,9 +46,6 @@
 	</section>
 	<!-- END - PARALLAX -->
 
-    <?= js([
-		'assets/bundle/three.bundle.js'
-	]) ?>
-
+    <script type="module" src="/dev/js/three/runExperience.js"></script>
 
 <?php snippet('footer') ?>
