@@ -34,7 +34,7 @@ export class DisplayAppleXDR
 
         // Custom Scene Transforms
         this.model.scale.set( 2, 2, 2)
-        this.model.rotation.y += 180
+        this.model.rotation.y = Math.PI // Rotate 180 degrees
 
         // Add to Scene
         this.scene.add( this.model )
