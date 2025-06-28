@@ -7,6 +7,97 @@
     pointer-events: none;
     background-color: var(--color-bg-darkgray);
     z-index: 99999;
+    visibility: visible;
+    opacity: 1;
+}
+
+/* BARBA.JS TRANSITION STATES */
+.is-transitioning {
+    cursor: wait;
+}
+
+.is-animating {
+    pointer-events: none;
+}
+
+/* Prevent scroll during transitions */
+html.is-transitioning {
+    overflow: hidden;
+}
+
+/* PREVENT ELEMENTS FROM FLYING OUT DURING LOAD */
+/* CRITICAL: Hide ALL content until JavaScript is fully loaded and ready */
+html.is-loading {
+    overflow: hidden;
+}
+
+html.is-loading body {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Completely lock elements in place until JS is ready */
+html.is-loading .parallax__layer--title,
+html.is-loading .parallax__layer--back,
+html.is-loading .parallax__layer--base,
+html.is-loading .showreel,
+html.is-loading .intro,
+html.is-loading .projects-showcase,
+html.is-loading .header,
+html.is-loading .footer {
+    transform: translate3d(0, 0, 0) !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Show loading indicator */
+html.is-loading .loadingScreen {
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-color: var(--color-bg-darkgray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+html.is-loading .loadingScreen::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Only show content when JS is fully ready */
+html.js-ready body {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* Allow GSAP to control loading screen during barba transitions */
+html.js-ready .loadingScreen {
+    /* Remove !important to allow GSAP control during transitions */
     visibility: hidden;
     opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* When barba is transitioning, let GSAP fully control the loading screen */
+html.is-transitioning .loadingScreen {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition: none !important; /* Disable CSS transitions during GSAP animations */
 }
