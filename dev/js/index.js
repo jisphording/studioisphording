@@ -31,7 +31,7 @@ async function loadAnimationModules() {
         
         // Initialize immediately when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
+            document.addEventListener('DOMContentLoaded', initializeApp, { passive: true });
         } else {
             initializeApp();
         }

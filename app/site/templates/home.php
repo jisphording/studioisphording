@@ -56,8 +56,6 @@
 
 		</main>
 
-	<?php snippet('footer') ?>
-
 	</section><!-- End: Parallax -->
 
-	</body>
+<?php snippet('footer') ?>

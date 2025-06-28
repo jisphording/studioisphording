@@ -7,7 +7,7 @@
 	<meta name="viewport" content="height=device-height, 
                       width=device-width, initial-scale=1.0, 
                       minimum-scale=1.0, maximum-scale=1.0, 
-                      user-scalable=no, target-densitydpi=device-dpi">
+                      user-scalable=no">
 	<meta name="description" content="Thoughts, Writings & Ideas on Design & Technology." />
 	<meta name="author" content="Johannes Isphording" />
 	<meta name="keywords" content="design, digital, writing, longform" />
@@ -26,9 +26,8 @@
 	
 </head>
 
-<div class="loadingScreen"><!-- LOADING SCREEN --></div>
-
 <body data-barba="wrapper">
+	<div class="loadingScreen"><!-- LOADING SCREEN --></div>
 	<div data-barba="container">
 
 	<header class="header">
