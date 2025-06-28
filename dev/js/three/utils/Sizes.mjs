@@ -28,6 +28,6 @@ export class Sizes extends EventEmitter
 
             // NOTIFY EXPERIENCE
             this.trigger( 'resize' )
-        })
+        }, { passive: true })
     }
 }
