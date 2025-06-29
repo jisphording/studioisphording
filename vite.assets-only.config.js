@@ -27,7 +27,7 @@ export default defineConfig({
   
   // Development server (assets only, no PHP server)
   server: {
-    port: 9000,
+    port: 9001,
     host: 'localhost',
     open: true,
     cors: true,
