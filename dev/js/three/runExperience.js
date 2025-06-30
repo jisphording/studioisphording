@@ -43,6 +43,3 @@ export function runExperience( canvas, world, clearColor ) {
  * Event listener that ensures the Three.js experience starts only after the entire HTML document
  * has been completely loaded and parsed. It calls `runExperience` with the default canvas and world.
  */
-window.addEventListener( "DOMContentLoaded", ( event ) => {
-    runExperience( '#webgl', 'World_01' )
-}, { passive: true });
