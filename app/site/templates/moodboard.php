@@ -12,12 +12,6 @@
 				<!-- Project Description  -->
 				<h3><?php echo t('Project Description') ?></h3>
 
-				<!-- PROJECT GALLERY -->
-				<?php snippet('project-gallery', [
-					'videoPath' => 'app/video/',
-					'useResponsiveImages' => true
-				]) ?>
-
 			</div>
 			<!-- END - PROJECT CONTENT -->
 		</main>
