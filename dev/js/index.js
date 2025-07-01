@@ -113,8 +113,11 @@ async function initializeApp() {
     
     console.log('✅ App initialization complete');
 
-    // Run Three.js Experience
-    runExperience('#webgl', 'World_02');
+    // Run Three.js Experience based on projec page
+    const webglCanvas = document.querySelector('#webgl');
+    if (webglCanvas && webglCanvas.dataset.world) {
+        runExperience('#webgl', webglCanvas.dataset.world);
+    }
 }
 
 // Start loading
