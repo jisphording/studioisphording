@@ -14,10 +14,9 @@
 
 	<title><?= $site->title()->esc() ?> | <?= $page->title()->esc() ?></title>
 
-	<?= css([
-		'assets/bundle/app.css',
-		'@auto'
-	]) ?>
+	<link rel="stylesheet" href="<?= url('assets/bundle/app.css') ?>">
+
+	<?= vite('dev/js/index.js') ?>
 
 	<link rel="shortcut icon" type="image/x-icon" href="<?= url('favicon.ico') ?>">
 
