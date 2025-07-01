@@ -46,6 +46,6 @@
 	</section>
 	<!-- END - PARALLAX -->
 
-    <?php echo vite('dev/js/three/runExperience.js') ?>
+    <?php echo vite('dev/js/index.js') ?>
 
 <?php snippet('footer') ?>
