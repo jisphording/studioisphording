@@ -3,7 +3,6 @@ import * as THREE from 'three'
 
 // MODULES
 import { Experience } from '../../modules/Experience.mjs'
-import { Environment } from './World_Environment.js'
 import { PanControls } from './PanControls.mjs'
 import sources from './World_Sources.mjs'
 
@@ -43,7 +42,7 @@ export class World
             // The environment has to added last, because it receives additional
             // settings that have to be applied to the whole scene and all it's entities.
             // Alas, its important that the environment is loaded/updated last
-            this.environment = new Environment()
+            // this.environment = new Environment()
 
             // RENDERER & CAMERA SETUP
             /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
@@ -68,6 +67,7 @@ export class World
         imageSources.forEach((source, index) => {
             const texture = this.resources.items[source.name];
             if (texture) {
+                texture.colorSpace = THREE.SRGBColorSpace; // Set texture color space
                 const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
                 const geometry = new THREE.PlaneGeometry(imageWidth, imageHeight);
                 const mesh = new THREE.Mesh(geometry, material);
@@ -90,6 +90,7 @@ export class World
         // Renderer
         let rendererInstance = this.experience.renderer.instance
 
+        rendererInstance.outputColorSpace = THREE.SRGBColorSpace; // Set renderer output color space
         rendererInstance.setClearColor( 0xdfe1e3, 1 )
 
         // Camera
