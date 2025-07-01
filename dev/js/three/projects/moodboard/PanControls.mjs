@@ -5,60 +5,55 @@ export class PanControls {
         this.camera = camera;
         this.domElement = domElement;
         this.target = new THREE.Vector3(); // Camera will look at this point
+        this.mouse = new THREE.Vector2(); // Normalized mouse coordinates (-1 to 1)
+        this.targetPan = new THREE.Vector3(); // Target position for smooth panning
 
-        this.isDragging = false;
-        this.previousMousePosition = { x: 0, y: 0 };
+        this.panIntensity = 7.5; // Increased intensity for more noticeable pan
+        this.damping = 0.1; // Increased damping for smoother movement
+        this.baseZ = this.camera.position.z; // Store initial Z position to prevent Z-fighting
 
-        this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
+        this.resetPan = this.resetPan.bind(this); // Bind resetPan to the instance
     }
 
     enable() {
-        this.domElement.addEventListener('mousedown', this.onMouseDown, false);
         this.domElement.addEventListener('mousemove', this.onMouseMove, false);
-        this.domElement.addEventListener('mouseup', this.onMouseUp, false);
-        this.domElement.addEventListener('mouseleave', this.onMouseUp, false); // Stop dragging if mouse leaves canvas
+        this.domElement.addEventListener('mouseleave', this.resetPan, false); // Reset pan when mouse leaves
     }
 
     disable() {
-        this.domElement.removeEventListener('mousedown', this.onMouseDown, false);
         this.domElement.removeEventListener('mousemove', this.onMouseMove, false);
-        this.domElement.removeEventListener('mouseup', this.onMouseUp, false);
-        this.domElement.removeEventListener('mouseleave', this.onMouseUp, false);
-    }
-
-    onMouseDown(event) {
-        this.isDragging = true;
-        this.previousMousePosition.x = event.clientX;
-        this.previousMousePosition.y = event.clientY;
+        this.domElement.removeEventListener('mouseleave', this.resetPan, false);
     }
 
     onMouseMove(event) {
-        if (!this.isDragging) return;
+        // Normalize mouse coordinates to -1 to 1
+        this.mouse.x = (event.clientX / this.domElement.clientWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / this.domElement.clientHeight) * 2 + 1;
 
-        const deltaX = event.clientX - this.previousMousePosition.x;
-        const deltaY = event.clientY - this.previousMousePosition.y;
-
-        // Adjust sensitivity as needed
-        const sensitivity = 0.01; // Increased sensitivity
-
-        // Move the camera and its target together for panning
-        this.camera.position.x -= deltaX * sensitivity;
-        this.camera.position.y += deltaY * sensitivity; // Invert Y for intuitive vertical panning
-
-        this.target.x -= deltaX * sensitivity;
-        this.target.y += deltaY * sensitivity;
-
-        this.previousMousePosition.x = event.clientX;
-        this.previousMousePosition.y = event.clientY;
+        // Calculate target pan based on mouse position
+        // We want to pan the target, not the camera directly, to keep the camera looking at the center
+        this.targetPan.x = -this.mouse.x * this.panIntensity;
+        this.targetPan.y = -this.mouse.y * this.panIntensity;
     }
 
-    onMouseUp() {
-        this.isDragging = false;
+    resetPan() {
+        // Reset target pan when mouse leaves the canvas
+        this.targetPan.set(0, 0, 0);
     }
 
     update() {
+        // Smoothly interpolate the target towards the mouse-driven targetPan
+        this.target.x += (this.targetPan.x - this.target.x) * this.damping;
+        this.target.y += (this.targetPan.y - this.target.y) * this.damping;
+
+        // Keep camera's Z position constant or smoothly return to baseZ
+        this.camera.position.z += (this.baseZ - this.camera.position.z) * this.damping;
+
+        // Update camera position relative to the target
+        this.camera.position.x = this.target.x;
+        this.camera.position.y = this.target.y;
+
         this.camera.lookAt(this.target);
     }
 }
