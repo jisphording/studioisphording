@@ -41,7 +41,7 @@ export class PanControls {
         const deltaY = event.clientY - this.previousMousePosition.y;
 
         // Adjust sensitivity as needed
-        const sensitivity = 0.2; // Increased sensitivity
+        const sensitivity = 0.01; // Increased sensitivity
 
         // Move the camera and its target together for panning
         this.camera.position.x -= deltaX * sensitivity;

@@ -57,7 +57,7 @@ export class World
     {
         const imageSources = sources.filter(source => source.type === 'texture' && source.name.startsWith('moodboardImage_'));
         const aspectRatio = 16 / 9; // Assuming a common aspect ratio for images, adjust as needed
-        const imageWidth = 1; // Reduced image size
+        const imageWidth = 6; // Image size
         const imageHeight = imageWidth / aspectRatio;
         const padding = 1; // Reduced padding
         const imagesPerRow = 5;
