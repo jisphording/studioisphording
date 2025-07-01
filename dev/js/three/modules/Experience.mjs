@@ -19,7 +19,10 @@ import { Resources } from './../utils/Resources.mjs'
 
 // EXPERIENCE WORLDS & RESOURCES
 import { World as World_01 } from '../projects/isphording-inneneinrichtung/World.mjs'
-import World_Sources from '../projects/isphording-inneneinrichtung/World_Sources.mjs'
+import World_01_Sources from '../projects/isphording-inneneinrichtung/World_Sources.mjs'
+
+import { World as World_02 } from '../projects/moodboard/World.mjs'
+import World_02_Sources from '../projects/moodboard/World_Sources.mjs'
 
 // Storing the singleton instance
 let instance = null
@@ -59,8 +62,12 @@ export class Experience
 		// SPECIFIC WORLD
 		// This is probably really verbose and shoould be refactored.
 		if ( world == 'World_01' ) { 
-			this.resources = new Resources( World_Sources )
+			this.resources = new Resources( World_01_Sources )
 			this.world = new World_01()
+		} 
+		else if ( world == 'World_02' ) { 
+			this.resources = new Resources( World_02_Sources )
+			this.world = new World_02()
 		}
 
 		// LISTEN TO EVENT EMITTERS

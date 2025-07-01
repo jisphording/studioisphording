@@ -114,7 +114,7 @@ async function initializeApp() {
     console.log('✅ App initialization complete');
 
     // Run Three.js Experience
-    runExperience('#webgl', 'World_01');
+    runExperience('#webgl', 'World_02');
 }
 
 // Start loading
