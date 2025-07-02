@@ -1,20 +1,32 @@
 import * as THREE from 'three';
 
 export class PanControls {
-    constructor(camera, domElement) {
-        this.camera = camera;
+    constructor(camera, domElement, moodboardWidth, moodboardHeight) {
+        this.camera = camera.instance;
         this.domElement = domElement;
+        this.moodboardWidth = moodboardWidth;
+        this.moodboardHeight = moodboardHeight;
         this.target = new THREE.Vector3(); // Camera will look at this point
         this.mouse = new THREE.Vector2(); // Normalized mouse coordinates (-1 to 1)
         this.targetPan = new THREE.Vector3(); // Target position for smooth panning
 
-        this.panIntensity = 7.5; // Increased intensity for more noticeable pan
+        // Camera settings
+        this.camera.position.set(0, 0, 200);
+        this.camera.lookAt(0, 0, 0);
+        camera.controls.enabled = false;
+        camera.update = () => {}; // Override the default camera update
+
+        // Dynamically set panIntensity and zoom limits based on moodboard dimensions
+        // These values might need fine-tuning based on desired feel
+        const maxDimension = Math.max(this.moodboardWidth, this.moodboardHeight);
+        this.panIntensity = maxDimension * 0.5; // Adjust based on the largest dimension
         this.damping = 0.1; // Increased damping for smoother movement
         this.baseZ = this.camera.position.z; // Store initial Z position for zoom target
 
         this.zoomIntensity = 0.1; // How much the camera zooms per scroll tick
-        this.minZoom = 40.0; // Minimum zoom level (closest to scene)
-        this.maxZoom = 100.0; // Maximum zoom level (furthest from scene)
+        this.minZoom = maxDimension * 0.1; // Closest zoom, should show most of the moodboard
+        this.maxZoom = maxDimension * 1.75; // Furthest zoom
+        this.baseZ = Math.max(this.minZoom, Math.min(this.maxZoom, this.baseZ)); // Ensure initial baseZ is within limits
 
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseWheel = this.onMouseWheel.bind(this); // Bind onMouseWheel to the instance
