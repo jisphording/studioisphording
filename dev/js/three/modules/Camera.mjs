@@ -36,7 +36,7 @@ export class Camera
             10,
             this.sizes.width / this.sizes.height,
             0.1,
-            100
+            1000
         )
 
         this.instance.position.set( 0, 0, 50 )
