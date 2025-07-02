@@ -4,6 +4,7 @@ import * as THREE from 'three'
 // MODULES
 import { Experience } from '../../modules/Experience.mjs'
 import { PanControls } from './PanControls.mjs'
+import { ImageZoom } from './ImageZoom.mjs'
 import sources from './World_Sources.mjs'
 
 // ---------- ---------- ---------- ---------- ---------- //
@@ -24,6 +25,7 @@ export class World
 
         this.moodboardImages = []
         this.panControls = null
+        this.ImageZoom = null
 
         // Wait until resources have been loaded and are ready
         this.resources.on( 'resourcesReady', () =>
@@ -51,6 +53,9 @@ export class World
             // Initialize PanControls after moodboard is created and dimensions are known
             this.panControls = new PanControls(this.camera, this.canvas, this.moodboardWidth, this.moodboardHeight);
             this.panControls.enable();
+
+            // Initialize ImageZoom
+            this.ImageZoom = new ImageZoom(this.camera, this.scene, this.canvas, this.moodboardImages);
 
             console.log('World: All resources have been loaded.')
         })
@@ -174,6 +179,11 @@ export class World
         // Update PanControls
         if (this.panControls) {
             this.panControls.update();
+        }
+
+        // Update ImageZoom
+        if (this.ImageZoom) {
+            this.ImageZoom.update();
         }
     }
 }
