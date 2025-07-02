@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export class PanControls {
     constructor(camera, domElement, moodboardWidth, moodboardHeight) {
-        this.camera = camera.instance;
+        this.camera = camera;
         this.domElement = domElement;
         this.moodboardWidth = moodboardWidth;
         this.moodboardHeight = moodboardHeight;
@@ -11,21 +11,21 @@ export class PanControls {
         this.targetPan = new THREE.Vector3(); // Target position for smooth panning
 
         // Camera settings
-        this.camera.position.set(0, 0, 200);
-        this.camera.lookAt(0, 0, 0);
-        camera.controls.enabled = false;
-        camera.update = () => {}; // Override the default camera update
+        this.camera.setPosition(0, 0, 150);
+        this.camera.setTarget(0, 0, 0);
+        this.camera.controls.enabled = false;
+        this.camera.update = () => {}; // Override the default camera update
 
         // Dynamically set panIntensity and zoom limits based on moodboard dimensions
         // These values might need fine-tuning based on desired feel
         const maxDimension = Math.max(this.moodboardWidth, this.moodboardHeight);
         this.panIntensity = maxDimension * 0.5; // Adjust based on the largest dimension
         this.damping = 0.1; // Increased damping for smoother movement
-        this.baseZ = this.camera.position.z; // Store initial Z position for zoom target
+        this.baseZ = this.camera.instance.position.z; // Store initial Z position for zoom target
 
         this.zoomIntensity = 0.1; // How much the camera zooms per scroll tick
-        this.minZoom = maxDimension * 0.1; // Closest zoom, should show most of the moodboard
-        this.maxZoom = maxDimension * 1.75; // Furthest zoom
+        this.minZoom = maxDimension * 1; // Closest zoom, should show most of the moodboard
+        this.maxZoom = maxDimension * 3; // Furthest zoom
         this.baseZ = Math.max(this.minZoom, Math.min(this.maxZoom, this.baseZ)); // Ensure initial baseZ is within limits
 
         this.onMouseMove = this.onMouseMove.bind(this);
@@ -77,12 +77,8 @@ export class PanControls {
         this.target.y += (this.targetPan.y - this.target.y) * this.damping;
 
         // Smoothly interpolate camera's Z position towards the new baseZ (zoom target)
-        this.camera.position.z += (this.baseZ - this.camera.position.z) * this.damping;
-
-        // Update camera position relative to the target
-        this.camera.position.x = this.target.x;
-        this.camera.position.y = this.target.y;
-
-        this.camera.lookAt(this.target);
+        const newZ = this.camera.instance.position.z + (this.baseZ - this.camera.instance.position.z) * this.damping;
+        this.camera.setPosition(this.target.x, this.target.y, newZ);
+        this.camera.setTarget(this.target.x, this.target.y, 0);
     }
 }
