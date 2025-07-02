@@ -39,7 +39,6 @@ export class Camera
             1000
         )
 
-        this.instance.position.set( 0, 0, 50 )
         this.scene.add( this.instance )
     }
 
@@ -50,8 +49,22 @@ export class Camera
     {
         this.controls = new OrbitControls( this.instance, this.canvas )
         this.controls.enableDamping = true
-        this.controls.minDistance = 8
-        this.controls.maxDistance = 20
+    }
+
+    setPosition(x, y, z)
+    {
+        this.instance.position.set(x, y, z);
+    }
+
+    setTarget(x, y, z)
+    {
+        this.controls.target.set(x, y, z);
+    }
+
+    setZoomLimits(min, max)
+    {
+        this.controls.minDistance = min;
+        this.controls.maxDistance = max;
     }
 
     // R E S I Z E
