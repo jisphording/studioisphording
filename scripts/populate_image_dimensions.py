@@ -26,7 +26,7 @@ def update_image_dimensions(file_path):
         )
 
         updated_entries = []
-        formatted_entries = [] # Initialize the list here
+        # formatted_entries = [] # This line was causing the NameError, removed as it's not needed here
         for i, match in enumerate(object_pattern.finditer(array_inner_content)):
             original_name = match.group('name')
             item_type = match.group('type')
@@ -56,11 +56,12 @@ def update_image_dimensions(file_path):
             else:
                 print(f"Image not found: {full_image_path}")
             
-            new_name = f"moodboardImage_{str(i + 1).zfill(4)}"
+            # Keep the original name, do not change it
+            # new_name = f"moodboardImage_{str(i + 1).zfill(4)}" 
             
-            # Format the entry exactly as requested
-            formatted_entries.append(
-                f"    {{ name: '{new_name}', \n"
+            # Format the entry exactly as requested, but with original name
+            updated_entries.append(
+                f"    {{ name: '{original_name}', \n" # Use original_name here
                 f"        type: '{item_type}', \n"
                 f"        path: {path_expr}, \n"
                 f"        width: {width}, \n"
@@ -73,14 +74,14 @@ def update_image_dimensions(file_path):
         before_array = content[:array_content_match.start()]
         after_array = content[array_content_match.end():]
 
-        new_array_content_formatted = ",\n".join(formatted_entries)
+        new_array_content_formatted = ",\n".join(updated_entries)
         
         final_content = f"{before_array}export default [\n{new_array_content_formatted}\n]{after_array}"
 
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(final_content)
             
-        print(f"Successfully updated dimensions and names in {file_path}")
+        print(f"Successfully updated dimensions and formatted {file_path}")
 
     except FileNotFoundError:
         print(f"Error: The file at {file_path} was not found.")
