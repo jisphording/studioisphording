@@ -105,7 +105,7 @@ export class World
                 
                 // Force a render after batch update
                 console.log('World: Forcing renderer update after batch processing');
-                this.experience.renderer.forceRender();
+                this.experience.renderer.update();
                 
                 // If this was the initial batch, mark it as loaded
                 if (!this.isInitialBatchLoaded) {
@@ -133,7 +133,7 @@ export class World
             
             // Final render to ensure everything is displayed
             this.scene.needsUpdate = true;
-            this.experience.renderer.forceRender();
+            this.experience.renderer.update();
         });
     }
 
@@ -369,7 +369,7 @@ export class World
                         
                         // Force render
                         this.scene.needsUpdate = true;
-                        this.experience.renderer.forceRender();
+                        this.experience.renderer.update();
                         
                         // Call the callback
                         if (callback) callback();
@@ -388,7 +388,7 @@ export class World
                         
                         // Force render
                         this.scene.needsUpdate = true;
-                        this.experience.renderer.forceRender();
+                        this.experience.renderer.update();
                         
                         // Call the callback
                         if (callback) callback();
