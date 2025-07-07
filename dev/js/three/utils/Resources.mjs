@@ -23,20 +23,36 @@ export class Resources extends EventEmitter
         this.renderer = this.experience.renderer
         this.hud = null
         this.items = {} // this will hold all loaded resources
-        this.toLoad = this.sources.length // specifiy number of resources to be loaded
+        
+        // Progressive loading properties
+        this.moodboardSources = []
+        this.otherSources = []
+        this.batchProcessing = false
+        
+        // Separate moodboard image sources from other sources
+        for (const source of this.sources) {
+            if (source.type === 'texture' && source.name.startsWith('moodboardImage_')) {
+                this.moodboardSources.push(source);
+            } else {
+                this.otherSources.push(source);
+            }
+        }
+        
+        this.toLoad = this.sources.length // specify number of resources to be loaded
         this.loaded = 0 // keep track of resources that have been loaded 
                         // to verify that everything is there thats needed
         this.hasLoaded = false // Check if everything has loaded
         this.sceneReady = false // Check if scene is ready
 
         this.setLoaders()
-        this.startLoading()
+        
+        // We don't start loading automatically anymore
+        // The World will call startProgressiveLoading instead
     }
 
     // SET LOADERS
     setLoaders()
     {
-        
         // Get loading bar
         const loadingBarElement = document.querySelector( '.loading-bar' )
 
@@ -105,69 +121,231 @@ export class Resources extends EventEmitter
         this.loaders.cubeTextureLoader = new THREE.CubeTextureLoader( this.loadingManager )
     }
 
-    // START LOADING
-    // Here we loop through and load all the resources that are needed for the scene
-    startLoading()
-    {
-        // Load each source
-        for( const source of this.sources )
-        {
-            // Load 3d Model
-            if( source.type === 'gltfModel' )
-            {
-                this.loaders.gltfLoader.load(
-                    source.path,
-                    ( file ) =>
-                    {
-                        this.sourceLoaded( source, file )
-                        console.log( source.name + ' loaded')
-                    }
-                )
-            }
-
-            // Load textures
-            else if( source.type === 'texture' )
-            {
-                this.loaders.textureLoader.load(
-                    source.path,
-                    ( file ) =>
-                    {
-                        this.sourceLoaded( source, file )
-                        console.log( source.name + ' loaded')
-                    }
-                )
-            }
-
-            // Load environment textures
-            else if( source.type === 'cubeTexture' )
-            {
-                this.loaders.cubeTextureLoader.load(
-                    source.path,
-                    ( file ) =>
-                    {
-                        this.sourceLoaded( source, file )
-                        console.log( source.name + ' loaded')
-                    }
-                )
-            }
-        }
+    // START PROGRESSIVE LOADING
+    // This is called by World to start the progressive loading process
+    startProgressiveLoading(initialBatchSize = 10, backgroundBatchSize = 8) {
+        console.log(`Resources: Starting progressive loading with initial batch of ${initialBatchSize} images`);
+        
+        // Load other resources first (non-moodboard)
+        this.loadOtherResources();
+        
+        // Start batch loading with the initial batch
+        this.startBatchLoading(initialBatchSize, backgroundBatchSize);
     }
-
-    sourceLoaded( source, file )
-    {
-        this.items[ source.name ] = file
-
-        // keep track of how many sourcers have been loaded
-        this.loaded++
-
-        // check if all needed sources have been loaded
-        if( this.loaded === this.toLoad )
-        {
-            console.log('Resources: All resources have been loaded.')
-
-            // NOTIFY LEVEL
-            this.trigger( 'resourcesReady' )
+    
+    // LOAD OTHER RESOURCES
+    // Load all non-moodboard resources
+    loadOtherResources() {
+        console.log(`Resources: Loading ${this.otherSources.length} non-moodboard resources`);
+        
+        // Load each non-moodboard source
+        for (const source of this.otherSources) {
+            this.loadSource(source);
         }
     }
     
+    // Load a single source
+    loadSource(source) {
+        // Load 3d Model
+        if (source.type === 'gltfModel') {
+            this.loaders.gltfLoader.load(
+                source.path,
+                (file) => {
+                    this.sourceLoaded(source, file);
+                    console.log(source.name + ' loaded');
+                }
+            );
+        }
+        // Load textures
+        else if (source.type === 'texture') {
+            this.loaders.textureLoader.load(
+                source.path,
+                (file) => {
+                    this.sourceLoaded(source, file);
+                    console.log(source.name + ' loaded');
+                }
+            );
+        }
+        // Load environment textures
+        else if (source.type === 'cubeTexture') {
+            this.loaders.cubeTextureLoader.load(
+                source.path,
+                (file) => {
+                    this.sourceLoaded(source, file);
+                    console.log(source.name + ' loaded');
+                }
+            );
+        }
+    }
+
+    // START BATCH LOADING
+    startBatchLoading(initialBatchSize, backgroundBatchSize) {
+        console.log(`Resources: Starting batch loading with ${this.moodboardSources.length} images remaining`);
+        
+        // Create a listener for batch processing completion
+        const onBatchProcessed = () => {
+            console.log('Resources: Batch processing complete, loading next batch...');
+            this.batchProcessing = false;
+            this.off('batchProcessed', onBatchProcessed); // Remove listener
+            
+            // Load the next batch with the background batch size
+            loadNextBatch(backgroundBatchSize);
+        };
+
+        const loadNextBatch = (batchSize) => {
+            // If we're already processing a batch or there are no more images, exit
+            if (this.batchProcessing || this.moodboardSources.length === 0) {
+                if (this.moodboardSources.length === 0) {
+                    console.log('Resources: No more images to load, batch loading complete');
+                    this.checkOverallLoadCompletion();
+                }
+                return;
+            }
+
+            // Mark that we're processing a batch
+            this.batchProcessing = true;
+
+            // Listen for batch processing completion
+            this.on('batchProcessed', onBatchProcessed);
+
+            // Get the next batch of images
+            const currentBatch = this.moodboardSources.splice(0, batchSize);
+            console.log(`Resources: Loading next batch of ${currentBatch.length} images`);
+            
+            let loadedBatchCount = 0;
+            const loadedTexturesInBatch = [];
+
+            if (currentBatch.length > 0) {
+                for (const source of currentBatch) {
+                    console.log(`Resources: Loading texture for ${source.name} from ${source.path}`);
+                    
+                    this.loaders.textureLoader.load(
+                        source.path,
+                        (texture) => {
+                            console.log(`Resources: Successfully loaded texture for ${source.name} from ${source.path}`);
+                            
+                            // Ensure texture is properly initialized
+                            texture.needsUpdate = true;
+                            
+                            // Store the texture in items
+                            this.items[source.name] = texture;
+                            this.loaded++;
+                            loadedBatchCount++;
+
+                            // Store the texture with its corresponding source
+                            loadedTexturesInBatch.push({ source: source, texture: texture });
+
+                            console.log(`Resources: Loaded ${loadedBatchCount}/${currentBatch.length} textures in current batch`);
+                            
+                            if (loadedBatchCount === currentBatch.length) {
+                                // All images in the current batch are loaded
+                                console.log(`Resources: Batch complete! Triggering batchLoaded with batch of ${loadedTexturesInBatch.length} textures`);
+                                
+                                // Make sure all textures are properly initialized before triggering the event
+                                loadedTexturesInBatch.forEach(item => {
+                                    if (item.texture) {
+                                        item.texture.needsUpdate = true;
+                                    }
+                                });
+                                
+                                // Trigger a single batchLoaded event with the entire batch array
+                                try {
+                                    console.log(`Resources: Triggering batchLoaded with ${loadedTexturesInBatch.length} fully prepared textures`);
+                                    this.trigger('batchLoaded', loadedTexturesInBatch);
+                                } catch (err) {
+                                    console.error('Resources: Error triggering batchLoaded event:', err);
+                                    // If there's an error, still signal batch processed to continue loading
+                                    setTimeout(() => this.trigger('batchProcessed'), 100);
+                                }
+                                
+                                console.log(`Resources: Batch of ${currentBatch.length} moodboard images loaded.`);
+                                console.log(`Resources: ${this.moodboardSources.length} images remaining to load`);
+                                
+                                // The World will trigger 'batchProcessed' when it's done processing this batch
+                                // We'll wait for that event before loading the next batch
+                                this.checkOverallLoadCompletion();
+                            }
+                        },
+                        // Progress callback
+                        undefined,
+                        // Error callback
+                        (error) => {
+                            console.error(`Resources: Failed to load texture ${source.name}:`, error);
+                            this.loaded++;
+                            loadedBatchCount++;
+                            
+                            if (loadedBatchCount === currentBatch.length) {
+                                // Continue even if some textures failed to load
+                                if (loadedTexturesInBatch.length > 0) {
+                                    console.log(`Resources: Triggering batchLoaded with ${loadedTexturesInBatch.length} textures (some failed to load)`);
+                                    
+                                    // Make sure all textures are properly initialized before triggering the event
+                                    loadedTexturesInBatch.forEach(item => {
+                                        if (item.texture) {
+                                            item.texture.needsUpdate = true;
+                                        }
+                                    });
+                                    
+                                    // Trigger a single batchLoaded event with the entire batch array
+                                    try {
+                                        console.log(`Resources: Triggering batchLoaded with ${loadedTexturesInBatch.length} textures (some failed to load)`);
+                                        this.trigger('batchLoaded', loadedTexturesInBatch);
+                                    } catch (err) {
+                                        console.error('Resources: Error triggering batchLoaded event:', err);
+                                        // If there's an error, still signal batch processed to continue loading
+                                        setTimeout(() => this.trigger('batchProcessed'), 100);
+                                    }
+                                } else {
+                                    console.log('Resources: All textures in batch failed to load, proceeding to next batch');
+                                    // Trigger batchProcessed directly since there's nothing to process
+                                    this.trigger('batchProcessed');
+                                }
+                                
+                                console.log(`Resources: Batch of ${currentBatch.length} moodboard images processed (some may have failed).`);
+                                console.log(`Resources: ${this.moodboardSources.length} images remaining to load`);
+                                this.checkOverallLoadCompletion();
+                            }
+                        }
+                    );
+                }
+            } else {
+                // No images in this batch, mark as processed and check completion
+                this.batchProcessing = false;
+                this.checkOverallLoadCompletion();
+            }
+        };
+
+        // Start with the initial batch
+        loadNextBatch(initialBatchSize);
+    }
+
+    // Legacy method for backward compatibility
+    startLoading() {
+        console.log('Resources: Using legacy loading method');
+        this.loadOtherResources();
+        
+        // Load all moodboard sources at once
+        for (const source of this.moodboardSources) {
+            this.loadSource(source);
+        }
+    }
+
+    sourceLoaded(source, file) {
+        this.items[source.name] = file;
+
+        // keep track of how many sources have been loaded
+        this.loaded++;
+
+        // check if all needed sources have been loaded
+        this.checkOverallLoadCompletion();
+    }
+    
+    checkOverallLoadCompletion() {
+        if (this.loaded === this.toLoad) {
+            console.log('Resources: All resources have been loaded.');
+
+            // NOTIFY LEVEL
+            this.trigger('resourcesReady');
+        }
+    }
 }
