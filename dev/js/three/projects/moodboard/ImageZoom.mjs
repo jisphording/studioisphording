@@ -32,14 +32,19 @@ export class ImageZoom {
 
         const overlay = document.createElement('div');
         overlay.className = 'lightbox-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
 
         const img = document.createElement('img');
         img.className = 'lightbox-image';
         img.src = image.material.map.image.src;
+        const altText = image.material.map.image.src.split('/').pop().split('.')[0].replace(/[-_]/g, ' ');
+        img.setAttribute('alt', altText);
 
-        const close = document.createElement('div');
+        const close = document.createElement('button');
         close.className = 'lightbox-close';
         close.innerHTML = '&times;';
+        close.setAttribute('aria-label', 'Close image lightbox');
 
         overlay.appendChild(img);
         overlay.appendChild(close);
@@ -52,6 +57,11 @@ export class ImageZoom {
 
         close.addEventListener('click', closeLightbox);
         overlay.addEventListener('click', closeLightbox);
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeLightbox();
+            }
+        });
     }
 
     onMouseMove(event) {
