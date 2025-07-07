@@ -55,7 +55,7 @@ export class World
             this.panControls.enable();
 
             // Initialize ImageZoom
-            this.ImageZoom = new ImageZoom(this.camera, this.scene, this.canvas, this.moodboardImages);
+            this.ImageZoom = new ImageZoom(this.camera, this.scene, this.canvas, this.moodboardImages, this.panControls);
 
             console.log('World: All resources have been loaded.')
         })
