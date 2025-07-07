@@ -25,7 +25,7 @@ export class Moodboard
     }
 
     createCheckerboardTexture() {
-        const size = 16; // Size of each checkerboard square
+        const size = 16; // Size of each checkerboard square in pixels for the texture
         const canvas = document.createElement('canvas');
         canvas.width = size * 2;
         canvas.height = size * 2;
@@ -38,7 +38,11 @@ export class Moodboard
         context.fillRect(0, 0, size, size);
         context.fillRect(size, size, size, size);
 
-        return new THREE.CanvasTexture(canvas);
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.needsUpdate = true; // Ensure the texture updates after setting wrap properties
+        return texture;
     }
 
     initializeMoodboardLayout()
@@ -47,6 +51,7 @@ export class Moodboard
         const maxImageHeight = 6; // Max height for images to maintain visual consistency
         const padding = 1; // Padding between images
         const imagesPerRow = 5;
+        const checkerboardUnitSize = 0.5; // Desired world unit size for each checkerboard square
 
         let currentX = 0;
         let currentY = 0;
@@ -128,6 +133,10 @@ export class Moodboard
                 mesh.position.z = 0;
                 mesh.name = img.source.name; // Assign name for easy lookup
 
+                // Set texture repeat based on mesh dimensions and desired checkerboard unit size
+                mesh.material.map.repeat.set(img.imageWidth / checkerboardUnitSize, img.imageHeight / checkerboardUnitSize);
+                mesh.material.map.needsUpdate = true;
+                
                 this.scene.add(mesh);
                 this.moodboardImages.push(mesh); // Still push to this array for ImageZoom
                 this.moodboardImageMeshes[img.source.name] = mesh; // Store by name
