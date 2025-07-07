@@ -19,7 +19,7 @@ export class PanControls {
         // Dynamically set panIntensity and zoom limits based on moodboard dimensions
         // These values might need fine-tuning based on desired feel
         const maxDimension = Math.max(this.moodboardWidth, this.moodboardHeight);
-        this.panIntensity = maxDimension * 0.5; // Adjust based on the largest dimension
+        this.panIntensity = maxDimension * 0.15; // Adjust based on the largest dimension
         this.damping = 0.1; // Increased damping for smoother movement
         this.baseZ = this.camera.instance.position.z; // Store initial Z position for zoom target
 
