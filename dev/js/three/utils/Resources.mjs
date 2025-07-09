@@ -236,22 +236,27 @@ export class Resources extends EventEmitter
                             loadedTexturesInBatch.push({ source: source, texture: texture });
 
                             console.log(`Resources: Loaded ${loadedBatchCount}/${currentBatch.length} textures in current batch`);
-                            
                             if (loadedBatchCount === currentBatch.length) {
                                 // All images in the current batch are loaded
                                 console.log(`Resources: Batch complete! Triggering batchLoaded with batch of ${loadedTexturesInBatch.length} textures`);
-                                
+
                                 // Make sure all textures are properly initialized before triggering the event
                                 loadedTexturesInBatch.forEach(item => {
                                     if (item.texture) {
                                         item.texture.needsUpdate = true;
                                     }
                                 });
+
                                 
-                                // Trigger a single batchLoaded event with the entire batch array
+                                // Create a new array with only the name and path
+                                const batchDataForEvent = loadedTexturesInBatch.map(item => {
+                                    return [item.source.name, item.source.path];
+                                });
+                                
+                                // Trigger a single batchLoaded event with the new array structure
                                 try {
-                                    console.log(`Resources: Triggering batchLoaded with ${loadedTexturesInBatch.length} fully prepared textures`);
-                                    this.trigger('batchLoaded', loadedTexturesInBatch);
+                                    console.log(`Resources: Triggering batchLoaded with transformed data for ${batchDataForEvent.length} textures`);
+                                    this.trigger('batchLoaded', [batchDataForEvent]);
                                 } catch (err) {
                                     console.error('Resources: Error triggering batchLoaded event:', err);
                                     // If there's an error, still signal batch processed to continue loading
@@ -286,10 +291,15 @@ export class Resources extends EventEmitter
                                         }
                                     });
                                     
-                                    // Trigger a single batchLoaded event with the entire batch array
+                                    // Create a new array with only the name and path
+                                    const batchDataForEvent = loadedTexturesInBatch.map(item => {
+                                        return [item.source.name, item.source.path];
+                                    });
+
+                                    // Trigger a single batchLoaded event with the new array structure
                                     try {
-                                        console.log(`Resources: Triggering batchLoaded with ${loadedTexturesInBatch.length} textures (some failed to load)`);
-                                        this.trigger('batchLoaded', loadedTexturesInBatch);
+                                        console.log(`Resources: Triggering batchLoaded with transformed data for ${batchDataForEvent.length} textures (some failed to load)`);
+                                        this.trigger('batchLoaded', [batchDataForEvent]);
                                     } catch (err) {
                                         console.error('Resources: Error triggering batchLoaded event:', err);
                                         // If there's an error, still signal batch processed to continue loading
@@ -321,7 +331,7 @@ export class Resources extends EventEmitter
 
     // Legacy method for backward compatibility
     startLoading() {
-        console.log('Resources: Using legacy loading method');
+        console.log('Resources: Using legacy loading method. This should ideally not be called for progressive loading.');
         this.loadOtherResources();
         
         // Load all moodboard sources at once
@@ -332,11 +342,8 @@ export class Resources extends EventEmitter
 
     sourceLoaded(source, file) {
         this.items[source.name] = file;
-
-        // keep track of how many sources have been loaded
         this.loaded++;
-
-        // check if all needed sources have been loaded
+        // Do not trigger any event here. Let the batch loader handle it.
         this.checkOverallLoadCompletion();
     }
     

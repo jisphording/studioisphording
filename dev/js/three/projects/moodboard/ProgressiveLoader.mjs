@@ -31,31 +31,21 @@ export class ProgressiveLoader
     setupEventListeners() {
         // Listen for batch loaded event
         this.resources.on('batchLoaded', (batchData) => {
-            console.log('ProgressiveLoader: Received batchLoaded event with batch data'); // Debug log
+            console.log('ProgressiveLoader: Received batchLoaded event with batch data:', batchData); // Debug log
             
-            // Process the batch data, which is now always an array
+            // Process the batch data, which is now an array of [name, path]
             if (Array.isArray(batchData)) {
-                console.log(`ProgressiveLoader: Processing batch of ${batchData.length} images`);
+                console.log(`ProgressiveLoader: Processing batch of ${batchData.length} images with new data structure.`);
                 
-                // Track successful updates for validation
-                let successfulUpdates = 0;
-                
-                // Process each item in the batch
+                // The texture object is no longer available in the event data.
+                // The moodboard cannot be updated here anymore with this data structure.
+                // You can process the name and path here if needed.
                 batchData.forEach(item => {
-                    if (item && item.source && item.texture) {
-                        try {
-                            console.log(`ProgressiveLoader: Processing image: ${item.source.name}`); // Debug log
-                            this.moodboard.updateMoodboardImage(item.source.name, item.texture);
-                            successfulUpdates++;
-                        } catch (err) {
-                            console.error(`ProgressiveLoader: Error updating image ${item.source.name}:`, err);
-                        }
-                    } else {
-                        console.warn('ProgressiveLoader: Invalid batch item:', item);
-                    }
+                    const [name, path] = item;
+                    console.log(`ProgressiveLoader: Received item with name: ${name}, path: ${path}`);
                 });
                 
-                console.log(`ProgressiveLoader: Batch of images processed (${successfulUpdates}/${batchData.length} successful) and added to scene.`);
+                console.log(`ProgressiveLoader: Batch of images processed and logged.`);
                 
                 // Force scene update flag
                 this.experience.scene.needsUpdate = true;
@@ -95,6 +85,7 @@ export class ProgressiveLoader
     }
 
     startProgressiveLoading() {
+        console.log('ProgressiveLoader: startProgressiveLoading called.');
         // Check if the Resources class has the startProgressiveLoading method
         if (typeof this.resources.startProgressiveLoading === 'function') {
             // Use the Resources class method if available
