@@ -1,228 +1,178 @@
-// Import external Libraries
-import * as THREE from 'three'
+// Import modules
+import sources from './World_Sources.mjs';
+import { BatchConfiguration } from './loaders/BatchConfiguration.mjs';
+import { BatchLoader } from './loaders/BatchLoader.mjs';
 
-// MODULES
-import sources from './World_Sources.mjs'
+/**
+ * ProgressiveLoader Class
+ * 
+ * Main orchestrator for progressive loading of moodboard images.
+ * Coordinates between batch configuration, event management, and texture loading
+ * to provide a smooth loading experience where users can interact with initial
+ * images while remaining images load in the background.
+ */
+export class ProgressiveLoader {
+    /**
+     * Creates a new ProgressiveLoader instance
+     * @param {Object} resources - Resources manager instance with event emitter capabilities
+     * @param {Object} moodboard - Moodboard instance for updating images
+     * @param {Object} experience - Experience instance containing scene and renderer
+     */
+    constructor(resources, moodboard, experience) {
+        this.resources = resources;
+        this.moodboard = moodboard;
+        this.experience = experience;
 
-// ---------- ---------- ---------- ---------- ---------- //
-// P R O G R E S S I V E L O A D E R //
-// ---------- ---------- ---------- ---------- ---------- //
-//
-// Manages the progressive loading of moodboard images.
+        // Initialize batch configuration
+        this.batchConfig = new BatchConfiguration({
+            initialBatchSize: 10,
+            backgroundBatchSize: 8
+        });
 
-export class ProgressiveLoader
-{
-    constructor(resources, moodboard, experience)
-    {
-        this.resources = resources
-        this.moodboard = moodboard
-        this.experience = experience
-        this.initialBatchSize = 10; // Number of images to load in the initial batch
-        this.backgroundBatchSize = 8; // Number of images to load in each background batch
-        this.isInitialBatchLoaded = false; // Flag to track if initial batch is loaded
+        // Initialize batch loader
+        this.batchLoader = new BatchLoader(resources, moodboard, experience);
 
-        // Set up event listeners for batch loading
+        // Track if initial batch has been processed
+        this.isInitialBatchProcessed = false;
+
+        // Set up event listeners using the enhanced EventEmitter
         this.setupEventListeners();
         
-        // Start loading the initial batch of images
+        // Start loading process
         this.startProgressiveLoading();
     }
 
+    /**
+     * Sets up event listeners for batch processing
+     * Uses the enhanced EventEmitter's batch processing capabilities
+     */
     setupEventListeners() {
-        // Listen for batch loaded event
-        this.resources.on('batchLoaded', (batchData) => {
-            console.log('ProgressiveLoader: Received batchLoaded event with batch data:', batchData); // Debug log
-            
-            // Process the batch data, which is now an array of objects with name, path, and texture
-            if (Array.isArray(batchData)) {
-                console.log(`ProgressiveLoader: Processing batch of ${batchData.length} images.`);
-                
-                // Update each moodboard image with its loaded texture
-                batchData.forEach(item => {
-                    if (item.texture && item.name) {
-                        console.log(`ProgressiveLoader: Updating moodboard image ${item.name} with loaded texture`);
-                        const updateSuccess = this.moodboard.updateMoodboardImage(item.name, item.texture);
-                        if (!updateSuccess) {
-                            console.error(`ProgressiveLoader: Failed to update moodboard image ${item.name}`);
-                        }
-                    } else {
-                        console.warn(`ProgressiveLoader: Invalid item in batch data:`, item);
-                    }
-                });
-                
-                console.log(`ProgressiveLoader: Batch of ${batchData.length} images processed and updated.`);
-                
-                // Force scene update flag
-                this.experience.scene.needsUpdate = true;
-                
-                // Force a render after batch update
-                console.log('ProgressiveLoader: Forcing renderer update after batch processing');
-                this.experience.renderer.update();
-                
-                // If this was the initial batch, mark it as loaded
-                if (!this.isInitialBatchLoaded) {
-                    this.isInitialBatchLoaded = true;
-                    console.log('ProgressiveLoader: Initial batch loaded, user can now interact with the moodboard');
+        // Register batch processor for handling loaded batches
+        this.resources.registerBatchProcessor('batchLoaded', {
+            processor: (batchData) => this.processBatchData(batchData),
+            onComplete: (result) => {
+                // Handle initial batch completion
+                if (!this.isInitialBatchProcessed && result) {
+                    this.isInitialBatchProcessed = true;
+                    this.handleInitialBatchLoaded();
                 }
-                
-                // Signal that this batch has been processed and the next batch can be loaded
-                setTimeout(() => {
-                    console.log('ProgressiveLoader: Signaling batch processing complete');
-                    this.resources.trigger('batchProcessed');
-                }, 200); // Slightly longer delay to ensure rendering completes
-            } else {
-                console.error('ProgressiveLoader: Cannot process batch, invalid format (expected array):', batchData);
-                // Signal batch processed even on error to continue loading
-                setTimeout(() => {
-                    this.resources.trigger('batchProcessed');
-                }, 100);
-            }
+            },
+            delay: 200,
+            completeEvent: 'batchProcessed'
         });
 
         // Listen for all resources ready event
         this.resources.on('resourcesReady', () => {
-            console.log('ProgressiveLoader: All resources have been loaded and displayed.');
-            
-            // Final render to ensure everything is displayed
-            this.experience.scene.needsUpdate = true;
-            this.experience.renderer.update();
+            this.handleAllResourcesReady();
         });
     }
 
+    /**
+     * Processes a batch of loaded texture data
+     * @param {Array} batchData - Array of objects with name, path, and texture properties
+     * @returns {boolean} True if batch was processed successfully
+     */
+    processBatchData(batchData) {
+        if (!Array.isArray(batchData)) {
+            return false;
+        }
+
+        // Update each moodboard image with its loaded texture
+        batchData.forEach(item => {
+            if (item.texture && item.name) {
+                this.moodboard.updateMoodboardImage(item.name, item.texture);
+            }
+        });
+
+        // Force scene update
+        this.forceSceneUpdate();
+
+        return true;
+    }
+
+    /**
+     * Forces a scene update and render
+     */
+    forceSceneUpdate() {
+        this.experience.scene.needsUpdate = true;
+        this.experience.renderer.update();
+    }
+
+    /**
+     * Handles the completion of all resource loading
+     */
+    handleAllResourcesReady() {
+        this.forceSceneUpdate();
+    }
+
+    /**
+     * Handles the completion of initial batch loading
+     * Called when the first batch is processed
+     */
+    handleInitialBatchLoaded() {
+        this.batchConfig.markInitialBatchLoaded();
+    }
+
+    /**
+     * Starts the progressive loading process
+     * Checks if Resources class has native support, otherwise uses fallback
+     */
     startProgressiveLoading() {
-        console.log('ProgressiveLoader: startProgressiveLoading called.');
-        // Check if the Resources class has the startProgressiveLoading method
         if (typeof this.resources.startProgressiveLoading === 'function') {
-            // Use the Resources class method if available
-            console.log(`ProgressiveLoader: Using Resources.startProgressiveLoading with initial batch of ${this.initialBatchSize} images`);
-            this.resources.startProgressiveLoading(this.initialBatchSize, this.backgroundBatchSize);
+            // Use native Resources class progressive loading
+            this.resources.startProgressiveLoading(
+                this.batchConfig.getInitialBatchSize(),
+                this.batchConfig.getBackgroundBatchSize()
+            );
         } else {
-            // Fallback: Implement progressive loading directly in ProgressiveLoader class
-            console.log(`ProgressiveLoader: Resources.startProgressiveLoading not available, using fallback implementation`);
+            // Use fallback implementation
             this.implementProgressiveLoading();
         }
     }
     
-    // Fallback implementation of progressive loading
-    implementProgressiveLoading() {
-        console.log('ProgressiveLoader: Starting fallback progressive loading');
+    /**
+     * Fallback implementation of progressive loading
+     * Used when Resources class doesn't have native progressive loading support
+     */
+    async implementProgressiveLoading() {
+        // Filter moodboard image sources
+        const moodboardSources = this.getMoodboardSources();
         
-        // Get all moodboard image sources
-        const moodboardSources = sources.filter(source => 
+        // Split into initial and remaining batches
+        const { initialBatch, remainingSources } = this.splitSources(moodboardSources);
+        
+        // Load initial batch
+        await this.batchLoader.loadBatch(initialBatch, () => {
+            this.handleInitialBatchLoaded();
+        });
+        
+        // Load remaining batches in background
+        await this.batchLoader.loadRemainingBatches(
+            remainingSources,
+            this.batchConfig.getBackgroundBatchSize()
+        );
+    }
+
+    /**
+     * Gets all moodboard image sources from the sources configuration
+     * @returns {Array} Array of moodboard image sources
+     */
+    getMoodboardSources() {
+        return sources.filter(source => 
             source.type === 'texture' && source.name.startsWith('moodboardImage_')
         );
-        
-        // Split into initial batch and remaining batches
-        const initialBatch = moodboardSources.slice(0, this.initialBatchSize);
-        const remainingSources = moodboardSources.slice(this.initialBatchSize);
-        
-        // Create a TextureLoader
-        const textureLoader = new THREE.TextureLoader();
-        
-        // Load the initial batch
-        console.log(`ProgressiveLoader: Loading initial batch of ${initialBatch.length} images`);
-        this.loadBatch(textureLoader, initialBatch, () => {
-            // Initial batch loaded callback
-            console.log('ProgressiveLoader: Initial batch loaded, user can now interact with the moodboard');
-            this.isInitialBatchLoaded = true;
-            
-            // Start loading remaining batches
-            this.loadRemainingBatches(textureLoader, remainingSources);
-        });
     }
-    
-    // Load a batch of textures
-    loadBatch(loader, sources, callback) {
-        let loadedCount = 0;
-        const batchSize = sources.length;
-        const loadedTextures = [];
-        
-        if (batchSize === 0) {
-            if (callback) callback();
-            return;
-        }
-        
-        // Load each texture in the batch
-        sources.forEach(source => {
-            loader.load(
-                source.path,
-                // Success callback
-                (texture) => {
-                    console.log(`ProgressiveLoader: Loaded texture for ${source.name}`);
-                    
-                    // Configure texture
-                    texture.colorSpace = THREE.SRGBColorSpace;
-                    texture.flipY = true;
-                    texture.wrapS = THREE.ClampToEdgeWrapping;
-                    texture.wrapT = THREE.ClampToEdgeWrapping;
-                    texture.minFilter = THREE.LinearFilter;
-                    texture.magFilter = THREE.LinearFilter;
-                    texture.needsUpdate = true;
-                    
-                    // Update the mesh with the new texture
-                    this.moodboard.updateMoodboardImage(source.name, texture);
-                    
-                    // Store in resources items
-                    this.resources.items[source.name] = texture;
-                    
-                    // Track loaded count
-                    loadedCount++;
-                    loadedTextures.push({ source, texture });
-                    
-                    // If all textures in this batch are loaded
-                    if (loadedCount === batchSize) {
-                        console.log(`ProgressiveLoader: Batch of ${batchSize} images loaded`);
-                        
-                        // Force render
-                        this.experience.scene.needsUpdate = true;
-                        this.experience.renderer.update();
-                        
-                        // Call the callback
-                        if (callback) callback();
-                    }
-                },
-                // Progress callback
-                undefined,
-                // Error callback
-                (error) => {
-                    console.error(`ProgressiveLoader: Error loading texture ${source.name}:`, error);
-                    loadedCount++;
-                    
-                    // If all textures in this batch are loaded (even with errors)
-                    if (loadedCount === batchSize) {
-                        console.log(`ProgressiveLoader: Batch of ${batchSize} images processed (some with errors)`);
-                        
-                        // Force render
-                        this.experience.scene.needsUpdate = true;
-                        this.experience.renderer.update();
-                        
-                        // Call the callback
-                        if (callback) callback();
-                    }
-                }
-            );
-        });
-    }
-    
-    // Load remaining batches sequentially
-    loadRemainingBatches(loader, sources) {
-        if (sources.length === 0) {
-            console.log('ProgressiveLoader: All images loaded');
-            return;
-        }
-        
-        // Get the next batch
-        const nextBatch = sources.slice(0, this.backgroundBatchSize);
-        const remainingSources = sources.slice(this.backgroundBatchSize);
-        
-        console.log(`ProgressiveLoader: Loading next batch of ${nextBatch.length} images (${remainingSources.length} remaining)`);
-        
-        // Load the batch
-        this.loadBatch(loader, nextBatch, () => {
-            // Continue with the next batch after a short delay
-            setTimeout(() => {
-                this.loadRemainingBatches(loader, remainingSources);
-            }, 200);
-        });
+
+    /**
+     * Splits sources into initial batch and remaining sources
+     * @param {Array} allSources - All moodboard sources
+     * @returns {Object} Object containing initialBatch and remainingSources arrays
+     */
+    splitSources(allSources) {
+        const initialSize = this.batchConfig.getInitialBatchSize();
+        return {
+            initialBatch: allSources.slice(0, initialSize),
+            remainingSources: allSources.slice(initialSize)
+        };
     }
 }
