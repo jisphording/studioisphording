@@ -248,14 +248,18 @@ export class Resources extends EventEmitter
                                 });
 
                                 
-                                // Create a new array with only the name and path
+                                // Pass the loaded textures with their metadata
                                 const batchDataForEvent = loadedTexturesInBatch.map(item => {
-                                    return [item.source.name, item.source.path];
+                                    return {
+                                        name: item.source.name,
+                                        path: item.source.path,
+                                        texture: item.texture
+                                    };
                                 });
                                 
-                                // Trigger a single batchLoaded event with the new array structure
+                                // Trigger a single batchLoaded event with the texture objects
                                 try {
-                                    console.log(`Resources: Triggering batchLoaded with transformed data for ${batchDataForEvent.length} textures`);
+                                    console.log(`Resources: Triggering batchLoaded with ${batchDataForEvent.length} textures`);
                                     this.trigger('batchLoaded', [batchDataForEvent]);
                                 } catch (err) {
                                     console.error('Resources: Error triggering batchLoaded event:', err);
@@ -291,14 +295,18 @@ export class Resources extends EventEmitter
                                         }
                                     });
                                     
-                                    // Create a new array with only the name and path
+                                    // Pass the loaded textures with their metadata
                                     const batchDataForEvent = loadedTexturesInBatch.map(item => {
-                                        return [item.source.name, item.source.path];
+                                        return {
+                                            name: item.source.name,
+                                            path: item.source.path,
+                                            texture: item.texture
+                                        };
                                     });
 
-                                    // Trigger a single batchLoaded event with the new array structure
+                                    // Trigger a single batchLoaded event with the texture objects
                                     try {
-                                        console.log(`Resources: Triggering batchLoaded with transformed data for ${batchDataForEvent.length} textures (some failed to load)`);
+                                        console.log(`Resources: Triggering batchLoaded with ${batchDataForEvent.length} textures (some failed to load)`);
                                         this.trigger('batchLoaded', [batchDataForEvent]);
                                     } catch (err) {
                                         console.error('Resources: Error triggering batchLoaded event:', err);

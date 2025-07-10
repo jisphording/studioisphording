@@ -85,6 +85,10 @@ export class Moodboard {
                 
                 // Apply the new material
                 mesh.material = newMaterial;
+                mesh.material.needsUpdate = true;
+                
+                // Force mesh update
+                mesh.needsUpdate = true;
                 
                 console.log(`Moodboard: Successfully updated texture for ${imageName}`); // Debug log
                 return true;

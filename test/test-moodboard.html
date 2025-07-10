@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodboard Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="info">
+        <div>Moodboard Texture Loading Test</div>
+        <div>Check console for loading progress</div>
+        <div>Images should replace checkerboard patterns as they load</div>
+    </div>
+    
+    <script type="module">
+        // Simple test to verify the moodboard is loading textures correctly
+        console.log('Starting moodboard test...');
+        
+        // Import the experience
+        import('./dev/js/three/runExperience.js').then(() => {
+            console.log('Experience loaded');
+        }).catch(err => {
+            console.error('Error loading experience:', err);
+        });
+    </script>
+</body>
+</html>

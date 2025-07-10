@@ -33,19 +33,24 @@ export class ProgressiveLoader
         this.resources.on('batchLoaded', (batchData) => {
             console.log('ProgressiveLoader: Received batchLoaded event with batch data:', batchData); // Debug log
             
-            // Process the batch data, which is now an array of [name, path]
+            // Process the batch data, which is now an array of objects with name, path, and texture
             if (Array.isArray(batchData)) {
-                console.log(`ProgressiveLoader: Processing batch of ${batchData.length} images with new data structure.`);
+                console.log(`ProgressiveLoader: Processing batch of ${batchData.length} images.`);
                 
-                // The texture object is no longer available in the event data.
-                // The moodboard cannot be updated here anymore with this data structure.
-                // You can process the name and path here if needed.
+                // Update each moodboard image with its loaded texture
                 batchData.forEach(item => {
-                    const [name, path] = item;
-                    console.log(`ProgressiveLoader: Received item with name: ${name}, path: ${path}`);
+                    if (item.texture && item.name) {
+                        console.log(`ProgressiveLoader: Updating moodboard image ${item.name} with loaded texture`);
+                        const updateSuccess = this.moodboard.updateMoodboardImage(item.name, item.texture);
+                        if (!updateSuccess) {
+                            console.error(`ProgressiveLoader: Failed to update moodboard image ${item.name}`);
+                        }
+                    } else {
+                        console.warn(`ProgressiveLoader: Invalid item in batch data:`, item);
+                    }
                 });
                 
-                console.log(`ProgressiveLoader: Batch of images processed and logged.`);
+                console.log(`ProgressiveLoader: Batch of ${batchData.length} images processed and updated.`);
                 
                 // Force scene update flag
                 this.experience.scene.needsUpdate = true;
