@@ -51,6 +51,9 @@ dev/apache_conf/*.*
 # remove library files
 dev/libs
 
+# do not track archived plans
+./plan/_archive/*
+
 # per-host local dev config overrides (Kirby config.<host>.php resolution)
 # — machine-specific, excluded from deploy.sh, never reaches production
 app/site/config/config.localhost.php
