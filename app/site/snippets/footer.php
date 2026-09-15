@@ -31,13 +31,6 @@
 		'@auto'
 	], true) ?>
 	
-	<!-- Preload dynamic imports for faster loading -->
-	<?= vitePreloadLinks('js/index.js') ?>
-	
-	<?php if (!option('debug')): ?>
-	<script type="module" src="<?= url('assets/bundle/app.bundle.js') ?>"></script>
-	<?php endif ?>
-
 	</div><!-- data-barba="container" -->
 </body>
 

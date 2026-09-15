@@ -10,11 +10,10 @@
 			<section class="section__bodycopy">
 				<article class="article__main imprint">
 					<?= remove_br_tags($page->text()->kirbytext()) ?>
-				<article>
+				</article>
 			</section>
 		</section>
 
 	</main>
-</body>
 
 <?php snippet('footer') ?>

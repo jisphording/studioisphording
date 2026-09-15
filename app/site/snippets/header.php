@@ -16,7 +16,7 @@
 
 	<link rel="stylesheet" href="<?= url('assets/bundle/app.css') ?>">
 
-	<?= vite('dev/js/index.js') ?>
+	<?= vite('js/index.js') ?>
 
 	<link rel="shortcut icon" type="image/x-icon" href="<?= url('favicon.ico') ?>">
 

@@ -9,7 +9,9 @@
 	<!-- Intro Video -->
 	<section class="showreel__video parallax__layer--back">
         <video class="mood__film" playsinline autoplay muted loop>
-			<source src="<?= $page->url() . '/' . $page->mood_film() ?>">
+			<?php if ($film = $page->mood_film()->toFile()): ?>
+			<source src="<?= $film->url() ?>">
+			<?php endif ?>
 		</video>
 	</section>
 </section>

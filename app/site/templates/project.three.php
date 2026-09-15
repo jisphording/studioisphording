@@ -46,6 +46,4 @@
 	</section>
 	<!-- END - PARALLAX -->
 
-    <?php echo vite('dev/js/index.js') ?>
-
 <?php snippet('footer') ?>
