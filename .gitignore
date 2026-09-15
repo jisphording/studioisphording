@@ -1,11 +1,26 @@
 # node.js
 node_modules
+npm-debug.log*
+
+# php / composer
+composer.phar
+*.log
 
 # os
 .DS_Store
 
+# editors
+.vscode/
+.idea/
+
+# local env / secrets — never commit real credentials
+.env
+.env.*
+!.env.example
+
 # kirby
 app/kirby/
+app/vendor/
 kirby.zip
 
 # media files
@@ -35,3 +50,12 @@ dev/apache_conf/*.*
 
 # remove library files
 dev/libs
+
+# per-host local dev config overrides (Kirby config.<host>.php resolution)
+# — machine-specific, excluded from deploy.sh, never reaches production
+app/site/config/config.localhost.php
+app/site/config/config.127.0.0.1.php
+
+# scratch copy of live-server files that conflict with git's version,
+# kept for manual diffing/merging — see scripts/deploy.sh
+ionos-live-reference/
