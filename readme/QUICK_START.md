@@ -118,5 +118,3 @@ before you deploy.
   migration history (may be partly stale after later Vite upgrades)
 - `readme/MEDIA_CACHE_README.md`, `readme/SETUP_SCRIPTS.md`,
   `readme/BARBA_FIX_SUMMARY.md` — feature-specific notes
-- `plan/01-kirby5-php85-recovery/` — the Kirby 5 / PHP 8.5 recovery plan
-  and its phase-by-phase findings

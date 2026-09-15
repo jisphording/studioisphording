@@ -55,5 +55,8 @@ dev-only settings (`debug`, `url`, `vite.server`) out of production.
 ## Background
 
 This repo was recovered from a state where Kirby 4.8 refused to boot on
-PHP 8.5. See `plan/01-kirby5-php85-recovery/` for the full recovery plan,
-phase-by-phase findings, and deferred issues (`plan/improvements.md`).
+PHP 8.5: the fix was upgrading to Kirby 5.5, updating the npm toolchain
+(Vite 8, Sass, Terser, Three.js), splitting deploy-safe config from
+localhost overrides, and fixing the template markup faults that upgrade
+surfaced. See `plan/improvements.md` for deferred issues found along the
+way.

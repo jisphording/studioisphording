@@ -44,9 +44,8 @@ Each entry is a `### MC-nn — <headline>` block with the following bolded keys:
 ### MC-02 — CSS edit hot-reloads in the browser without a full page reload
 
 **Claim**: "the page updates without a full reload"
-**Doc**: plan/01-kirby5-php85-recovery/04-deploy-safe-config-split-and-template-markup-fixes.md
 **Covers**: app/site/snippets/header.php, app/site/snippets/footer.php, app/site/plugins/vite-manifest/index.php, vite.config.dev.js
-**Procedure**: Run `npm run dev` and `npm run php`, open the page in a browser, edit a colour in dev/css/main.scss, save, and confirm the change appears without a full page reload. Phase 4 verified the HMR pipeline server-side only (Vite dev server logged `hmr update /css/main.scss` after the header's `vite('js/index.js')` call was pointed at the corrected manifest-matching entry name; the `/@vite/client` and `/js/index.js` dev-server URLs both returned 200) — no browser was used to confirm the in-page visual update.
+**Procedure**: Run `npm run dev` and `npm run php`, open the page in a browser, edit a colour in dev/css/main.scss, save, and confirm the change appears without a full page reload. The HMR pipeline was previously verified server-side only (Vite dev server logged `hmr update /css/main.scss` after the header's `vite('js/index.js')` call was pointed at the corrected manifest-matching entry name; the `/@vite/client` and `/js/index.js` dev-server URLs both returned 200) — no browser was used to confirm the in-page visual update.
 **Last verified**: null
 **Verified against**: null
 **Status**: unverified
