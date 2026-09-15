@@ -53,6 +53,10 @@ export class World
             console.log('World: All resources have been loaded.')
         })
 
+        // Resources no longer loads on construction (see Resources.mjs);
+        // this world has no moodboard batches, so load everything directly.
+        this.resources.loadOtherResources()
+
         //this.init()
     }
 

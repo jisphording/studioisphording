@@ -4,7 +4,7 @@
 
 // Import external libraries
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
 // Import modules
 import { Experience } from './Experience.mjs'

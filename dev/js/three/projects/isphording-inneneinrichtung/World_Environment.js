@@ -25,7 +25,9 @@ export class Environment
 
     setSunLight()
     {
-        this.sunLight = new THREE.DirectionalLight( '#ffffff', 4 )
+        // three r165 removed legacy lighting; physically based light units
+        // need the old intensity (4) multiplied by PI to look the same.
+        this.sunLight = new THREE.DirectionalLight( '#ffffff', 4 * Math.PI )
         this.sunLight.castShadow = true
         //this.sunLight.shadow.camera.far = 15
         this.sunLight.shadow.mapSize.set( 1024, 1024 )
@@ -83,7 +85,7 @@ export class Environment
                     .add(this.sunLight, 'intensity')
                     .name('intensity')
                     .min(0)
-                    .max(5)
+                    .max(5 * Math.PI)
                     .step(0.001)
 
                 // Tweak sun light position
