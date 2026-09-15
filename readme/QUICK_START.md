@@ -1,110 +1,122 @@
-# Quick Start Guide - Studio Isphording Development
+# Quick Start Guide — Studio Isphording Development
 
-Your project has been successfully migrated from Webpack to Vite! Here's how to get started:
+Kirby 5.5 (flat-file CMS) under `app/`, front-end assets built with Vite 8 from
+`dev/` into `app/assets/bundle/`. This guide reflects the actual, working
+workflow — see `CLAUDE.md` at the repo root for the condensed house rules.
 
-## ✅ What's Already Working
+## Prerequisites
 
-- ✅ Asset compilation (CSS & JS) is working perfectly
-- ✅ Your Kirby CMS templates are already configured correctly
-- ✅ Build output goes to the right location (`app/assets/bundle/`)
-- ✅ All your existing code and imports work unchanged
+- **PHP 8.3, 8.4, or 8.5** (Kirby 5.5 requires `~8.3.0 || ~8.4.0 || ~8.5.0`)
+- **Composer** 2.x
+- **Node.js ≥ 20.19** (Vite 8 requires 20.19+ or 22.12+)
 
-## 🚀 Getting Started
+## First-time setup
 
-### Option 1: Quick Setup with XAMPP (Easiest)
-
-1. **Download XAMPP**: https://www.apachefriends.org/
-2. **Install XAMPP** and start Apache
-3. **Copy your app folder**: Copy the entire `app/` folder to `C:\xampp\htdocs\studioisphording\`
-4. **Start development**: 
-   ```bash
-   npm run dev    # Starts Vite for asset compilation
-   ```
-5. **Open your site**: http://localhost/studioisphording/
-
-### Option 2: Install PHP (More Flexible) - AUTOMATED!
-
-**Easy Installation (Recommended):**
-1. **Right-click `download-php.bat`** and select **"Run as administrator"**
-2. **Wait for download and installation** (automatic)
-3. **Restart your command prompt/IDE**
-4. **Run `check-php.bat`** to verify and start development
-
-**Manual Installation:**
-1. **Download PHP**: https://www.php.net/downloads.php
-2. **Add PHP to PATH** (Windows environment variables)
-3. **Start development**:
-   ```bash
-   npm run dev:full    # Starts both PHP server and Vite
-   ```
-4. **Open your site**: http://localhost:8000/
-
-### Option 3: Just Asset Development
-
-If you only want to work on CSS/JS:
 ```bash
-npm run build    # Compile assets once
-# or
-npm run dev      # Watch for changes and recompile
+# Install Kirby 5 (core → app/kirby, dependencies → app/vendor; both are
+# gitignored and reproduced from app/composer.lock)
+(cd app && composer install)
+
+# Install npm dependencies
+npm ci
 ```
 
-## 🔧 Development Commands
+## Everyday development
+
+Run these in **two terminals**:
 
 ```bash
-# Start development (automatically starts PHP server if available)
+# Terminal 1 — Vite dev server (HMR for CSS/JS)
 npm run dev
 
-# Production build
+# Terminal 2 — PHP dev server, routed through Kirby's router so pretty
+# URLs (/about, /projects/…) work
+npm run php
+```
+
+Then open **http://localhost:8000/** (German, the default language, is
+served under `/de` — Kirby redirects `/` there automatically).
+
+There is no single command that starts both servers — `npm run dev` only
+runs Vite. If you see stale claims elsewhere (an `npm run dev:full`
+script, "dev starts both servers") they don't reflect the current
+`package.json` and should be ignored/fixed.
+
+### The `config.localhost.php` convention
+
+`app/site/config/config.php` holds **production-safe** defaults (`debug`
+=> false, no hardcoded URL). Dev-only overrides (`debug` => true, `url` =>
+`http://localhost:8000`, `vite.server` => `http://localhost:9001`) live in
+`app/site/config/config.localhost.php`, which Kirby merges automatically
+when the request host is exactly `localhost` (there's a matching
+`config.127.0.0.1.php` for when a server is bound to `127.0.0.1` instead,
+e.g. by `scripts/smoke.sh`). Both files are excluded from
+`scripts/deploy.sh` and never reach production.
+
+If you serve the PHP dev server on a **different port** than 8000 (e.g.
+because something else already holds port 8000 on your machine), asset
+URLs built from the hardcoded `url` in `config.localhost.php` will point
+at the wrong port and CSS/media will fail to load. Either free port 8000,
+or edit `url` in `config.localhost.php` locally for your session — never
+commit that change.
+
+## Other commands
+
+```bash
+# Production build (writes to app/assets/bundle/)
 npm run build
 
-# Preview production build
+# Preview a production build locally
 npm run preview
 
-# Start only PHP server (requires PHP installed)
-npm run php
-
-# Start only asset compilation (no PHP server)
+# Asset compilation only (no PHP server)
 npm run dev:assets-only
+
+# Smoke test: boots the PHP dev server through Kirby's router, curls the
+# main URLs in every language, and fails if any page 404s or shows a
+# PHP-version/Whoops/fatal-error/warning/deprecation notice. This is the
+# verification gate — keep it green.
+bash scripts/smoke.sh
+
+# If port 8000 is already taken on your machine, override it:
+PORT=8011 bash scripts/smoke.sh
 ```
 
-**🎉 NEW: `npm run dev` now automatically starts both PHP and Vite servers!**
-
-## 📁 Project Structure
+## Project structure
 
 ```
-├── app/                    # Your Kirby CMS (unchanged)
-│   ├── index.php          # Main entry point
-│   ├── assets/bundle/     # Compiled assets (auto-generated)
-│   └── site/              # Your templates & content
-├── dev/                   # Source files for development
-│   ├── css/main.scss      # Your styles
-│   ├── js/index.js        # Main JavaScript
-│   └── assets/            # Static assets
-├── vite.config.js         # Vite configuration
-└── package.json           # Dependencies & scripts
+├── app/                    # Kirby CMS
+│   ├── kirby/              # Kirby 5.5 core (gitignored, via composer install)
+│   ├── vendor/             # Composer dependencies (gitignored)
+│   ├── assets/bundle/      # Compiled assets (gitignored, via npm run build)
+│   ├── content/            # Site content (never modify directly in git — live data)
+│   └── site/               # Templates, snippets, plugins, config
+├── dev/                    # Front-end source (CSS/SCSS, JS, Three.js)
+├── scripts/
+│   ├── smoke.sh            # Verification gate — see above
+│   └── deploy.sh           # rsync to IONOS; always dry-run first (--dry-run)
+├── vite.config.dev.js      # Vite dev-server config
+├── vite.config.build.js    # Vite production build config
+└── package.json
 ```
 
-## 🎯 Next Steps
+## Deploying
 
-1. Choose one of the setup options above
-2. Run `npm run dev` to start asset compilation
-3. Your site will automatically load the compiled CSS and JS
-4. Make changes to files in `dev/` folder
-5. Assets will automatically recompile and update
+`scripts/deploy.sh` builds the site and rsyncs `app/` to the IONOS
+server. **Always run `bash scripts/deploy.sh --dry-run` first** and review
+the output before a real deploy — see `CLAUDE.md` for the house rule.
 
-## 💡 Benefits You Now Have
+The rsync mirrors with `--delete`, and the WebGL assets under
+`app/assets/three/` (glTF model, environment map, Draco decoder) are
+gitignored, so a fresh clone doesn't have them. If the dry-run lists
+`deleting assets/three/...`, restore those files locally from the live site
+before you deploy.
 
-- ⚡ **10x faster** asset compilation
-- 🔥 **Hot Module Replacement** - changes appear instantly
-- 🛠️ **Better error messages** and debugging
-- 📦 **Smaller bundle sizes** with better optimization
-- 🚀 **Instant server startup** (no more waiting for webpack)
+## More docs
 
-## 🆘 Need Help?
-
-- Check `VITE_MIGRATION.md` for detailed migration info
-- Your existing Kirby templates work exactly as before
-- All asset paths remain the same
-- No changes needed to your PHP code
-
-**You're all set! Your development experience just got much faster! 🎉**
+- `readme/VITE_MIGRATION.md`, `readme/VITE_OPTIMIZATION_SUMMARY.md` — Vite
+  migration history (may be partly stale after later Vite upgrades)
+- `readme/MEDIA_CACHE_README.md`, `readme/SETUP_SCRIPTS.md`,
+  `readme/BARBA_FIX_SUMMARY.md` — feature-specific notes
+- `plan/01-kirby5-php85-recovery/` — the Kirby 5 / PHP 8.5 recovery plan
+  and its phase-by-phase findings

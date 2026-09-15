@@ -115,7 +115,7 @@ If thumbnails still don't appear:
 ## Integration
 
 The build system integrates with:
-- **Kirby 4.8** native media processing
+- **Kirby 5** native media processing (on-demand thumbs with the GD driver work again since the 5.5 upgrade)
 - **Vite build process** (can be added to build pipeline)
 - **Development workflow** (run during development)
 - **Deployment process** (include in CI/CD)

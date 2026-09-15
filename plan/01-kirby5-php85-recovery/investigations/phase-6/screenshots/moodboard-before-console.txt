@@ -1,0 +1,194 @@
+three revision: 152
+[debug] [vite] connecting...
+[debug] [vite] connected.
+[log] Loading animation modules...
+[warn] Ignoring Event: localhost
+[log] All modules loaded successfully
+[log] Initializing app...
+[log] Library check: [object Object]
+[log] ✅ All CDN libraries loaded
+[log] Barba available: true
+[log] GSAP available: true
+[log] Loading screen element exists: true
+[log] animBarba: Starting initialization...
+[log] ✅ Barba.js initialized successfully with loading screen animations
+[log] ✅ Barba initialized successfully
+[log] animGsap: Starting initialization...
+[log] animGsap: All elements found, setting up animations...
+[log] ✅ GSAP animations initialized successfully
+[log] ✅ App initialization complete
+[log] runExperience in #webgl World_02 0x_16119022
+[log] Resources: Starting progressive loading with initial batch of 10 images
+[log] Resources: Loading 0 non-moodboard resources
+[log] Resources: Starting batch loading with 44 images remaining
+[log] Resources: Loading next batch of 10 images
+[log] Resources: Loading texture for moodboardImage_0001 from /content/moodboard/ea9f8336688c41762b6ce4982a3e4f08e4c63730.png
+[log] Resources: Loading texture for moodboardImage_0002 from /content/moodboard/HSR_STILLS_16x9_4K_18-1536x864.webp
+[log] Resources: Loading texture for moodboardImage_0003 from /content/moodboard/img_2_1543930141_057bed4730bc963c2c29ca4dc77fb8ec.webp
+[log] Resources: Loading texture for moodboardImage_0004 from /content/moodboard/img_2_1545022143_86cf9c637b9944c746b16ad4f0d226b7.webp
+[log] Resources: Loading texture for moodboardImage_0005 from /content/moodboard/img_3_1537874577_54abb025a489e9ce811a40b5a5ba1c17.webp
+[log] Resources: Loading texture for moodboardImage_0006 from /content/moodboard/img_3_1540395586_a1130ddd13f69edbd5fba45ebb0aa489.webp
+[log] Resources: Loading texture for moodboardImage_0007 from /content/moodboard/img_3_1540494080_4c142d6d65990990f27bdaf7c17224df.webp
+[log] Resources: Loading texture for moodboardImage_0008 from /content/moodboard/img_5_1540395586_af4086ba44589cb444fe2faa0016f3ae.webp
+[log] Resources: Loading texture for moodboardImage_0009 from /content/moodboard/img_5_1540564516_89b8d1bf91fcdf01269add01aa4a6a8f.webp
+[log] Resources: Loading texture for moodboardImage_0010 from /content/moodboard/img_9_1545022143_a81978ab07ac45ccb4ef92e222905991.webp
+[log] Barba: afterEnter hook - transition complete
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0001: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0002: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0003: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0004: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0005: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0006: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0007: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0008: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0009: [object Event]
+[error] Resources: Failed to load texture moodboardImage_0010: [object Event]
+[log] Resources: All textures in batch failed to load, proceeding to next batch
+[log] Resources: Batch processing complete, loading next batch...
+[log] Resources: Loading next batch of 8 images
+[log] Resources: Loading texture for moodboardImage_0011 from /content/moodboard/img_12_1545055065_e197e82ea3401019c992dbc273791359.webp
+[log] Resources: Loading texture for moodboardImage_0012 from /content/moodboard/Jeil-Health-Science-graphic-identity-logo-design-graphic-blog-project-mindsparkle-mag-beautiful-portfolio-8fa249109290765.5fd094e069f4b.jpg.webp
+[log] Resources: Loading texture for moodboardImage_0013 from /content/moodboard/jxlyjk14luyt.webp
+[log] Resources: Loading texture for moodboardImage_0014 from /content/moodboard/lorenzo-mariotti-electric-tractor-concept-designboom-1.webp
+[log] Resources: Loading texture for moodboardImage_0015 from /content/moodboard/matteucci-garage-dakhla-honda-nx650-motorcycle-designboom-1.webp
+[log] Resources: Loading texture for moodboardImage_0016 from /content/moodboard/miramacho_website_esntial_design_01_e8e328d778.webp
+[log] Resources: Loading texture for moodboardImage_0017 from /content/moodboard/oke_by_thought_and_found_esntial_design_01_76d08c80c4.webp
+[log] Resources: Loading texture for moodboardImage_0018 from /content/moodboard/pangram-pangram-bureau-borsche-o.format-webp.width-2880_bS2OaXl2MZOj43Kd.webp
+[log] Resources: Batch of 10 moodboard images processed (some may have failed).
+[log] Resources: 26 images remaining to load
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0011: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0012: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0013: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0014: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0015: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0016: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0017: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0018: [object Event]
+[log] Resources: All textures in batch failed to load, proceeding to next batch
+[log] Resources: Batch processing complete, loading next batch...
+[log] Resources: Loading next batch of 8 images
+[log] Resources: Loading texture for moodboardImage_0019 from /content/moodboard/Paw-Plex-design-logo-design-graphic-blog-project-mindsparkle-mag-beautiful-portfolio-bb88ca109400683.5fd2b1305d56a.jpg.webp
+[log] Resources: Loading texture for moodboardImage_0020 from /content/moodboard/Paw-Plex-design-logo-design-graphic-blog-project-mindsparkle-mag-beautiful-portfolio-f5f707109400683.5fd2b1305e200.jpg.webp
+[log] Resources: Loading texture for moodboardImage_0021 from /content/moodboard/projects.webp
+[log] Resources: Loading texture for moodboardImage_0022 from /content/moodboard/rattan-in-concrete-jungle-4-5ed24e6dcdf8f.webp
+[log] Resources: Loading texture for moodboardImage_0023 from /content/moodboard/roihan-haidar-el-LuI0mVLo-unsplash.jpg
+[log] Resources: Loading texture for moodboardImage_0024 from /content/moodboard/ronin-47-blacked-out-motorcycle-designboom-1.webp
+[log] Resources: Loading texture for moodboardImage_0025 from /content/moodboard/screencapture-youtube-watch-2025-06-18-23_33_23.png
+[log] Resources: Loading texture for moodboardImage_0026 from /content/moodboard/ShoppableImage2_TheKitchen_1920x.webp
+[log] Resources: Batch of 8 moodboard images processed (some may have failed).
+[log] Resources: 18 images remaining to load
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0019: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0020: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0021: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0022: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0023: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0024: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0025: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0026: [object Event]
+[log] Resources: All textures in batch failed to load, proceeding to next batch
+[log] Resources: Batch processing complete, loading next batch...
+[log] Resources: Loading next batch of 8 images
+[log] Resources: Loading texture for moodboardImage_0027 from /content/moodboard/standard-projects-devrev-digital-402.webp
+[log] Resources: Loading texture for moodboardImage_0028 from /content/moodboard/static.wixstatic.com-14217356368564028.webp
+[log] Resources: Loading texture for moodboardImage_0029 from /content/moodboard/stator-electric-scooter-self-balancing-designboom-2.webp
+[log] Resources: Loading texture for moodboardImage_0030 from /content/moodboard/studio_oker_portfolio_website_the_essential_design_2_f548e83102.webp
+[log] Resources: Loading texture for moodboardImage_0031 from /content/moodboard/studio_oker_portfolio_website_the_essential_design_6_b2ab5dd958.webp
+[log] Resources: Loading texture for moodboardImage_0032 from /content/moodboard/studio-WOK-country-home-chievo-designboom-014.webp
+[log] Resources: Loading texture for moodboardImage_0033 from /content/moodboard/study_by_shifwalk_the_essential_design_15_64a73ea0d2.webp
+[log] Resources: Loading texture for moodboardImage_0034 from /content/moodboard/supergrand_by_caserne_the_essential_design_7_eba8dbdb30.webp
+[log] Resources: Batch of 8 moodboard images processed (some may have failed).
+[log] Resources: 10 images remaining to load
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0027: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0028: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0029: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0030: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0031: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0032: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0033: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0034: [object Event]
+[log] Resources: All textures in batch failed to load, proceeding to next batch
+[log] Resources: Batch processing complete, loading next batch...
+[log] Resources: Loading next batch of 8 images
+[log] Resources: Loading texture for moodboardImage_0035 from /content/moodboard/tabla_rasa_by_estudioblende_esntial_design_09_464a26bb67.webp
+[log] Resources: Loading texture for moodboardImage_0036 from /content/moodboard/tbvd-samples1-1536x918.webp
+[log] Resources: Loading texture for moodboardImage_0037 from /content/moodboard/tbvd-table1-1536x1901.webp
+[log] Resources: Loading texture for moodboardImage_0038 from /content/moodboard/Tendril_Logo_Structure_01.webp
+[log] Resources: Loading texture for moodboardImage_0039 from /content/moodboard/The-taste-therapy-brand-branding-visual-identity-design-graphic-hand-drawn-rustic-warm-illustration-line-Mindsparkle-Mag5.jpg.webp
+[log] Resources: Loading texture for moodboardImage_0040 from /content/moodboard/Tshirt_01_v001_0000-scaled-e1660233379355-1536x1536.webp
+[log] Resources: Loading texture for moodboardImage_0041 from /content/moodboard/v48srxuhlsshgewjaixb.webp
+[log] Resources: Loading texture for moodboardImage_0042 from /content/moodboard/Valha-fashion-visual-identity-brand-branding-design-typography-custom-modern-clean-young-fresh-glam-Mindsparkle-Mag.jpg.webp
+[log] Resources: Batch of 8 moodboard images processed (some may have failed).
+[log] Resources: 2 images remaining to load
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0035: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0036: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0037: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0038: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0039: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0040: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0041: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0042: [object Event]
+[log] Resources: All textures in batch failed to load, proceeding to next batch
+[log] Resources: Batch processing complete, loading next batch...
+[log] Resources: Loading next batch of 2 images
+[log] Resources: Loading texture for moodboardImage_0043 from /content/moodboard/vinyl_records_by_tomorrow_the_essential_design_4_439753b55c.webp
+[log] Resources: Loading texture for moodboardImage_0044 from /content/moodboard/volksans-3-6.webp
+[log] Resources: Batch of 8 moodboard images processed (some may have failed).
+[log] Resources: 0 images remaining to load
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0043: [object Event]
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Resources: Failed to load texture moodboardImage_0044: [object Event]
+[log] Resources: All textures in batch failed to load, proceeding to next batch
+[log] Resources: Batch processing complete, loading next batch...
+[log] Resources: No more images to load, batch loading complete
+[log] Resources: All resources have been loaded.
+[log] Resources: Batch of 2 moodboard images processed (some may have failed).
+[log] Resources: 0 images remaining to load
+[log] Resources: All resources have been loaded.
+[log] animGsap: Initialization complete

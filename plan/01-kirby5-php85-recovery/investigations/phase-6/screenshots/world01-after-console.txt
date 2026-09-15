@@ -1,0 +1,38 @@
+three revision: 186
+[debug] [vite] connecting...
+[debug] [vite] connected.
+[debug] [vite] connecting...
+[debug] [vite] connected.
+[log] Loading animation modules...
+[warn] Ignoring Event: localhost
+[log] All modules loaded successfully
+[log] Initializing app...
+[log] Library check: [object Object]
+[log] ✅ All CDN libraries loaded
+[log] Barba available: true
+[log] GSAP available: true
+[log] Loading screen element exists: true
+[log] animBarba: Starting initialization...
+[log] ✅ Barba.js initialized successfully with loading screen animations
+[log] ✅ Barba initialized successfully
+[log] animGsap: Starting initialization...
+[log] animGsap: All elements found, setting up animations...
+[log] ✅ GSAP animations initialized successfully
+[log] ✅ App initialization complete
+[log] runExperience in #webgl World_01 0x_16119022
+[log] Resources: Loading 2 non-moodboard resources
+[log] Barba: afterEnter hook - transition complete
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[warn] [.WebGL-0x114000e9e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[warn] [.WebGL-0x114000e9e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[warn] [.WebGL-0x114000e9e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels
+[warn] [.WebGL-0x114000e9e00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)
+[log] animGsap: Initialization complete
+[log] environmentMapTexture loaded
+[log] Resources: All resources have been loaded.
+[log] Enironment Ready.
+[log] World: All resources have been loaded.
+[log] DisplayAppleXDR loaded

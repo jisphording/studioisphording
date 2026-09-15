@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "files": [
+    "00-master.md",
+    "01-safety-net-working-php-dev-server-and-smoke-test.md",
+    "02-upgrade-kirby-4-8-5-5-and-make-the-site-boot-on-php-8-5.md",
+    "03-update-npm-packages-and-migrate-the-vite-config-to-vite-8.md",
+    "04-deploy-safe-config-split-and-template-markup-fixes.md",
+    "05-end-to-end-verification-docs-and-deploy-dry-run.md",
+    "06-upgrade-three-js-0-152-latest-and-fix-rendering-regressions.md"
+  ]
+}
