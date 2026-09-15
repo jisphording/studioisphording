@@ -32,9 +32,10 @@ export default defineConfig({
           return 'assets/[name]-[hash].[ext]'
         },
         // Manual chunk splitting for better optimization
-        manualChunks: {
-          // Vendor libraries chunk
-          'vendor-three': ['three']
+        manualChunks: (id) => {
+          if (id.includes('node_modules/three')) {
+            return 'vendor-three'
+          }
         }
       }
     },
