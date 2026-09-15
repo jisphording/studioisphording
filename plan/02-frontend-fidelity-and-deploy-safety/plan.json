@@ -1,0 +1,845 @@
+{
+  "slug": "02-frontend-fidelity-and-deploy-safety",
+  "title": "Frontend fidelity, transition rework and deploy safety",
+  "goal": "Repair the three visible production defects (web fonts 404, invisible home showreel video, page transition revealing the old page), then clear the whole plan/improvements.md backlog: deploy-safety, repo hygiene, build toolchain, Three.js correctness and stale docs.",
+  "created": "2026-09-16",
+  "capturedInputs": [
+    {
+      "source": "plan/improvements.md",
+      "copy": "plan/02-frontend-fidelity-and-deploy-safety/sources/improvements.md",
+      "capturedAt": "2026-09-16"
+    }
+  ],
+  "repo": {
+    "name": "studioisphording",
+    "stack": "Kirby CMS 5.5 (flat-file, PHP 8.3-8.5, Composer 2.x) under app/, multi-language (de default, plus en/it/es), custom plugins in app/site/plugins (gallery, media-processing, site-methods, vite-manifest), no Panel/blueprints. Front-end: Vite 8 + Sass + Three.js built from dev/ into app/assets/bundle. Barba.js + GSAP loaded from CDN. Node >= 20.19. Deploy via rsync to IONOS (scripts/deploy.sh).",
+    "buildCommand": "npm run build",
+    "houseRules": [
+      "Never modify app/content/ - it's live content, not test fixture data.",
+      "Never run scripts/deploy.sh without --dry-run. Review the dry-run output before any real deploy; the real deploy is a human call, not something an agent runs.",
+      "Never ssh to the server with a write command. Read-only checks (php -v, ls) only, and only after asking the user first.",
+      "bash scripts/smoke.sh is the verification gate - leave it at least as green as you found it.",
+      "Match the surrounding file's style: tabs in app/site templates/snippets/plugins, 4 spaces in app/site/config/config.php, 2 spaces in Vite configs and dev/js.",
+      "Do not commit unless explicitly asked; leave changes staged/unstaged for review."
+    ]
+  },
+  "toggles": {
+    "cleanup": true,
+    "tdd": false,
+    "investigate": false,
+    "kickoffPrompts": false,
+    "modelRecommendations": true,
+    "parallelHints": true,
+    "conductor": false,
+    "tokenTracking": false,
+    "retrieval": false,
+    "briefDigest": false,
+    "contextpack": false,
+    "research": false,
+    "fusion": false
+  },
+  "conventions": [
+    "Every phase ends green on `PORT=8011 bash scripts/smoke.sh` (port 8000 is held by an unrelated local service on this machine).",
+    "Any change to dev/css or dev/js requires `npm run build` before smoke, because app/assets/bundle is the only thing app/site/snippets/header.php loads in production mode.",
+    "Never edit app/content/ - the home showreel fields already carry the values the templates need.",
+    "Prefer Kirby's own URL helpers ($page->file(...)->url(), $file->url()) over hand-built paths; app/.htaccess:30 rewrites every /content/* request to index.php, so a content path is never a working URL.",
+    "Font, video and transition fixes must be verified against a real browser (chrome-devtools MCP) in addition to smoke, because smoke only asserts HTTP 200 and clean markup."
+  ],
+  "decisions": [
+    {
+      "topic": "Web font 404 root cause",
+      "choice": "The @font-face URLs are one path segment short, not missing files.",
+      "rationale": "dev/css/templates/_typography.scss uses url(\"./../../assets/fonts/X.otf\"), which Vite rewrites to url(../assets/fonts/X.otf) in app/assets/bundle/app.css. Relative to /assets/bundle/app.css that resolves to /assets/assets/fonts/X.otf. Measured live: reqid 13-16 all 404, and document.fonts reports status 'error' for all five faces while /assets/fonts/RadioGrotesk-Regular.otf itself returns 200 and is a valid OTTO/CFF file byte-identical to the local copy."
+    },
+    {
+      "topic": "Font format order",
+      "choice": "Serve woff2 -> woff -> otf and drop the leading local() entries.",
+      "rationale": "app/assets/fonts already ships woff2, woff, ttf and otf for all five faces; woff2 is 30-45% smaller (17.6 kB vs 25.4 kB for RadioGrotesk-Regular). local() first lets a designer's installed copy silently mask a broken url(), which is exactly what hid this bug.",
+      "isDefault": true
+    },
+    {
+      "topic": "Home showreel video root cause",
+      "choice": "home.php builds /content/<diruri>/ URLs, which app/.htaccess rewrites to index.php.",
+      "rationale": "app/site/templates/home.php:21 sets $contentPath = '/content/' . $page->diruri() . '/'. Live markup emits /content/home/landing_reel.mp4; measured 404 on .mp4, .webm and .ogg, video.networkState 3 (NO_SOURCE), readyState 0. app/.htaccess:30 'RewriteRule ^content/(.*) index.php [L]' blocks the whole tree by design. The files exist (app/content/home/landing_reel.{mp4,webm,jpg}) and the Showreel field is 'landing_reel'."
+    },
+    {
+      "topic": "Page transition root cause",
+      "choice": "The reveal animation plays while the OLD container is still in the DOM; Barba removes it only after enter() resolves.",
+      "rationale": "Instrumented live: at t=800ms the wipe-in completes and afterLeave fires with 1 container; at t=851ms the next container is appended (2 containers); the 1.8s loaderOut wipe runs t=1050-2650 with both containers present and document.querySelector('h1') still reading 'Studio Isphording'; the old container is removed at t=2751, after the reveal finished. Barba appends next.container before leave resolves and removes current.container only after enter resolves, so awaiting the reveal inside enter() defers the removal past it."
+    },
+    {
+      "topic": "Transition fix shape",
+      "choice": "Remove the outgoing container explicitly at the end of leave(), then gate the reveal on the incoming page's assets with a timeout ceiling and a minimum cover floor.",
+      "rationale": "User requirement: 'use the transition animation to actually load and then show the new page.' Explicit removal in leave() makes Barba's own removal a no-op and guarantees only the new container exists when the wipe opens. The readiness gate (document.fonts.ready, image decode for above-the-fold images, video canplay) with a ~3s cap and a ~400ms floor keeps the loader honest without ever hanging."
+    },
+    {
+      "topic": "WebGL readiness in the transition gate",
+      "choice": "Do NOT block the reveal on the Three.js world being ready.",
+      "rationale": "User chose the 'assets ready, with timeout' option over the variant that also waits for WebGL. Heavy glTF pages would hold the loader for seconds; the canvas fading in after the reveal is acceptable."
+    },
+    {
+      "topic": "Kirby core in git",
+      "choice": "git rm -r --cached app/kirby and have scripts/deploy.sh run composer install --no-dev before rsync.",
+      "rationale": "User decision. app/kirby/ is gitignored yet 551 files are still tracked in HEAD, so the 5.5.3 upgrade reads as a phantom diff. Untracking keeps the repo small and pins the core in composer.json."
+    },
+    {
+      "topic": "Deploy safety for gitignored runtime trees",
+      "choice": "Add rsync excludes for every gitignored runtime tree plus a preflight guard that aborts when a required local tree is missing or empty.",
+      "rationale": "User decision. scripts/deploy.sh:70 mirrors app/ with --delete but EXCLUDES (scripts/deploy.sh:47-57) covers only site/cache, site/sessions, site/accounts, the two local config overrides, /media/, .git and OS junk. app/assets/, app/content/ and app/video/ are all in .gitignore, so a deploy from a fresh clone would delete the live fonts, the Three.js glTF/env-map/Draco assets and every content file."
+    },
+    {
+      "topic": "Live bundle is stale relative to the repo",
+      "choice": "Treat the repo as the source of truth and note the drift; do not reverse-engineer production CSS.",
+      "rationale": "Live computed style gives h1 font-family 'Monument-Extended', while dev/css/templates/_typography.scss:58 assigns 'Grafier-Regular' to h1-h6. The deployed bundle predates the current SCSS. Phase 11 records this so the first real deploy after this plan is expected to change heading typography."
+    },
+    {
+      "topic": "Backlog purge",
+      "choice": "plan/improvements.md is captured byte-for-byte into this plan folder now, and truncated back to its empty template only in the final phase, after all preceding phases are done.",
+      "rationale": "User requirement: 'make sure that all the ideas from the improvements file are purged after plan execution so that i do not implement them twice.' Capturing first makes the truncation safe; truncating last makes it honest."
+    }
+  ],
+  "context": [
+    {
+      "fact": "@font-face src is url(\"./../../assets/fonts/<Name>.otf\") for all five faces; only .otf is referenced even though woff2/woff/ttf exist alongside it.",
+      "source": "dev/css/templates/_typography.scss:4-47"
+    },
+    {
+      "fact": "Built CSS contains url(../assets/fonts/<Name>.otf) and is served at /assets/bundle/app.css, so every font request lands on /assets/assets/fonts/ and 404s.",
+      "source": "app/assets/bundle/app.css"
+    },
+    {
+      "fact": "All five faces exist in app/assets/fonts/ as .otf, .woff2, .woff and .ttf, and the .otf files are valid OpenType (OTTO/CFF) - the local RadioGrotesk-Regular.otf is byte-identical (sha1 93fd317f...) to the copy the live server serves at /assets/fonts/.",
+      "source": "app/assets/fonts/"
+    },
+    {
+      "fact": "app/assets/ is gitignored in its entirety, so the fonts and the Three.js assets are present on disk but untracked - they were downloaded from the live server.",
+      "source": ".gitignore"
+    },
+    {
+      "fact": "app/assets/three/{libs/draco,meshes,textures} now exist locally, resolving the two Phase 5 'missing assets' entries in the backlog.",
+      "source": "app/assets/three/"
+    },
+    {
+      "fact": "home.php builds $contentPath = '/content/' . $page->diruri() . '/' and uses it for the video poster, all three <source> elements and the download fallback link.",
+      "source": "app/site/templates/home.php:16-30"
+    },
+    {
+      "fact": "Kirby's shipped .htaccess rewrites every /content/* request to index.php, so no content path is ever a working asset URL.",
+      "source": "app/.htaccess:29-30"
+    },
+    {
+      "fact": "The home page's Showreel field is 'landing_reel' in de/en/it, and app/content/home/ holds landing_reel.mp4 (23.7 MB), landing_reel.webm (20.6 MB) and landing_reel.jpg. There is no .ogg file, so the third <source> can only ever 404.",
+      "source": "app/content/home/"
+    },
+    {
+      "fact": "project.three.php passes 'videoPath' => 'app/video/' into project-gallery.php, which builds URLs like http://<host>/app/video/<name>.mp4 - a path with no corresponding Kirby route.",
+      "source": "app/site/templates/project.three.php:22"
+    },
+    {
+      "fact": "The media-processing plugin's file.create:after hook calls $file->parent()->diruri(), which fatals for site-level files because the parent is a Site, not a Page.",
+      "source": "app/site/plugins/media-processing/index.php:11"
+    },
+    {
+      "fact": "The Barba transition's leave() awaits the wipe-in and enter() awaits prepareNewPage() then the 1.8s animateLoaderOut, so the reveal is inside enter() - which is what defers Barba's removal of the outgoing container past the reveal.",
+      "source": "dev/js/animation/animBarba.mjs:81-89"
+    },
+    {
+      "fact": "prepareNewPage waits two rAFs plus a fixed 100ms setTimeout and then re-runs animGsap(), restartVideos() and ScrollTrigger.refresh(); it never inspects whether any incoming asset has actually loaded.",
+      "source": "dev/js/animation/animBarba.mjs:99-119"
+    },
+    {
+      "fact": "The loading screen is position:fixed, 100vw x 200vh, z-index 99999, and lives outside the Barba container, so it does cover both containers during the swap.",
+      "source": "dev/css/templates/_loadingscreen.scss:3-12"
+    },
+    {
+      "fact": "html.is-transitioning forces .loadingScreen visible with !important and html.js-ready hides it; the class is added in barba.hooks.before and removed in barba.hooks.after, so any reveal logic must stay inside that window.",
+      "source": "dev/css/templates/_loadingscreen.scss:90-103"
+    },
+    {
+      "fact": "The Barba container wraps the header, the page body, the footer AND the CDN script tags for GSAP, ScrollTrigger and @barba/core, which are emitted by js([...], true) inside the container div.",
+      "source": "app/site/snippets/header.php:28-30 and app/site/snippets/footer.php:27-34"
+    },
+    {
+      "fact": "vite.config.build.js declares a second rollup entry three: dev/js/three/runExperience.js, but dev/js/index.js already statically imports runExperience.js and nothing in app/site references three.bundle.js - the 78 kB three.bundle.js output is dead.",
+      "source": "vite.config.build.js:20-23"
+    },
+    {
+      "fact": "publicDir is set to 'assets' with root './dev', i.e. dev/assets - a directory that does not exist (dev/ holds only css/ and js/). Nothing is copied through Vite's public pipeline today.",
+      "source": "vite.config.build.js:65"
+    },
+    {
+      "fact": "package.json has no \"type\" field, so all three ESM vite configs emit a configLoader: 'native' CJS-syntax warning on every run; dev:assets-only is referenced only by readme/QUICK_START.md:72.",
+      "source": "package.json"
+    },
+    {
+      "fact": "smoke.sh backgrounds php -S and then polls curl, but never checks that its own server bound the port - an occupied port silently tests whatever else is listening.",
+      "source": "scripts/smoke.sh:25-35"
+    },
+    {
+      "fact": "smoke.sh asserts HTTP 200 and the absence of PHP-error markers only; it never requests a font, a video or the CSS bundle, which is why a site-wide 404 on every web font passed the gate.",
+      "source": "scripts/smoke.sh:63-98"
+    },
+    {
+      "fact": "deploy.sh mirrors app/ to the remote root with --delete and its EXCLUDES list does not mention /assets/, /content/ or /video/, all three of which are gitignored.",
+      "source": "scripts/deploy.sh:47-70"
+    },
+    {
+      "fact": "git ls-files app/kirby returns 551 tracked files even though app/kirby/ is gitignored.",
+      "source": ".gitignore"
+    },
+    {
+      "fact": "plan/_archive/ holds exactly one earlier plan, 01-kirby5-php85-recovery, so this plan takes prefix 02.",
+      "source": "plan/_archive/"
+    },
+    {
+      "fact": "app/content/projects/ contains no moodboard page, so the moodboard template is unreachable via any URL.",
+      "source": "app/content/projects/"
+    }
+  ],
+  "requirements": [
+    { "id": "R1", "text": "Web fonts load in production: all five @font-face declarations resolve to a 200 and document.fonts reports status 'loaded'." },
+    { "id": "R2", "text": "The home page showreel video autoplays: a real media URL, no 404, video element with non-zero dimensions and readyState >= 2." },
+    { "id": "R3", "text": "Every remaining hand-built asset path in templates and plugins resolves through Kirby's own URL helpers instead of /content/ or /app/video/." },
+    { "id": "R4", "text": "The page transition never reveals the outgoing page: the old container is gone before the wipe opens." },
+    { "id": "R5", "text": "The transition loader holds until the incoming page's fonts, above-the-fold images and video are ready, bounded by a timeout ceiling and a minimum cover floor." },
+    { "id": "R6", "text": "The Kirby core is untracked in git and installed by Composer as part of the deploy." },
+    { "id": "R7", "text": "scripts/deploy.sh cannot delete live runtime trees, and aborts before rsync when a required local tree is missing or empty." },
+    { "id": "R8", "text": "The Vite build produces no dead entry, no configLoader warning, and no unreferenced dev script." },
+    { "id": "R9", "text": "scripts/smoke.sh fails fast on a port it did not bind, and asserts that the CSS bundle, the web fonts and the showreel video all return 200." },
+    { "id": "R10", "text": "Three.js worlds start their resource loading through one explicit protocol, and the Draco decoder stays in lockstep with the bundled three version." },
+    { "id": "R11", "text": "Three.js interaction and render defects are fixed: canvas-relative hit-testing, no leaked keydown listener, no dead shadow configuration." },
+    { "id": "R12", "text": "Documentation reflects reality and plan/improvements.md is emptied so nothing in it gets implemented twice." }
+  ],
+  "phases": [
+    {
+      "id": 1,
+      "title": "Web fonts: fix the resolved URL and modernise the @font-face stack",
+      "goal": "Make every declared face actually load in production, in woff2 first, and make a broken font URL impossible to miss again.",
+      "dependsOn": [],
+      "satisfies": ["R1"],
+      "touchesFiles": [
+        "dev/css/templates/_typography.scss",
+        "app/site/snippets/header.php",
+        "readme/QUICK_START.md"
+      ],
+      "requiredReading": [
+        { "path": "dev/css/templates/_typography.scss", "inline": true },
+        { "path": "vite.config.build.js" }
+      ],
+      "model": {
+        "tier": "Fast",
+        "pick": "Claude Sonnet 5",
+        "reason": "The root cause is already measured and the fix is a mechanical rewrite of five @font-face blocks plus preload tags; no design judgement is left."
+      },
+      "steps": [
+        "Confirm the defect before changing anything: run `npm run build`, then `grep -o 'url([^)]*fonts[^)]*)' app/assets/bundle/app.css` and check the emitted path is `../assets/fonts/...`, which resolves to /assets/assets/fonts/ from /assets/bundle/app.css.",
+        "In dev/css/templates/_typography.scss, replace the relative src URL in all five @font-face blocks with the root-absolute path `/assets/fonts/<Name>.<ext>`. The webroot is app/, the site is served from the domain root, and a root-absolute URL is immune to wherever Vite emits the stylesheet.",
+        "Give each face a format list in descending preference: woff2, then woff, then otf - e.g. src: url(\"/assets/fonts/RadioGrotesk-Regular.woff2\") format(\"woff2\"), url(\"/assets/fonts/RadioGrotesk-Regular.woff\") format(\"woff\"), url(\"/assets/fonts/RadioGrotesk-Regular.otf\") format(\"opentype\"). All three files already exist for all five faces.",
+        "Drop the leading `local(...)` entry from every face. A locally installed copy silently masking a 404 is what hid this bug for a full release cycle; keep font-display: swap so there is still a graceful fallback.",
+        "In app/site/snippets/header.php, add preload links for the two faces used above the fold - RadioGrotesk-Regular.woff2 (body) and the heading face (Grafier-Regular.woff2) - as `<link rel=\"preload\" as=\"font\" type=\"font/woff2\" href=\"<?= url('assets/fonts/...') ?>\" crossorigin>`, placed before the stylesheet link. Match the file's tab indentation.",
+        "Rebuild with `npm run build` and re-grep the emitted CSS: every font url must now read `/assets/fonts/...` with exactly one `assets` segment.",
+        "Verify in a real browser against the local dev server (PORT=8011): `await document.fonts.ready` then confirm every entry of `[...document.fonts]` has status 'loaded', and that no request to /assets/assets/ appears in the network log.",
+        "Note in readme/QUICK_START.md that app/assets/fonts is gitignored and must be present locally before a build, since the licensed .otf/.woff2 files are not in git."
+      ],
+      "acceptance": [
+        "dev/css/templates/_typography.scss declares woff2, woff and otf sources for all five faces, with root-absolute /assets/fonts/ URLs and no local() entry.",
+        "`grep -o 'url([^)]*fonts[^)]*)' app/assets/bundle/app.css` after a fresh build shows only /assets/fonts/ paths - no ../assets/ and no double assets segment.",
+        "In a browser on the local site, document.fonts reports status 'loaded' for all five faces and document.fonts.check('400 16px \"Radio-Grotesk\"') is true.",
+        "The network log contains zero 404s for any /assets/fonts/ or /assets/assets/ request.",
+        "app/site/snippets/header.php preloads the two above-the-fold woff2 faces with crossorigin.",
+        "PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "npm run build",
+          "PORT=8011 bash scripts/smoke.sh"
+        ],
+        "manual": [
+          "Load / in a browser against the local dev server, await document.fonts.ready, and confirm all five faces report status 'loaded' and no /assets/fonts/ request 404s."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 2,
+      "title": "Home showreel video: resolve through Kirby file URLs",
+      "goal": "Make the autoplay hero video actually play by replacing the .htaccess-blocked /content/ paths with real Kirby file URLs.",
+      "dependsOn": [],
+      "satisfies": ["R2", "R3"],
+      "touchesFiles": [
+        "app/site/templates/home.php"
+      ],
+      "requiredReading": [
+        { "path": "app/site/templates/home.php", "inline": true },
+        { "path": "app/.htaccess" }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Small but needs correct Kirby 5 file-resolution idiom and a defensive shape for missing files; the surrounding template style (tabs) must be matched exactly."
+      },
+      "steps": [
+        "Reproduce first: load / on the local dev server and confirm the <video> emits /content/home/landing_reel.mp4 and that the request 404s, with video.networkState === 3 and readyState === 0.",
+        "In app/site/templates/home.php, replace the $contentPath construction with Kirby file lookups against the page: resolve $showreelName from $page->showreel()->value() as today, then look up each variant with $page->file($showreelName . '.mp4'), ->file($showreelName . '.webm') and ->file($showreelName . '.jpg').",
+        "Emit the poster attribute only when the .jpg file object exists, and emit each <source> only when its file object exists. Do not emit an .ogg source at all - app/content/home/ has no .ogg and that source can only ever 404.",
+        "Call ->url() on each resolved file object so the URL goes through Kirby's media route rather than the blocked /content/ tree.",
+        "Point the no-video fallback download link at the resolved .mp4 file URL, and skip the whole <video> block gracefully if no video file resolves, so a content change can never fatal the home page.",
+        "Keep every attribute that makes autoplay work in modern browsers: playsinline, autoplay, muted and loop must all stay on the element - muted is what permits autoplay at all.",
+        "Keep the file's tab indentation and its existing comment style.",
+        "Verify in a browser: the video element reports readyState >= 2, videoWidth and videoHeight are non-zero, and the network log shows a 200 for the .mp4 (or .webm) under Kirby's media URL."
+      ],
+      "acceptance": [
+        "app/site/templates/home.php contains no '/content/' string.",
+        "The rendered home page emits a <video> whose sources are Kirby media URLs that return 200, with no .ogg source.",
+        "In a browser, the home page video has readyState >= 2, non-zero videoWidth/videoHeight, and is visibly playing.",
+        "The page renders without error when the showreel field or its files are absent.",
+        "PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "PORT=8011 bash scripts/smoke.sh"
+        ],
+        "manual": [
+          "Open / in a browser against the local dev server and confirm the hero video autoplays, loops, and reports readyState >= 2 with non-zero dimensions."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 3,
+      "title": "Remaining hand-built asset paths: project.three videos and the media-processing hook",
+      "goal": "Close the other two places where a hand-built path substitutes for a Kirby URL, and stop the Panel-upload fatal on site-level files.",
+      "dependsOn": [],
+      "satisfies": ["R3"],
+      "touchesFiles": [
+        "app/site/templates/project.three.php",
+        "app/site/snippets/project-gallery.php",
+        "app/site/plugins/media-processing/index.php"
+      ],
+      "requiredReading": [
+        { "path": "app/site/snippets/project-gallery.php", "inline": true },
+        { "path": "app/site/templates/project.three.php", "inline": true },
+        { "path": "app/site/plugins/media-processing/index.php", "inline": true }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Requires reading how project-gallery.php branches on $videoPath and deciding whether the parameter survives at all; more judgement than phase 2 but still a contained change."
+      },
+      "steps": [
+        "Read app/site/snippets/project-gallery.php:11-30 and establish exactly what the $videoPath branch does differently from the default Kirby-file branch.",
+        "Confirm the defect: load /de/projects/isphording-inneneinrichtung locally and check the case-study video inserts request /app/video/<name>.mp4 and 404.",
+        "Establish where those case-study videos actually live. If they are page files, drop the 'videoPath' => 'app/video/' argument at app/site/templates/project.three.php:22 so the snippet falls through to its working Kirby-file branch, and delete the now-unused $videoPath branch from the snippet.",
+        "If the files genuinely live outside the content tree, keep a path parameter but make it resolve through url() against app/assets or a real route rather than the bare string 'app/video/' - and say so in the phase's build-log findings.",
+        "In app/site/plugins/media-processing/index.php:11, guard the $file->parent()->diruri() call: only build the jobs path when the parent is a Kirby\\Cms\\Page. For a site-level file the media root is media/site/<hash>, not media/pages/..., so either handle that branch explicitly or return early.",
+        "Confirm no other template or snippet builds a '/content/' or 'app/video/' URL: `grep -rn \"'/content/\\|app/video/\" app/site/`.",
+        "Verify in a browser that the case-study video inserts on a project.three page load and play."
+      ],
+      "acceptance": [
+        "`grep -rn \"app/video/\" app/site/` returns nothing, or only a comment explaining a real resolved route.",
+        "`grep -rn \"'/content/\" app/site/` returns nothing.",
+        "On /de/projects/isphording-inneneinrichtung the case-study video inserts return 200 and play in a browser.",
+        "The media-processing file.create:after hook no longer calls diruri() on a non-Page parent.",
+        "PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "PORT=8011 bash scripts/smoke.sh",
+          "grep -rn \"app/video/\" app/site/ ; test $? -eq 1"
+        ],
+        "manual": [
+          "Open a project.three page in a browser and confirm the iPhone/iPad case-study video inserts load and play."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 4,
+      "title": "Page transition: remove the outgoing container before the reveal",
+      "goal": "Stop the wipe-out from revealing the page you just left.",
+      "dependsOn": [],
+      "satisfies": ["R4"],
+      "touchesFiles": [
+        "dev/js/animation/animBarba.mjs"
+      ],
+      "requiredReading": [
+        { "path": "dev/js/animation/animBarba.mjs", "inline": true },
+        { "path": "dev/css/templates/_loadingscreen.scss" }
+      ],
+      "model": {
+        "tier": "Heavy",
+        "pick": "Claude Opus 5",
+        "reason": "Barba's lifecycle ordering is subtle and the failure mode is a timing race that only shows in a browser; getting the removal point wrong silently reintroduces a flash or leaves a detached container."
+      },
+      "steps": [
+        "Reproduce and record the current timeline before changing anything. Instrument barba.hooks (before, leave, afterLeave, beforeEnter, enter, afterEnter, after) to log a timestamp plus document.querySelectorAll('[data-barba=\"container\"]').length, navigate, and confirm the measured shape: wipe-in done at ~800ms, second container appended at ~850ms, reveal running 1050-2650ms with BOTH containers present, old container removed only at ~2750ms.",
+        "At the end of leave(), after animateLoaderIn resolves, explicitly remove the outgoing container: `data.current.container.remove()`. This is Barba's documented pattern for taking ownership of the swap; Barba's own later removal then becomes a no-op on a detached node.",
+        "Move the reveal out of the moment the container count is still 2: enter() must observe exactly one container before animateLoaderOut starts. Assert this in development with a console.warn when the count is not 1, so a future regression is loud.",
+        "Delete the fixed `setTimeout(..., 100)` inside prepareNewPage. It is a guess standing in for a readiness signal, and phase 5 replaces the whole waiting strategy; leaving it would compound with the new gate.",
+        "Keep the two requestAnimationFrame ticks - they are a legitimate way to let the browser paint the new container before the wipe opens.",
+        "Leave animGsap(), restartVideos() and ScrollTrigger.refresh() running before the reveal, but reorder them so they run against the new container only, after the old one is gone.",
+        "Rebuild and re-run the instrumented navigation. The container count must be 1 for the entire duration of animateLoaderOut, and the h1 text sampled during the reveal must be the DESTINATION page's, never the origin page's.",
+        "Check both directions and the browser back button - a popstate navigation goes through the same transition and must not regress."
+      ],
+      "acceptance": [
+        "During the whole animateLoaderOut tween, document.querySelectorAll('[data-barba=\"container\"]').length === 1.",
+        "Sampling document.querySelector('h1').textContent every 50ms across the transition never returns the origin page's title once the wipe starts opening.",
+        "No detached container remains in memory after the transition (the wrapper has exactly one container child at rest).",
+        "Forward navigation, a second consecutive navigation, and the browser back button all behave identically.",
+        "The fixed 100ms setTimeout is gone from prepareNewPage.",
+        "npm run build succeeds and PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "npm run build",
+          "PORT=8011 bash scripts/smoke.sh"
+        ],
+        "manual": [
+          "With the barba hooks instrumented in the browser console, navigate home -> project -> back and confirm the container count is 1 throughout every reveal and the sampled h1 never shows the origin page."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 5,
+      "title": "Page transition: gate the reveal on the incoming page being ready",
+      "goal": "Make the transition animation do real work - hold the cover until the new page's fonts, visible images and video are ready, then reveal.",
+      "dependsOn": [4],
+      "satisfies": ["R5"],
+      "touchesFiles": [
+        "dev/js/animation/animBarba.mjs",
+        "dev/css/templates/_loadingscreen.scss"
+      ],
+      "requiredReading": [
+        { "path": "dev/js/animation/animBarba.mjs", "inline": true }
+      ],
+      "model": {
+        "tier": "Heavy",
+        "pick": "Claude Opus 5",
+        "reason": "A readiness gate that can never hang and never feels sluggish is a real design problem: every await needs a bound, and the floor/ceiling interaction with the GSAP timeline has to be reasoned about rather than guessed."
+      },
+      "steps": [
+        "Write a `waitForPageReady(container, { timeout })` helper in dev/js/animation/animBarba.mjs that resolves when the incoming container is presentable, and ALWAYS resolves - never rejects, never hangs.",
+        "Inside it, race a Promise.all of the readiness signals against a single timeout promise. Signals: (a) document.fonts.ready; (b) for every <img> in the container that intersects the initial viewport, either img.complete or img.decode() caught to a no-op; (c) for every <video autoplay> in the container, a one-shot 'canplay' or 'loadeddata' listener, resolved immediately if readyState >= 2.",
+        "Attach every listener with { once: true } and clear it in a finally, so a timed-out navigation cannot leak listeners onto a detached container.",
+        "Set the timeout ceiling to 3000ms as the default and expose it as a named constant at the top of the module so it is tunable in one place.",
+        "Add a minimum cover floor of ~400ms measured from the moment the wipe-in completes, so a warm cache does not produce a jarring instant flash-open. Implement it as `await Promise.all([waitForPageReady(...), minCoverDelay])`.",
+        "Call the gate in enter(), after the outgoing container has been removed (phase 4) and after the two rAF ticks, and only then start animateLoaderOut.",
+        "Reduce animateLoaderOut's duration from 1.8s to something proportionate now that the cover is doing real work - the reveal no longer needs to stall for content. Pick a value that keeps the total perceived transition under about 2s on a warm cache and say why in the build-log findings.",
+        "Handle the slow path explicitly: when the gate times out, still reveal. A visibly incomplete page is better than a stuck loader.",
+        "Respect prefers-reduced-motion: when it is set, collapse both wipes to a short cross-fade but keep the readiness gate, since the gate is correctness and the wipe is decoration.",
+        "Rebuild and verify on both a warm cache and a throttled Slow 3G profile: on Slow 3G the loader must stay closed while the hero video buffers and must never stay closed past the ceiling."
+      ],
+      "acceptance": [
+        "animBarba.mjs exports/holds a waitForPageReady helper that resolves on fonts + visible images + autoplay video readiness, and is bounded by a single named timeout constant.",
+        "The reveal never starts before the minimum cover floor has elapsed, and never starts later than floor + ceiling.",
+        "On a throttled Slow 3G profile, navigating to the home page keeps the loader closed until the hero video reports readyState >= 2 or the ceiling expires - and the loader always opens.",
+        "On a warm cache the whole transition completes in under about 2 seconds and the revealed page is already painted with its fonts applied.",
+        "No 'canplay' or image listener remains attached after a timed-out navigation.",
+        "With prefers-reduced-motion: reduce, the transition cross-fades instead of wiping and still gates on readiness.",
+        "npm run build succeeds and PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "npm run build",
+          "PORT=8011 bash scripts/smoke.sh"
+        ],
+        "manual": [
+          "Navigate between pages with the network throttled to Slow 3G and confirm the loader holds until the incoming video is ready, opens by the timeout ceiling at the latest, and reveals an already-painted page.",
+          "Repeat with prefers-reduced-motion: reduce forced on and confirm the cross-fade path still gates on readiness."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 6,
+      "title": "Untrack the Kirby core and install it via Composer on deploy",
+      "goal": "End the half-tracked app/kirby state so a core upgrade stops showing as thousands of phantom diffs.",
+      "dependsOn": [],
+      "satisfies": ["R6"],
+      "touchesFiles": [
+        "scripts/deploy.sh",
+        "app/composer.json",
+        "readme/QUICK_START.md",
+        "CLAUDE.md"
+      ],
+      "requiredReading": [
+        { "path": "scripts/deploy.sh", "inline": true },
+        { "path": ".gitignore", "inline": true }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Mechanical, but it changes the deploy contract and touches git index state, so it needs care rather than cleverness."
+      },
+      "steps": [
+        "Record the starting state for the build log: `git ls-files app/kirby | wc -l` (expected 551) and the Kirby version pinned in app/composer.json.",
+        "Run `git rm -r --cached app/kirby` to drop the tracked core from the index without touching the working tree. Confirm app/kirby/ still exists on disk and the site still boots.",
+        "Confirm .gitignore already covers app/kirby/ and app/vendor/ so nothing re-adds them; leave the ignore rules as they are.",
+        "In scripts/deploy.sh, add a Composer step before the existing npm build: run `composer install --no-dev --optimize-autoloader` in app/ and abort the deploy on a non-zero exit. Place it as a new numbered section ahead of the build so a broken dependency tree fails before anything is pushed.",
+        "Verify app/composer.json pins getkirby/cms to the 5.5 line so the deploy installs the version this site was tested against, not a future one.",
+        "Add an assertion after the Composer step that app/kirby/index.php exists, mirroring the existing app/assets/bundle check, so a silent Composer no-op cannot produce an empty core.",
+        "Run `bash scripts/deploy.sh --dry-run` and read the output. Confirm it reports pushing app/kirby content and nothing unexpected. Do not run a real deploy.",
+        "Update CLAUDE.md's setup commands and readme/QUICK_START.md to state that app/kirby is Composer-managed and never committed."
+      ],
+      "acceptance": [
+        "`git ls-files app/kirby` returns nothing.",
+        "app/kirby/ still exists on disk and the site boots: PORT=8011 bash scripts/smoke.sh passes.",
+        "scripts/deploy.sh runs composer install --no-dev --optimize-autoloader before the npm build and aborts on failure.",
+        "scripts/deploy.sh asserts app/kirby/index.php exists after the Composer step.",
+        "`bash scripts/deploy.sh --dry-run` completes and its output was reviewed; no real deploy was run.",
+        "CLAUDE.md and readme/QUICK_START.md describe the Composer-managed core."
+      ],
+      "verification": {
+        "commands": [
+          "git ls-files app/kirby",
+          "PORT=8011 bash scripts/smoke.sh",
+          "bash scripts/deploy.sh --dry-run"
+        ],
+        "manual": [
+          "Read the deploy dry-run output and confirm nothing outside the expected trees is listed for deletion."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 7,
+      "title": "Deploy safety: exclude gitignored runtime trees and add a preflight guard",
+      "goal": "Make it impossible for a deploy from an incomplete clone to delete live fonts, Three.js assets, content or media.",
+      "dependsOn": [6],
+      "satisfies": ["R7"],
+      "touchesFiles": [
+        "scripts/deploy.sh",
+        "readme/QUICK_START.md"
+      ],
+      "requiredReading": [
+        { "path": "scripts/deploy.sh", "inline": true },
+        { "path": ".gitignore", "inline": true }
+      ],
+      "model": {
+        "tier": "Heavy",
+        "pick": "Claude Opus 5",
+        "reason": "This is the one destructive-risk change in the plan: rsync --delete semantics against a live server, where an exclude in the wrong form either fails to protect or silently stops deploying something that should ship."
+      },
+      "steps": [
+        "Cross-read .gitignore against scripts/deploy.sh's EXCLUDES and write down, in the build log, every tree that is gitignored but NOT excluded from the --delete mirror. Expected: /assets/, /content/, /video/, and the favicon/index.php/.htaccess entries.",
+        "Decide per tree whether it is server-owned (never pushed, never deleted) or build-owned (pushed every time). app/assets/bundle is build-owned - the deploy builds it and must keep pushing it. app/assets/fonts, app/assets/three, app/content and app/video are server-owned binaries that git does not carry.",
+        "Add anchored rsync excludes for the server-owned trees, using the leading-slash form (--exclude='/content/') so they anchor at the transfer root and cannot accidentally match a nested directory of the same name.",
+        "Keep app/assets/bundle deploying. Because /assets/ as a whole must not be deleted but bundle must be pushed, use an include-before-exclude pair or exclude the specific sibling directories (/assets/fonts/, /assets/three/) rather than blanket-excluding /assets/. Verify whichever form you choose with a dry-run, not by reasoning alone.",
+        "Add a preflight section that runs before rsync and aborts with a clear message when a required local tree is missing or empty: app/assets/bundle (built), app/kirby/index.php (Composer), app/index.php and app/.htaccess. Use a helper function so each check reads as one line.",
+        "Extend the preflight to warn - not abort - when a server-owned tree is absent locally, since that is now expected and harmless.",
+        "Run `bash scripts/deploy.sh --dry-run` and read every line of the output that mentions 'deleting'. There must be no deletion of anything under /assets/fonts, /assets/three, /content or /video. Paste the relevant excerpt into the build-log findings.",
+        "Simulate the failure the guard exists for: temporarily move app/assets/bundle aside, confirm the preflight aborts, and restore it.",
+        "Document the ownership split in readme/QUICK_START.md: which trees live only on the server, which are built, and what a fresh clone must fetch before it can deploy."
+      ],
+      "acceptance": [
+        "scripts/deploy.sh excludes /content/, /video/, /assets/fonts/ and /assets/three/ from the --delete mirror, with anchored paths.",
+        "app/assets/bundle is still pushed by the deploy - confirmed in the dry-run output.",
+        "A dry-run's output contains no 'deleting' line for any path under /assets/fonts, /assets/three, /content or /video.",
+        "With app/assets/bundle absent, scripts/deploy.sh aborts before reaching rsync with a message naming the missing tree.",
+        "readme/QUICK_START.md documents which trees are server-owned, which are built, and what a fresh clone needs.",
+        "No real deploy was run - dry-run only."
+      ],
+      "verification": {
+        "commands": [
+          "bash scripts/deploy.sh --dry-run"
+        ],
+        "manual": [
+          "Read the full dry-run output and confirm no server-owned tree appears on a 'deleting' line.",
+          "Move app/assets/bundle aside, re-run the dry-run, confirm the preflight aborts, then restore it."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 8,
+      "title": "Build toolchain hygiene: dead entry, ESM configs, unused dev script",
+      "goal": "Make the Vite build emit only what the site uses and run without warnings.",
+      "dependsOn": [],
+      "satisfies": ["R8"],
+      "touchesFiles": [
+        "vite.config.build.js",
+        "vite.config.dev.js",
+        "vite.assets-only.config.js",
+        "package.json",
+        "readme/QUICK_START.md",
+        "readme/VITE_OPTIMIZATION_SUMMARY.md"
+      ],
+      "requiredReading": [
+        { "path": "vite.config.build.js", "inline": true },
+        { "path": "package.json", "inline": true }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Config surgery with a clear before/after signal (build output listing, absence of a warning); the only real judgement is whether the three entry is truly unreferenced, which greps settle."
+      },
+      "steps": [
+        "Prove the `three` rollup entry is dead: confirm dev/js/index.js statically imports ./three/runExperience.js, and that `grep -rn 'three.bundle' app/ dev/ --include='*.php' --include='*.js'` finds no reference outside the build output itself.",
+        "Remove the `three: resolve(__dirname, 'dev/js/three/runExperience.js')` entry from vite.config.build.js:22. Keep the vendor-three manualChunks function - that is what actually splits the three vendor code.",
+        "Rebuild and compare the output listing before and after: three.bundle.js (~78 kB) and its source map should disappear; app.bundle.js and vendor-three-*.js must remain and the site must still initialise the WebGL experience.",
+        "Fix the configLoader warning: add `\"type\": \"module\"` to package.json. Then check every .js file the toolchain loads as CommonJS - the vite configs use __dirname, which is not defined in ESM, so replace it with a fileURLToPath(import.meta.url) dirname in all three configs.",
+        "Run `npm run dev`, `npm run build` and `npm run preview` and confirm none of them prints the configLoader: 'native' warning and all three still work.",
+        "Delete the unreferenced dev:assets-only script from package.json and delete vite.assets-only.config.js, removing its mention at readme/QUICK_START.md:72. It has no code, test or CI reference.",
+        "Fix vite.config.build.js's publicDir: it points at dev/assets, which does not exist. Either remove the option so Vite's default applies, or point it at a real directory - do not leave a dangling path.",
+        "Rewrite readme/VITE_OPTIMIZATION_SUMMARY.md to describe the chunking that actually exists (a single vendor-three chunk via function-form manualChunks for Rolldown compatibility), replacing the stale three-modules/three-world/utils description."
+      ],
+      "acceptance": [
+        "vite.config.build.js has a single rollup input (app) and no dangling publicDir.",
+        "A fresh `npm run build` produces no three.bundle.js and the site's WebGL experience still initialises on a project.three page.",
+        "package.json declares \"type\": \"module\" and no vite config references __dirname.",
+        "`npm run build` prints no configLoader: 'native' warning.",
+        "vite.assets-only.config.js and the dev:assets-only script are gone, with no remaining references anywhere in the repo.",
+        "readme/VITE_OPTIMIZATION_SUMMARY.md describes the current vendor-three chunking.",
+        "PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "npm run build",
+          "PORT=8011 bash scripts/smoke.sh",
+          "grep -rn 'dev:assets-only\\|assets-only.config' . --exclude-dir=node_modules --exclude-dir=.git"
+        ],
+        "manual": [
+          "Open a project.three page in a browser and confirm the WebGL canvas still renders after the three entry removal."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 9,
+      "title": "Harden the smoke gate so a silent asset 404 cannot pass",
+      "goal": "Make scripts/smoke.sh fail on the class of defect this plan just fixed, and stop it testing the wrong server.",
+      "dependsOn": [1, 2],
+      "satisfies": ["R9"],
+      "touchesFiles": [
+        "scripts/smoke.sh",
+        "app/site/config/config.localhost.php",
+        "readme/QUICK_START.md",
+        "CLAUDE.md"
+      ],
+      "requiredReading": [
+        { "path": "scripts/smoke.sh", "inline": true }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Bash with real failure modes (background process, port binding, trap cleanup); needs to be correct but the shape is well understood."
+      },
+      "steps": [
+        "Make the server start fail fast. After backgrounding php -S, check that the PID is alive AND that the port is actually held by that PID - poll with `kill -0 \"$SERVER_PID\"` inside the readiness loop and exit non-zero with a clear message when the process died, instead of silently curling whatever else is listening.",
+        "Additionally verify identity, not just reachability: before the loop, if the port already answers, abort with a message telling the user to pick another PORT. A local uvicorn holding 8000 is the known case.",
+        "Add an asset-assertion pass after the existing page loop. For each of a small fixed list, assert HTTP 200: /assets/bundle/app.css, the five /assets/fonts/*.woff2 files, and the home showreel video URL.",
+        "Derive the showreel video URL rather than hardcoding it, so a content rename does not silently stop testing it - resolve it from the rendered home page markup by extracting the first <source src=...> inside the showreel <video>.",
+        "Add a markup assertion to the existing BAD_MARKERS pass: fail if the home page HTML contains the string '/content/' inside a src or href attribute, which is the fingerprint of the bug phase 2 fixed.",
+        "Keep the assertion output in the existing table format so the gate stays readable, and keep the overall PASS/FAIL contract unchanged.",
+        "Fix the hardcoded dev URL: app/site/config/config.localhost.php pins 'url' => 'http://localhost:8000', which makes every CSS and image request 404 or get ORB-blocked whenever the dev server runs on another port. Derive it from the incoming request host/port, or drop the 'url' option entirely and let Kirby infer it.",
+        "Re-verify browser QA on PORT=8011 now works: the stylesheet and the project thumbnails must load without ERR_BLOCKED_BY_ORB.",
+        "Record the PORT=8011 convention and the new asset assertions in CLAUDE.md and readme/QUICK_START.md."
+      ],
+      "acceptance": [
+        "smoke.sh exits non-zero with a clear message when the port is already in use or its php -S died, instead of testing another server.",
+        "smoke.sh asserts 200 for /assets/bundle/app.css, all five woff2 faces, and the home showreel video.",
+        "smoke.sh fails when the home page markup contains a /content/ src or href.",
+        "Deliberately reverting phase 1's or phase 2's fix makes smoke.sh FAIL - verified once, then reverted back.",
+        "Browsing the local site on PORT=8011 loads the stylesheet and thumbnails with no ERR_BLOCKED_BY_ORB.",
+        "PORT=8011 bash scripts/smoke.sh passes on the fixed tree."
+      ],
+      "verification": {
+        "commands": [
+          "PORT=8011 bash scripts/smoke.sh"
+        ],
+        "manual": [
+          "Start an unrelated listener on the chosen port and confirm smoke.sh aborts instead of passing.",
+          "Temporarily reintroduce the /assets/assets/ font path, confirm smoke.sh FAILs, then restore.",
+          "Load the local site on PORT=8011 in a browser and confirm CSS and thumbnails load."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 10,
+      "title": "Three.js: one explicit resource-start protocol and a lockstep Draco decoder",
+      "goal": "Stop a world from silently rendering an empty canvas because nobody kicked off loading, and stop the decoder drifting from the bundled three version.",
+      "dependsOn": [],
+      "satisfies": ["R10"],
+      "touchesFiles": [
+        "dev/js/three/utils/Resources.mjs",
+        "dev/js/three/projects/isphording-inneneinrichtung/World.mjs",
+        "dev/js/three/projects/moodboard/ProgressiveLoader.mjs",
+        "vite.config.build.js",
+        "scripts/deploy.sh"
+      ],
+      "requiredReading": [
+        { "path": "dev/js/three/utils/Resources.mjs", "inline": true },
+        { "path": "dev/js/three/projects/isphording-inneneinrichtung/World.mjs", "inline": true }
+      ],
+      "model": {
+        "tier": "Heavy",
+        "pick": "Claude Opus 5",
+        "reason": "Requires understanding two different loading strategies (progressive vs batch) across two worlds and designing one API that serves both without changing observable render behaviour."
+      },
+      "steps": [
+        "Map the current implicit protocol: Resources exposes both loadOtherResources() and startProgressiveLoading(), and each world must remember to call the right one. The moodboard calls startProgressiveLoading() from ProgressiveLoader.mjs:42; the isphording-inneneinrichtung world calls loadOtherResources() from World.mjs (restored in the previous plan's phase 6).",
+        "Introduce a single `resources.start()` entry point that dispatches to the right strategy based on a mode chosen per world - passed in at construction or set as a property - so a world can never be constructed without a loading strategy.",
+        "Keep the existing methods as the implementations start() dispatches to; do not change what either strategy actually loads.",
+        "Make the failure loud: if start() is never called within a short window after construction, console.warn naming the world. An empty canvas with zero network requests must not be a silent outcome again.",
+        "Update both worlds to call resources.start() and remove the direct calls to the strategy methods.",
+        "Verify visual parity on both worlds before and after: load /de/projects/isphording-inneneinrichtung and the moodboard entry point, confirm the model/textures request and the canvas is non-black (readPixels at centre returns a non-zero alpha).",
+        "Fix the Draco drift: app/assets/three/libs/draco/ was mirrored from the live server and differs from node_modules/three/examples/jsm/libs/draco/. Add a build step that copies the decoder from node_modules into app/assets/three/libs/draco/ so decoder and DRACOLoader versions stay in lockstep with the pinned three version.",
+        "Wire that copy into the build (a Vite plugin hook or a prebuild npm script), not into the deploy, so a local build and a deployed build get the same decoder.",
+        "Confirm the deploy's new /assets/three/ exclude from phase 7 does not strand a stale decoder on the server - if the decoder is now build-generated, it must ship; say explicitly in the build log how the decoder reaches production and reconcile it with phase 7's exclude list.",
+        "Reload a Draco-compressed model and confirm it decodes without console errors."
+      ],
+      "acceptance": [
+        "Resources exposes a single start() entry point and both worlds call it; neither calls loadOtherResources() or startProgressiveLoading() directly.",
+        "A world constructed without a start() call produces a console warning naming the world.",
+        "/de/projects/isphording-inneneinrichtung renders a non-empty canvas: readPixels at the canvas centre returns a non-zero value, and the model and texture requests appear in the network log.",
+        "The moodboard world still loads progressively with unchanged behaviour.",
+        "The Draco decoder in app/assets/three/libs/draco/ is byte-identical to node_modules/three/examples/jsm/libs/draco/ after a build.",
+        "The build log states how the decoder reaches production and that it is consistent with phase 7's rsync excludes.",
+        "npm run build succeeds and PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "npm run build",
+          "PORT=8011 bash scripts/smoke.sh",
+          "diff -r app/assets/three/libs/draco node_modules/three/examples/jsm/libs/draco"
+        ],
+        "manual": [
+          "Open /de/projects/isphording-inneneinrichtung in a browser, confirm the canvas is not black and the glTF/texture requests succeed with no Draco console errors."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 11,
+      "title": "Three.js: canvas-relative hit-testing, listener leak, and dead shadow config",
+      "goal": "Fix the moodboard interaction defects and remove or complete the shadow setup that currently does nothing.",
+      "dependsOn": [],
+      "satisfies": ["R11"],
+      "touchesFiles": [
+        "dev/js/three/projects/moodboard/ImageZoom.mjs",
+        "dev/js/three/World_Environment.js"
+      ],
+      "requiredReading": [
+        { "path": "dev/js/three/projects/moodboard/ImageZoom.mjs", "inline": true },
+        { "path": "dev/js/three/World_Environment.js", "inline": true }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Three well-scoped bugs with known fixes; the only decision is enable-vs-remove for shadows, and that is settled by a visual comparison."
+      },
+      "steps": [
+        "Fix the NDC computation at dev/js/three/projects/moodboard/ImageZoom.mjs:70-71: derive mouse coordinates from the canvas's getBoundingClientRect() rather than window.innerWidth/innerHeight, so hover and click hit-testing stay correct when the canvas is not full-window.",
+        "Verify by hovering near each canvas edge at a non-full-window canvas size and confirming the highlighted item matches the cursor.",
+        "Fix the lightbox listener leak: the keydown listener added when the overlay opens is never removed, so a later Escape calls removeChild on a detached overlay. Remove the listener in the close path and use { once: true } or an AbortController so every open/close pair is symmetrical.",
+        "Reproduce the leak first: open and close the lightbox twice, then press Escape, and confirm the console error before the fix and its absence after.",
+        "Decide the shadow question in dev/js/three/World_Environment.js: castShadow, receiveShadow and the shadow mapSize are all set, but renderer.shadowMap.enabled is never set, so none of it has any effect. Enable shadows and compare the render against the current output.",
+        "If enabling shadows changes the look in a way that is not clearly an improvement, remove the dead castShadow/receiveShadow/mapSize configuration instead - do not leave code that reads as intentional but does nothing. Record which branch you took and why in the build-log findings.",
+        "Capture a before/after screenshot of the affected world either way, so the visual decision is evidenced rather than asserted."
+      ],
+      "acceptance": [
+        "ImageZoom.mjs computes NDC from the canvas bounding rect; hover hit-testing is accurate at a non-full-window canvas size.",
+        "Opening and closing the lightbox twice and then pressing Escape produces no console error and no removeChild on a detached node.",
+        "World_Environment.js either enables renderer.shadowMap or no longer configures shadows at all - not both.",
+        "A before/after screenshot of the affected world is attached to the phase's build-log findings.",
+        "npm run build succeeds and PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "npm run build",
+          "PORT=8011 bash scripts/smoke.sh"
+        ],
+        "manual": [
+          "Resize the browser so the moodboard canvas is not full-window, hover near each edge, and confirm the hit-tested item matches the cursor.",
+          "Open and close the lightbox twice, press Escape, and confirm a clean console."
+        ]
+      },
+      "status": "todo"
+    },
+    {
+      "id": 12,
+      "title": "Documentation sweep and backlog purge",
+      "goal": "Make the docs describe the site as it now is, resolve the leftover status questions, and empty plan/improvements.md so nothing in it gets implemented twice.",
+      "dependsOn": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      "satisfies": ["R12"],
+      "touchesFiles": [
+        "readme/QUICK_START.md",
+        "readme/MEDIA_CACHE_README.md",
+        "readme/VITE_OPTIMIZATION_SUMMARY.md",
+        "CLAUDE.md",
+        "plan/improvements.md",
+        "package.json",
+        "utils/build-media-cache.php"
+      ],
+      "requiredReading": [
+        { "path": "plan/improvements.md", "inline": true },
+        { "path": "readme/QUICK_START.md" },
+        { "path": "CLAUDE.md", "inline": true }
+      ],
+      "model": {
+        "tier": "Strong",
+        "pick": "Claude Sonnet 5",
+        "reason": "Breadth over depth: it must reconcile every backlog line against what the preceding eleven phases actually did, and a wrong claim here is worse than no claim."
+      },
+      "steps": [
+        "Confirm the gate before starting: phases 1-11 are all marked done. This phase must not run early - it is what empties the backlog.",
+        "Rewrite readme/QUICK_START.md end to end. The current file claims npm run dev auto-starts both servers, references a nonexistent npm run dev:full script, and carries stale XAMPP/Windows setup. Replace it with the two-terminal workflow (npm run dev, npm run php), the PORT=8011 smoke convention, the config.localhost.php / config.127.0.0.1.php convention, the Composer-managed core from phase 6, and the server-owned vs built tree split from phase 7.",
+        "Decide the media cache question: on-demand GD thumbs work under Kirby 5.5, so the Kirby-4.8 workaround utils/build-media-cache.php and its npm run build:media script may be removable. Verify thumbs generate on demand on a cold media/ directory, then remove the script, the package.json entry and readme/MEDIA_CACHE_README.md - or document why it must stay.",
+        "Resolve the moodboard status: app/content/projects/ has no moodboard page, so app/site/templates/moodboard.php is unreachable. Either document it as work-in-progress in readme/QUICK_START.md or note it for removal. Do not create content - app/content/ is off limits.",
+        "Record the live-bundle drift: production currently renders h1 with Monument-Extended while dev/css/templates/_typography.scss:58 assigns Grafier-Regular to h1-h6, so the deployed bundle predates the repo. State plainly in the build-log findings that the first deploy after this plan will change heading typography, so it is an expected change rather than a regression.",
+        "Update CLAUDE.md so its Commands and House rules sections match the post-plan reality: the Composer step, the new smoke assertions, the removed dev:assets-only script, and the deploy preflight.",
+        "Walk plan/improvements.md line by line and confirm every entry is either (a) delivered by a phase of this plan, (b) already resolved and verified so here, or (c) listed in this plan's outOfScope with a reason. Any line that is none of the three must be raised before truncating - do not silently drop it.",
+        "Truncate plan/improvements.md back to its empty template: keep the '# Improvements & deferred ideas' heading and the 'One line per entry, most recent first.' line, and delete every entry. The byte-for-byte copy captured in this plan folder is the record.",
+        "Confirm the purge: `grep -c '^- ' plan/improvements.md` returns 0."
+      ],
+      "acceptance": [
+        "readme/QUICK_START.md describes the actual workflow with no reference to dev:full, dev:assets-only, or XAMPP.",
+        "The media-cache question is resolved: either the script, npm entry and README are removed, or the doc explains why they stay.",
+        "The moodboard template's unreachable status is documented; no content was created or modified.",
+        "CLAUDE.md's Commands and House rules match the post-plan repo.",
+        "Every line that was in plan/improvements.md is accounted for as delivered, already-resolved, or explicitly out of scope - the mapping is written into the build-log findings.",
+        "plan/improvements.md contains only its heading and intro line: `grep -c '^- ' plan/improvements.md` returns 0.",
+        "The byte-for-byte capture of the original backlog exists inside this plan folder.",
+        "PORT=8011 bash scripts/smoke.sh passes."
+      ],
+      "verification": {
+        "commands": [
+          "PORT=8011 bash scripts/smoke.sh",
+          "grep -c '^- ' plan/improvements.md"
+        ],
+        "manual": [
+          "Read the backlog-to-phase mapping in the build-log findings and confirm no original entry is unaccounted for before the truncation is accepted."
+        ]
+      },
+      "status": "todo"
+    }
+  ],
+  "batches": [
+    { "id": "A", "title": "Visible production defects", "phases": [1, 2, 3], "status": "todo" },
+    { "id": "B", "title": "Page transition rework", "phases": [4, 5], "status": "todo" },
+    { "id": "C", "title": "Deploy and repo hygiene", "phases": [6, 7], "status": "todo" },
+    { "id": "D", "title": "Build toolchain and verification gate", "phases": [8, 9], "status": "todo" },
+    { "id": "E", "title": "Three.js correctness", "phases": [10, 11], "status": "todo" },
+    { "id": "F", "title": "Docs and backlog purge", "phases": [12], "status": "todo" }
+  ],
+  "outOfScope": [
+    "Running a real deploy. Every deploy-touching phase stops at scripts/deploy.sh --dry-run; the real push is a human call, per CLAUDE.md.",
+    "Enabling Kirby's production pages cache. config.php leaves it off deliberately because languages.detect redirects risk serving one visitor's cached redirect to another; designing a cache strategy that is safe with language detection needs its own research pass, not a phase bolted onto this plan.",
+    "Promoting the before/after WebGL capture harness (the capture.mjs/compare.mjs pair that imports puppeteer-core from an npx cache path) into a proper devDependency script. Worth doing before the next three.js major, but it is tooling for a future upgrade rather than a defect in the current site.",
+    "Creating a moodboard content page. app/content/ is live content and off limits to this plan; phase 12 documents the template's unreachable status instead.",
+    "Reverse-engineering or patching the currently deployed CSS bundle. The repo is the source of truth; the drift is recorded, not reconciled backwards.",
+    "Waiting on the Three.js world before revealing a page transition. The user chose the asset-readiness gate without WebGL; heavy glTF pages would hold the loader too long.",
+    "Adding es to the content languages. The config lists es but no content exists for it; that is a content decision, not a code one."
+  ],
+  "risks": [
+    "Phase 7 is the one destructive-risk change: an rsync exclude in the wrong form either fails to protect a live tree or silently stops deploying app/assets/bundle. Both failure modes are invisible until a real deploy, which is why every acceptance check there reads the dry-run output rather than reasoning about the flags.",
+    "app/assets/fonts and app/assets/three exist only on this machine and on the server - they are gitignored and untracked. If this working copy is lost before phase 7 lands, the only copies are the live server's. Consider taking a backup outside the repo before starting.",
+    "Phase 6 removes 551 files from the git index. If app/composer.json does not actually pin Kirby 5.5, the next composer install could pull a different core than the one this site was tested against.",
+    "The first real deploy after this plan will change production typography (Grafier-Regular headings instead of Monument-Extended), because the live bundle predates the current SCSS. That is expected, but it will look like a regression to anyone who has not read phase 12's findings.",
+    "The transition readiness gate in phase 5 can make navigation feel slower on cold caches than the current broken-but-fast behaviour. The timeout ceiling and minimum floor are the tuning knobs; both are named constants so they can be adjusted without re-reading the logic.",
+    "Phase 10 changes the Draco decoder to a build-generated artifact while phase 7 adds /assets/three/ to the deploy's exclude list. If those two are not reconciled, production keeps a stale decoder. Phase 10's acceptance requires stating explicitly how the decoder reaches production.",
+    "scripts/smoke.sh is the only automated gate in this repo - there is no test suite. Every phase leans on it plus manual browser verification, so a defect it cannot see can still ship."
+  ]
+}
