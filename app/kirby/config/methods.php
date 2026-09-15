@@ -2,6 +2,7 @@
 
 use Kirby\Cms\App;
 use Kirby\Cms\Blocks;
+use Kirby\Cms\Collection;
 use Kirby\Cms\File;
 use Kirby\Cms\Files;
 use Kirby\Cms\Html;
@@ -80,7 +81,9 @@ return function (App $app) {
 					$message .= ' on parent "' . $parent->title() . '"';
 				}
 
-				throw new InvalidArgumentException($message);
+				throw new InvalidArgumentException(
+					message: $message
+				);
 			}
 		},
 
@@ -128,6 +131,18 @@ return function (App $app) {
 			}
 
 			return Str::date($time, $format);
+		},
+
+		/**
+		 * Parse yaml entries data and convert it to a
+		 * collection of field objects
+		 */
+		'toEntries' => function (Field $field): Collection {
+			$entries = new Collection(parent: $field->parent());
+			foreach ($field->yaml() as $index => $entry) {
+				$entries->append(new Field($field->parent(), $index, $entry));
+			}
+			return $entries;
 		},
 
 		/**
@@ -236,6 +251,9 @@ return function (App $app) {
 			Field $field,
 			string $separator = 'yaml'
 		) use ($app): Pages {
+			// always pass at least two arguments even if the
+			// data is empty so that `$site->find()` always
+			// returns a collection, not a single page
 			return $app->site()->find(
 				false,
 				false,
@@ -266,7 +284,9 @@ return function (App $app) {
 					$message .= ' on parent "' . $parent->id() . '"';
 				}
 
-				throw new InvalidArgumentException($message);
+				throw new InvalidArgumentException(
+					message: $message
+				);
 			}
 		},
 
@@ -303,6 +323,9 @@ return function (App $app) {
 			Field $field,
 			string $separator = 'yaml'
 		) use ($app): Users {
+			// always pass at least two arguments even if the
+			// data is empty so that `$users->find()` always
+			// returns a collection, not a single user
 			return $app->users()->find(
 				false,
 				false,

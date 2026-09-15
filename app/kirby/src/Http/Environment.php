@@ -13,13 +13,13 @@ use Kirby\Toolkit\Str;
  * secure host and base URL detection, as
  * well as loading the dedicated
  * environment options.
- * @since 3.7.0
  *
  * @package   Kirby Http
  * @author    Bastian Allgeier <bastian@getkirby.com>
  * @link      https://getkirby.com
  * @copyright Bastian Allgeier
  * @license   https://opensource.org/licenses/MIT
+ * @since     3.7.0
  */
 class Environment
 {
@@ -112,7 +112,7 @@ class Environment
 
 	/**
 	 * Returns the server's IP address
-	 * @see ::ip
+	 * @see self::ip()
 	 */
 	public function address(): string|null
 	{
@@ -156,13 +156,13 @@ class Environment
 		array|null $options = null,
 		array|null $info = null
 	): array {
-		$defaults = [
+		$options = [
 			'cli'     => null,
-			'allowed' => null
+			'allowed' => null,
+			...$options ?? []
 		];
 
-		$info  ??= $_SERVER;
-		$options = array_merge($defaults, $options ?? []);
+		$info ??= $_SERVER;
 
 		$this->info          = static::sanitize($info);
 		$this->cli           = $this->detectCli($options['cli']);
@@ -178,11 +178,11 @@ class Environment
 		if ($options['allowed'] === '*' || $options['allowed'] === ['*']) {
 			$this->detectAuto(true);
 
-			// fixed environments
+		// fixed environments
 		} elseif (empty($options['allowed']) === false) {
 			$this->detectAllowed($options['allowed']);
 
-			// secure auto-detection
+		// secure auto-detection
 		} else {
 			$this->detectAuto();
 		}
@@ -211,7 +211,9 @@ class Environment
 			$baseUrl = A::first($allowed);
 
 			if (is_string($baseUrl) === false) {
-				throw new InvalidArgumentException('Invalid allow list setup for base URLs');
+				throw new InvalidArgumentException(
+					message: 'Invalid allow list setup for base URLs'
+				);
 			}
 
 			$uri = new Uri($baseUrl, ['slash' => false]);
@@ -248,7 +250,9 @@ class Environment
 			}
 		}
 
-		throw new InvalidArgumentException('The environment is not allowed');
+		throw new InvalidArgumentException(
+			message: 'The environment is not allowed'
+		);
 	}
 
 	/**
@@ -330,7 +334,7 @@ class Environment
 		$term = getenv('TERM');
 
 		if (
-			substr($sapi, 0, 3) === 'cgi' &&
+			str_starts_with($sapi, 'cgi') === true &&
 			$term &&
 			$term !== 'unknown'
 		) {
@@ -356,8 +360,9 @@ class Environment
 
 		// prefer the standardized `Forwarded` header if defined
 		if ($forwarded = $this->get('HTTP_FORWARDED')) {
-			// only use the first (outermost) proxy by using the first set of values
-			// before the first comma (but only a comma outside of quotes)
+			// only use the first (outermost) proxy by using
+			// the first set of values before the first comma
+			// (but only a comma outside of quotes)
 			if (Str::contains($forwarded, ',') === true) {
 				$forwarded = preg_split('/"[^"]*"(*SKIP)(*F)|,/', $forwarded)[0];
 			}
@@ -368,6 +373,7 @@ class Environment
 
 			// split key and value into an associative array
 			$fields = [];
+
 			foreach ($rawFields as $field) {
 				$key   = Str::lower(Str::before($field, '='));
 				$value = Str::after($field, '=');
@@ -395,7 +401,7 @@ class Environment
 				$data['port'] ??= 443;
 			}
 
-			$data['for'] = $parts['for'] ?? null;
+			$data['for'] = $fields['for'] ?? null;
 
 			return $data;
 		}
@@ -529,7 +535,7 @@ class Environment
 
 		$protocols = ['https', 'https, http'];
 
-		return in_array(strtolower($protocol), $protocols) === true;
+		return in_array(strtolower($protocol), $protocols, true) === true;
 	}
 
 	/**
@@ -634,13 +640,13 @@ class Environment
 	/**
 	 * Gets a value from the server environment array
 	 *
-	 * <code>
-	 * $server->get('document_root');
+	 * ```php
 	 * // sample output: /var/www/kirby
+	 * $server->get('document_root');
 	 *
-	 * $server->get();
 	 * // returns the whole server array
-	 * </code>
+	 * $server->get();
+	 * ```
 	 *
 	 * @param string|false|null $key The key to look for. Pass `false` or `null`
 	 *                               to return the entire server array.
@@ -760,7 +766,9 @@ class Environment
 		$ips = [
 			$this->get('REMOTE_ADDR'),
 			$this->get('HTTP_X_FORWARDED_FOR'),
-			$this->get('HTTP_CLIENT_IP')
+			$this->get('HTTP_CLIENT_IP'),
+			$this->get('HTTP_X_CLIENT_IP'),
+			$this->get('HTTP_X_REAL_IP'),
 		];
 
 		if ($this->get('HTTP_FORWARDED')) {
@@ -771,13 +779,13 @@ class Environment
 		$ips = array_unique(array_filter($ips));
 
 		// no known ip? Better not assume it's local
-		if (empty($ips) === true) {
+		if ($ips === []) {
 			return false;
 		}
 
 		// stop as soon as a non-local ip is found
 		foreach ($ips as $ip) {
-			if (in_array($ip, ['::1', '127.0.0.1']) === false) {
+			if (in_array($ip, ['::1', '127.0.0.1'], true) === false) {
 				return false;
 			}
 		}
@@ -805,7 +813,8 @@ class Environment
 			$configCli = F::load(
 				file: $root . '/config.cli.php',
 				fallback: [],
-				allowOutput: false
+				allowOutput: false,
+				cache: true
 			);
 		}
 
@@ -817,7 +826,8 @@ class Environment
 			$configHost = F::load(
 				file: $path,
 				fallback: [],
-				allowOutput: false
+				allowOutput: false,
+				cache: true
 			);
 		}
 
@@ -829,7 +839,8 @@ class Environment
 			$configAddr = F::load(
 				file: $path,
 				fallback: [],
-				allowOutput: false
+				allowOutput: false,
+				cache: true
 			);
 		}
 

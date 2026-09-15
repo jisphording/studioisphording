@@ -2,9 +2,9 @@
 
 use Kirby\Cms\Html;
 use Kirby\Cms\Url;
-use Kirby\Exception\NotFoundException;
 use Kirby\Text\KirbyTag;
 use Kirby\Toolkit\A;
+use Kirby\Toolkit\Escape;
 use Kirby\Toolkit\Str;
 use Kirby\Uuid\Uuid;
 
@@ -23,7 +23,9 @@ return [
 				return date('Y');
 			}
 
-			return date($tag->date);
+			// escape the formatted date to prevent injecting HTML
+			// through special characters in the tag value
+			return Escape::html(date($tag->date));
 		}
 	],
 
@@ -200,33 +202,46 @@ return [
 			'text',
 		],
 		'html' => function (KirbyTag $tag): string {
+			// keep $tag->value as the original value (e.g. UUID) for errors
+			$link = $tag->value;
+
 			if (empty($tag->lang) === false) {
-				$tag->value = Url::to($tag->value, $tag->lang);
+				$link = Url::to($link, $tag->lang);
 			}
 
 			// if value is a UUID, resolve to page/file model
 			// and use the URL as value
-			if (
-				Uuid::is($tag->value, 'page') === true ||
-				Uuid::is($tag->value, 'file') === true
-			) {
-				$tag->value = Uuid::for($tag->value)->model()?->url();
+			if (Uuid::is($link, ['page', 'file']) === true) {
+				$link = Uuid::for($link)?->toUrl();
 			}
 
-			// if url is empty, throw exception or link to the error page
-			if ($tag->value === null) {
+			// broken link: handle inline instead of turning the
+			// whole page into the error page
+			if ($link === null) {
+				// debug: visible inline error, no styles to avoid clashes
 				if ($tag->kirby()->option('debug', false) === true) {
-					if (empty($tag->text) === false) {
-						throw new NotFoundException('The linked page cannot be found for the link text "' . $tag->text . '"');
-					} else {
-						throw new NotFoundException('The linked page cannot be found');
+					$error = 'The link "' . $tag->value . '" cannot be found';
+
+					if ($tag->text !== null && $tag->text !== '') {
+						$error .= ' for the link text "' . $tag->text . '"';
 					}
-				} else {
-					$tag->value = Url::to($tag->kirby()->site()->errorPageId());
+
+					return Html::tag('span', '🚨 ' . $error, [
+						'class' => Str::trim('kirby-broken-link ' . $tag->class)
+					]);
 				}
+
+				// otherwise drop the link, keep its text (if any)
+				if ($tag->text !== null && $tag->text !== '') {
+					return Html::tag('span', $tag->text, [
+						'class' => $tag->class
+					]);
+				}
+
+				return '';
 			}
 
-			return Html::a($tag->value, $tag->text, [
+			return Html::a($link, $tag->text, [
 				'rel'    => $tag->rel,
 				'class'  => $tag->class,
 				'role'   => $tag->role,

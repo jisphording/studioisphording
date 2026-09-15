@@ -3,6 +3,7 @@
 namespace Kirby\Cms;
 
 use Kirby\Exception\InvalidArgumentException;
+use Kirby\Exception\PermissionException;
 
 /**
  * The PagePicker class helps to
@@ -29,12 +30,13 @@ class PagePicker extends Picker
 	 */
 	public function defaults(): array
 	{
-		return array_merge(parent::defaults(), [
+		return [
+			...parent::defaults(),
 			// Page ID of the selected parent. Used to navigate
-			'parent' => null,
+			'parent'   => null,
 			// enable/disable subpage navigation
 			'subpages' => true,
-		]);
+		];
 	}
 
 	/**
@@ -126,13 +128,18 @@ class PagePicker extends Picker
 		if (empty($this->options['query']) === true) {
 			$items = $this->itemsForParent();
 
-			// when subpage navigation is enabled, a parent
-			// might be passed in addition to the query.
-			// The parent then takes priority.
-		} elseif ($this->options['subpages'] === true && empty($this->options['parent']) === false) {
+		// when subpage navigation is enabled, a parent
+		// might be passed in addition to the query.
+		// The parent then takes priority.
+		// Don't use the parent if it's the same as the start/top-most model.
+		} elseif (
+			$this->options['subpages'] === true &&
+			empty($this->options['parent']) === false &&
+			$this->model()->id() !== $this->start()->id()
+		) {
 			$items = $this->itemsForParent();
 
-			// search by query
+		// search by query
 		} else {
 			$items = $this->itemsForQuery();
 		}
@@ -178,7 +185,9 @@ class PagePicker extends Picker
 			$items instanceof Page  => $items->children(),
 			$items instanceof Pages => $items,
 
-			default => throw new InvalidArgumentException('Your query must return a set of pages')
+			default => throw new InvalidArgumentException(
+				message: 'Your query must return a set of pages'
+			)
 		};
 
 		return $this->itemsForQuery = $items;
@@ -186,13 +195,33 @@ class PagePicker extends Picker
 
 	/**
 	 * Returns the parent model.
-	 * The model will be used to fetch
-	 * subpages unless there's a specific
-	 * query to find pages instead.
+	 * The model will be used to fetch subpages unless there's
+	 * a specific query to find pages instead. Falls back to the
+	 * site root when the requested parent is missing or not
+	 * accessible for the current user.
+	 *
+	 * @throws \Kirby\Exception\PermissionException if neither the requested parent
+	 *                                              nor the site are accessible
 	 */
 	public function parent(): Page|Site
 	{
-		return $this->parent ??= $this->kirby->page($this->options['parent']) ?? $this->site;
+		if ($this->parent !== null) {
+			return $this->parent;
+		}
+
+		$page = $this->kirby->page($this->options['parent']);
+
+		if ($page?->isAccessible() === true) {
+			return $this->parent = $page;
+		}
+
+		if ($this->site->isAccessible() === true) {
+			return $this->parent = $this->site;
+		}
+
+		throw new PermissionException(
+			key: 'page.undefined'
+		);
 	}
 
 	/**

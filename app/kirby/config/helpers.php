@@ -7,8 +7,6 @@ use Kirby\Cms\Html;
 use Kirby\Cms\ModelWithContent;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
-use Kirby\Cms\Plugin;
-use Kirby\Cms\PluginAssets;
 use Kirby\Cms\Response;
 use Kirby\Cms\Site;
 use Kirby\Cms\Url;
@@ -16,6 +14,8 @@ use Kirby\Filesystem\Asset;
 use Kirby\Filesystem\F;
 use Kirby\Http\Router;
 use Kirby\Image\QrCode;
+use Kirby\Plugin\Assets as PluginAssets;
+use Kirby\Plugin\Plugin;
 use Kirby\Template\Slot;
 use Kirby\Template\Snippet;
 use Kirby\Toolkit\Date;
@@ -55,7 +55,7 @@ if (Helpers::hasOverride('collection') === false) { // @codeCoverageIgnore
 	 * Returns the result of a collection by name
 	 *
 	 * @return \Kirby\Toolkit\Collection|null
-	 * @todo 5.0 Add return type declaration
+	 * @todo 6.0 Add return type declaration
 	 */
 	function collection(string $name, array $options = [])
 	{
@@ -202,7 +202,7 @@ if (Helpers::hasOverride('go') === false) { // @codeCoverageIgnore
 	 */
 	function go(string $url = '/', int $code = 302): never
 	{
-		Response::go($url, $code);
+		Response::go($url, $code); // @codeCoverageIgnore
 	}
 }
 
@@ -551,7 +551,7 @@ if (Helpers::hasOverride('t') === false) { // @codeCoverageIgnore
 	 */
 	function t(
 		string|array $key,
-		string|null $fallback = null,
+		string|array|null $fallback = null,
 		string|null $locale = null
 	): string|array|Closure|null {
 		return I18n::translate($key, $fallback, $locale);
@@ -640,7 +640,7 @@ if (Helpers::hasOverride('uuid') === false) { // @codeCoverageIgnore
 
 if (Helpers::hasOverride('video') === false) { // @codeCoverageIgnore
 	/**
-	 * Creates a video embed via iframe for Youtube or Vimeo
+	 * Creates a video embed via iframe for YouTube or Vimeo
 	 * videos. The embed Urls are automatically detected from
 	 * the given Url.
 	 */
@@ -680,7 +680,7 @@ if (Helpers::hasOverride('widont') === false) { // @codeCoverageIgnore
 
 if (Helpers::hasOverride('youtube') === false) { // @codeCoverageIgnore
 	/**
-	 * Embeds a Youtube video by URL in an iframe
+	 * Embeds a YouTube video by URL in an iframe
 	 */
 	function youtube(
 		string $url,

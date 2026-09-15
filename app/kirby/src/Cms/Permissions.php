@@ -3,6 +3,7 @@
 namespace Kirby\Cms;
 
 use Kirby\Exception\InvalidArgumentException;
+use Kirby\Exception\LogicException;
 
 /**
  * Handles permission definition in each user
@@ -18,18 +19,19 @@ use Kirby\Exception\InvalidArgumentException;
 class Permissions
 {
 	public static array $extendedActions = [];
+	public static array $extendedAreas = [];
 
-	protected array $actions = [
+	protected array $defaults = [
 		'access' => [
 			'account'   => true,
 			'languages' => true,
 			'panel'     => true,
 			'site'      => true,
 			'system'    => true,
-			'users'     => true,
+			'users'     => true
 		],
 		'files' => [
-			'access'     	 => true,
+			'access'         => true,
 			'changeName'     => true,
 			'changeTemplate' => true,
 			'create'         => true,
@@ -37,6 +39,7 @@ class Permissions
 			'list'           => true,
 			'read'           => true,
 			'replace'        => true,
+			'sort'           => true,
 			'update'         => true
 		],
 		'languages' => [
@@ -45,7 +48,7 @@ class Permissions
 			'update' => true
 		],
 		'pages' => [
-			'access'     	 => true,
+			'access'         => true,
 			'changeSlug'     => true,
 			'changeStatus'   => true,
 			'changeTemplate' => true,
@@ -61,10 +64,13 @@ class Permissions
 			'update'         => true
 		],
 		'site' => [
+			'access'      => true,
 			'changeTitle' => true,
+			'preview'     => true,
 			'update'      => true
 		],
 		'users' => [
+			'access'         => true,
 			'changeEmail'    => true,
 			'changeLanguage' => true,
 			'changeName'     => true,
@@ -72,18 +78,23 @@ class Permissions
 			'changeRole'     => true,
 			'create'         => true,
 			'delete'         => true,
+			'list'           => true,
 			'update'         => true
 		],
 		'user' => [
+			'access'         => true,
 			'changeEmail'    => true,
 			'changeLanguage' => true,
 			'changeName'     => true,
 			'changePassword' => true,
 			'changeRole'     => true,
 			'delete'         => true,
+			'list'           => true,
 			'update'         => true
 		]
 	];
+
+	protected array $actions;
 
 	/**
 	 * Permissions constructor
@@ -92,123 +103,161 @@ class Permissions
 	 */
 	public function __construct(array|bool|null $settings = [])
 	{
+		$defaults = $this->defaults;
+
+		// dynamically register access permissions for custom areas
+		foreach (array_keys(static::$extendedAreas) as $areaId) {
+			$defaults['access'][$areaId] = true;
+		}
+
 		// dynamically register the extended actions
 		foreach (static::$extendedActions as $key => $actions) {
-			if (isset($this->actions[$key]) === true) {
-				throw new InvalidArgumentException('The action ' . $key . ' is already a core action');
+			if (isset($defaults[$key]) === true) {
+				throw new InvalidArgumentException(
+					message: 'The action ' . $key . ' is already a core action'
+				);
 			}
 
-			$this->actions[$key] = $actions;
+			$defaults[$key] = $actions;
 		}
 
-		if (is_array($settings) === true) {
-			return $this->setCategories($settings);
-		}
-
-		if (is_bool($settings) === true) {
-			return $this->setAll($settings);
-		}
+		$this->actions = $this->normalize(
+			settings: $settings,
+			defaults: $defaults
+		);
 	}
 
+	/**
+	 * Expands a bool or null shorthand into a full actions array
+	 */
+	protected function expand(
+		array|bool|null $values,
+		array $defaults = []
+	): array {
+		if (is_bool($values) === true) {
+			$values = ['*' => $values];
+		}
+
+		if (is_array($values) === false) {
+			return [];
+		}
+
+		if (array_key_exists('*', $values) === true) {
+			$values += array_fill_keys(
+				array_keys($defaults),
+				$values['*']
+			);
+
+			unset($values['*']);
+		}
+
+		return $values;
+	}
+
+	/**
+	 * @todo Replace first param with `string $category` in v6
+	 */
 	public function for(
 		string|null $category = null,
 		string|null $action = null,
 		bool $default = false
 	): bool {
-		if ($action === null) {
-			if ($this->hasCategory($category) === false) {
-				return $default;
-			}
+		if (is_null($category) === true) {
+			Helpers::deprecated(
+				'Passing `$category = null` to `Permissions::for()` is not supported',
+				'permissions-for-category-null'
+			);
 
-			return $this->actions[$category];
-		}
-
-		if ($this->hasAction($category, $action) === false) {
 			return $default;
 		}
 
-		return $this->actions[$category][$action];
-	}
-
-	protected function hasAction(string $category, string $action): bool
-	{
-		return
-			$this->hasCategory($category) === true &&
-			array_key_exists($action, $this->actions[$category]) === true;
-	}
-
-	protected function hasCategory(string $category): bool
-	{
-		return array_key_exists($category, $this->actions) === true;
-	}
-
-	/**
-	 * @return $this
-	 */
-	protected function setAction(
-		string $category,
-		string $action,
-		$setting
-	): static {
-		// wildcard to overwrite the entire category
-		if ($action === '*') {
-			return $this->setCategory($category, $setting);
+		if ($this->has($category, $action) === false) {
+			return $default;
 		}
 
-		$this->actions[$category][$action] = $setting;
+		$permission = $this->get($category, $action);
 
-		return $this;
-	}
+		if (is_bool($permission) === false) {
+			$key = is_string($action) === true
+				? $category . '.' . $action
+				: $category;
 
-	/**
-	 * @return $this
-	 */
-	protected function setAll(bool $setting): static
-	{
-		foreach ($this->actions as $categoryName => $actions) {
-			$this->setCategory($categoryName, $setting);
+			throw new LogicException(
+				message: 'The value for the permission "' . $key . '" must be of type bool, ' . gettype($permission) . ' given'
+			);
 		}
 
-		return $this;
+		return $permission;
 	}
 
 	/**
-	 * @return $this
+	 * Returns the permission value for a category or a specific action
 	 */
-	protected function setCategories(array $settings): static
+	protected function get(string $category, string|null $action = null): mixed
 	{
-		foreach ($settings as $categoryName => $categoryActions) {
-			if (is_bool($categoryActions) === true) {
-				$this->setCategory($categoryName, $categoryActions);
+		if (is_string($action) === true) {
+			return $this->actions[$category][$action];
+		}
+
+		return $this->actions[$category];
+	}
+
+	/**
+	 * Checks whether a category or specific action exists in the actions array
+	 */
+	protected function has(string $category, string|null $action = null): bool
+	{
+		if (is_string($action) === true) {
+			return isset($this->actions[$category][$action]);
+		}
+
+		return isset($this->actions[$category]);
+	}
+
+	/**
+	 * Normalizes the permission settings against the defaults
+	 */
+	protected function normalize(
+		array|bool|null $settings,
+		array $defaults = []
+	): array {
+		$categories = $this->expand($settings, $defaults);
+
+		foreach ($categories as $category => $actions) {
+			if (isset($defaults[$category]) === false) {
+				Helpers::deprecated(
+					'Setting undefined permission category "' . $category . '" is deprecated and will be ignored in a future version. Please use https://getkirby.com/docs/reference/plugins/extensions/permissions to register custom permissions.',
+					'permissions-undefined'
+				);
+				$defaults[$category] = [];
 			}
 
-			if (is_array($categoryActions) === true) {
-				foreach ($categoryActions as $actionName => $actionSetting) {
-					$this->setAction($categoryName, $actionName, $actionSetting);
+			$actions = $this->expand($actions, $defaults[$category]);
+
+			foreach ($actions as $key => $value) {
+				if (is_bool($value) === false) {
+					throw new LogicException(
+						message: 'The value for the permission "' . $category . '.' . $key . '" must be of type bool, ' . gettype($value) . ' given'
+					);
 				}
+
+				if (isset($defaults[$category][$key]) === false) {
+					Helpers::deprecated(
+						'Setting undefined permission "' . $category . '.' . $key . '" is deprecated and will be ignored in a future version. Please use https://getkirby.com/docs/reference/plugins/extensions/permissions to register custom permissions.',
+						'permissions-undefined'
+					);
+				}
+
+				$defaults[$category][$key] = $value;
 			}
 		}
 
-		return $this;
+		return $defaults;
 	}
 
 	/**
-	 * @return $this
-	 * @throws \Kirby\Exception\InvalidArgumentException
+	 * Returns all permissions as an array
 	 */
-	protected function setCategory(string $category, bool $setting): static
-	{
-		if ($this->hasCategory($category) === false) {
-			throw new InvalidArgumentException('Invalid permissions category');
-		}
-
-		foreach ($this->actions[$category] as $actionName => $actionSetting) {
-			$this->actions[$category][$actionName] = $setting;
-		}
-
-		return $this;
-	}
-
 	public function toArray(): array
 	{
 		return $this->actions;

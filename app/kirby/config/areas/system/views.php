@@ -1,6 +1,8 @@
 <?php
 
 use Kirby\Cms\App;
+use Kirby\Http\Cookie;
+use Kirby\Panel\Ui\Buttons\ViewButtons;
 use Kirby\Toolkit\I18n;
 
 return [
@@ -59,11 +61,12 @@ return [
 
 				return [
 					'author'  => empty($authors) ? '–' : $authors,
-					'license' => $plugin->license() ?? '–',
+					'license' => $plugin->license()->toArray(),
 					'name'    => [
 						'text' => $plugin->name() ?? '–',
 						'href' => $plugin->link(),
 					],
+					'status'  => $plugin->license()->status()->toArray(),
 					'version' => $version,
 				];
 			});
@@ -109,6 +112,24 @@ return [
 				];
 			}
 
+			if ($kirby->option('content.salt') === null) {
+				$security[] = [
+					'id'    => 'content-salt',
+					'link'  => 'https://getkirby.com/security/content-salt',
+					'text'  => I18n::translate('system.issues.content.salt'),
+					'theme' => 'notice'
+				];
+			}
+
+			if (($kirby->option('cookie.key') ?? Cookie::$key) === 'KirbyHttpCookieKey') {
+				$security[] = [
+					'id'    => 'cookie-key',
+					'link'  => 'https://getkirby.com/security/cookie-key',
+					'text'  => I18n::translate('system.issues.cookie.key'),
+					'theme' => 'notice'
+				];
+			}
+
 			// sensitive URLs
 			if ($isLocal === false) {
 				$sensitive = [
@@ -122,12 +143,14 @@ return [
 			return [
 				'component' => 'k-system-view',
 				'props'     => [
+					'buttons'     => fn () =>
+						ViewButtons::view('system')->render(),
 					'environment' => $environment,
 					'exceptions'  => $debugMode ? $exceptions : [],
 					'info'        => $system->info(),
 					'plugins'     => $plugins,
 					'security'    => $security,
-					'urls'        => $sensitive ?? null
+					'urls'        => $sensitive ?? []
 				]
 			];
 		}
