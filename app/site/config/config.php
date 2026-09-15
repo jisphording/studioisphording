@@ -1,5 +1,9 @@
-<?php 
+<?php
+// Production defaults. Dev-host overrides live in the per-host config
+// files under this directory (loaded by Kirby's config.<host>.php
+// resolution and excluded from deploy.sh) — never add debug/url/vite.server here.
 return [
+    'debug' => false,
     'markdown' => [
         'extra' => true
     ],
@@ -9,10 +13,6 @@ return [
     'smartypants' => true,
     'languages' => true,
     'languages.detect' => true,
-    'media' => [
-        'read' => true,
-        'url' => 'media'
-    ],
     'thumbs' => [
         'driver' => 'gd',
         'quality' => 90
@@ -23,13 +23,12 @@ return [
             'use_crop' => false // Set to true for cropped images, false for resized images
         ]
     ],
-    // Development configuration
-    'debug' => true,
-    'url' => 'http://localhost:8000', // Explicitly set Kirby's base URL to the PHP server
-    'vite.server' => 'http://localhost:9001', // Vite dev server URL
     'cache' => [
+        // Left off: 'languages.detect' => true redirects based on the
+        // request's Accept-Language/cookie, and page caching would risk
+        // serving one visitor's cached redirect/language to another.
         'pages' => [
-            'active' => false // Disable page cache during debugging
+            'active' => false
         ]
     ]
 ];
