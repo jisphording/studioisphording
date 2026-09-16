@@ -103,6 +103,7 @@ PORT=8011 bash scripts/smoke.sh
 ├── dev/                    # Front-end source (CSS/SCSS, JS, Three.js)
 ├── scripts/
 │   ├── smoke.sh            # Verification gate — see above
+│   ├── perf.sh             # Perf snapshot + compare — see readme/PERFORMANCE.md
 │   └── deploy.sh           # rsync to IONOS; always dry-run first (--dry-run)
 ├── vite.config.dev.js      # Vite dev-server config
 ├── vite.config.build.js    # Vite production build config

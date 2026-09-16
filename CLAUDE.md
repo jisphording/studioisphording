@@ -30,6 +30,17 @@ bash scripts/smoke.sh
 PORT=8011 bash scripts/smoke.sh
 ```
 
+```bash
+# Performance snapshot (production build, local) and before/after compare
+npm run perf -- --label before     # or --quick for a fast sanity check
+npm run perf:compare               # two newest snapshots in perf/
+npm run test:perf                  # unit tests for the perf tooling
+```
+
+See `readme/PERFORMANCE.md`. Snapshots land in gitignored `perf/`;
+`report.md`'s "Heavy assets and loading behaviour" section is the input
+for media/lazy-loading work.
+
 See `readme/QUICK_START.md` for the full walkthrough, including the
 `config.localhost.php` / `config.127.0.0.1.php` convention that keeps
 dev-only settings (`debug`, `vite.server`) out of production. Neither file
@@ -53,6 +64,13 @@ often already held by an unrelated local service.
   own `php -S` dies, and it asserts the CSS bundle, all five webfonts,
   and the home showreel video (derived from rendered markup) return 200,
   plus that the home page markup carries no hand-built `/content/` path.
+- **Always test code changes.** Before changing code, find and run the
+  tests that cover it; if none do, write sensible ones in the same change
+  (pin current behaviour first when refactoring, and add a test that fails
+  without the fix when fixing a bug). Don't weaken an existing assertion
+  to get green. If a change really can't be tested automatically, say so
+  and state how it was verified instead. Smoke staying green is not a
+  substitute for tests.
 - Match the surrounding file's style: tabs in `app/site` templates/
   snippets/plugins, 4 spaces in `app/site/config/config.php`, 2 spaces in
   Vite configs and `dev/js`.
