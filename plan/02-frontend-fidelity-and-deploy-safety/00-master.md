@@ -106,12 +106,12 @@ Serial vs parallel is computed from `dependsOn` + file overlap. Phases marked
 
 ## Batches
 
-- **Batch A — Visible production defects** (todo): phases 1, 2, 3
-- **Batch B — Page transition rework** (todo): phases 4, 5
-- **Batch C — Deploy and repo hygiene** (todo): phases 6, 7
-- **Batch D — Build toolchain and verification gate** (todo): phases 8, 9
-- **Batch E — Three.js correctness** (todo): phases 10, 11
-- **Batch F — Docs and backlog purge** (todo): phases 12
+- **Batch A — Visible production defects** (done): phases 1, 2, 3
+- **Batch B — Page transition rework** (done): phases 4, 5
+- **Batch C — Deploy and repo hygiene** (done): phases 6, 7
+- **Batch D — Build toolchain and verification gate** (done): phases 8, 9
+- **Batch E — Three.js correctness** (done): phases 10, 11
+- **Batch F — Docs and backlog purge** (done): phases 12
 
 ---
 
@@ -124,6 +124,10 @@ Serial vs parallel is computed from `dependsOn` + file overlap. Phases marked
 - Reverse-engineering or patching the currently deployed CSS bundle. The repo is the source of truth; the drift is recorded, not reconciled backwards.
 - Waiting on the Three.js world before revealing a page transition. The user chose the asset-readiness gate without WebGL; heavy glTF pages would hold the loader too long.
 - Adding es to the content languages. The config lists es but no content exists for it; that is a content decision, not a code one.
+- Deduping project-gallery.php custom-video rendering by base name (it currently emits one <video> per matching image file, so a clip with both a .jpg and .webp sibling doubles its network requests). Pre-existing since before this plan (flagged in Phase 3), never touched by any of the eleven phases — it is a gallery-markup correctness bug, not a fidelity or deploy-safety defect this plan targeted.
+- Guarding against @barba/core throwing when go() is invoked while a transition is already in flight (reproduced during Phase 5 QA). Phases 4 and 5 fixed the removal/reveal timing of a single transition, not double-invocation from a user double-clicking or spam-clicking nav links; a proper fix needs its own small phase.
+- Wiring up or removing the unused Monument-Extended 900 (Black) font weight declared in dev/css/templates/_typography.scss but never applied by any selector. Cosmetic/content decision (does anything need a 900-weight heading?), not a functional defect.
+- Building uptime-monitoring coverage for Kirby's "change the PHP version" maintenance page returning HTTP 200 (Phase 2 finding). That monitoring lives outside this repo; recording the failure mode here is the deliverable.
 
 ---
 
@@ -141,15 +145,15 @@ Serial vs parallel is computed from `dependsOn` + file overlap. Phases marked
 
 ## Status
 
-- [ ] Phase 1 — Web fonts: fix the resolved URL and modernise the @font-face stack
-- [ ] Phase 2 — Home showreel video: resolve through Kirby file URLs
-- [ ] Phase 3 — Remaining hand-built asset paths: project.three videos and the media-processing hook
-- [ ] Phase 4 — Page transition: remove the outgoing container before the reveal
-- [ ] Phase 5 — Page transition: gate the reveal on the incoming page being ready
-- [ ] Phase 6 — Untrack the Kirby core and install it via Composer on deploy
-- [ ] Phase 7 — Deploy safety: exclude gitignored runtime trees and add a preflight guard
-- [ ] Phase 8 — Build toolchain hygiene: dead entry, ESM configs, unused dev script
-- [ ] Phase 9 — Harden the smoke gate so a silent asset 404 cannot pass
-- [ ] Phase 10 — Three.js: one explicit resource-start protocol and a lockstep Draco decoder
-- [ ] Phase 11 — Three.js: canvas-relative hit-testing, listener leak, and dead shadow config
-- [ ] Phase 12 — Documentation sweep and backlog purge
+- [x] Phase 1 — Web fonts: fix the resolved URL and modernise the @font-face stack
+- [x] Phase 2 — Home showreel video: resolve through Kirby file URLs
+- [x] Phase 3 — Remaining hand-built asset paths: project.three videos and the media-processing hook
+- [x] Phase 4 — Page transition: remove the outgoing container before the reveal
+- [x] Phase 5 — Page transition: gate the reveal on the incoming page being ready
+- [x] Phase 6 — Untrack the Kirby core and install it via Composer on deploy
+- [x] Phase 7 — Deploy safety: exclude gitignored runtime trees and add a preflight guard
+- [x] Phase 8 — Build toolchain hygiene: dead entry, ESM configs, unused dev script
+- [x] Phase 9 — Harden the smoke gate so a silent asset 404 cannot pass
+- [x] Phase 10 — Three.js: one explicit resource-start protocol and a lockstep Draco decoder
+- [x] Phase 11 — Three.js: canvas-relative hit-testing, listener leak, and dead shadow config
+- [x] Phase 12 — Documentation sweep and backlog purge
