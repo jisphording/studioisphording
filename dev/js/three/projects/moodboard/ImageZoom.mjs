@@ -50,25 +50,30 @@ export class ImageZoom {
         overlay.appendChild(close);
         document.body.appendChild(overlay);
 
+        const abortController = new AbortController();
+
         const closeLightbox = () => {
             document.body.removeChild(overlay);
             this.panControls.enable();
+            abortController.abort();
         };
 
-        close.addEventListener('click', closeLightbox);
-        overlay.addEventListener('click', closeLightbox);
+        close.addEventListener('click', closeLightbox, { signal: abortController.signal });
+        overlay.addEventListener('click', closeLightbox, { signal: abortController.signal });
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 closeLightbox();
             }
-        });
+        }, { signal: abortController.signal });
     }
 
     onMouseMove(event) {
         // Calculate mouse position in normalized device coordinates
-        // (-1 to +1) for both components
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        // (-1 to +1) for both components, relative to the canvas
+        // itself so hit-testing stays correct when it isn't full-window.
+        const rect = this.canvas.getBoundingClientRect();
+        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
     }
 
     update() {

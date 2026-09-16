@@ -54,8 +54,9 @@ export class World
         })
 
         // Resources no longer loads on construction (see Resources.mjs);
-        // this world has no moodboard batches, so load everything directly.
-        this.resources.loadOtherResources()
+        // kick off loading through the single explicit entry point. This world
+        // is constructed in 'batch' mode, so start() loads everything directly.
+        this.resources.start()
 
         //this.init()
     }

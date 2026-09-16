@@ -118,12 +118,14 @@ export class ProgressiveLoader {
      * Checks if Resources class has native support, otherwise uses fallback
      */
     startProgressiveLoading() {
-        if (typeof this.resources.startProgressiveLoading === 'function') {
-            // Use native Resources class progressive loading
-            this.resources.startProgressiveLoading(
-                this.batchConfig.getInitialBatchSize(),
-                this.batchConfig.getBackgroundBatchSize()
-            );
+        if (typeof this.resources.start === 'function') {
+            // Kick off loading through the single explicit entry point. Resources
+            // was constructed in 'progressive' mode, so start() dispatches to the
+            // native progressive loading strategy.
+            this.resources.start({
+                initialBatchSize: this.batchConfig.getInitialBatchSize(),
+                backgroundBatchSize: this.batchConfig.getBackgroundBatchSize()
+            });
         } else {
             // Use fallback implementation
             this.implementProgressiveLoading();

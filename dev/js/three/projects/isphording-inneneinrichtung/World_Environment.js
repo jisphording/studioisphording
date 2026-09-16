@@ -28,10 +28,6 @@ export class Environment
         // three r165 removed legacy lighting; physically based light units
         // need the old intensity (4) multiplied by PI to look the same.
         this.sunLight = new THREE.DirectionalLight( '#ffffff', 4 * Math.PI )
-        this.sunLight.castShadow = true
-        //this.sunLight.shadow.camera.far = 15
-        this.sunLight.shadow.mapSize.set( 1024, 1024 )
-        this.sunLight.shadow.normalBias = 0.05
         this.sunLight.position.set( 3.5, 2, -1.25 )
         this.scene.add( this.sunLight )
     }
@@ -59,8 +55,6 @@ export class Environment
                      child.material.envMap = this.environmentMap.texture
                      child.material.envMapIntensity = this.environmentMap.intensity
                      child.material.needsUpdate = true
-                     child.castShadow = true
-                     child.receiveShadow = true
                 }
             })
         } 

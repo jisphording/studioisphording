@@ -61,12 +61,12 @@ export class Experience
 
 		// SPECIFIC WORLD
 		// This is probably really verbose and shoould be refactored.
-		if ( world == 'World_01' ) { 
-			this.resources = new Resources( World_01_Sources )
+		if ( world == 'World_01' ) {
+			this.resources = new Resources( World_01_Sources, 'batch', 'isphording-inneneinrichtung' )
 			this.world = new World_01()
-		} 
-		else if ( world == 'World_02' ) { 
-			this.resources = new Resources( World_02_Sources )
+		}
+		else if ( world == 'World_02' ) {
+			this.resources = new Resources( World_02_Sources, 'progressive', 'moodboard' )
 			this.world = new World_02()
 		}
 

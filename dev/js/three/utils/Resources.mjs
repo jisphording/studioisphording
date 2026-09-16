@@ -11,12 +11,20 @@ import EventEmitter from './EventEmitter.mjs'
 
 export class Resources extends EventEmitter
 {
-    constructor( sources )
+    constructor( sources, mode = null, worldName = 'unknown' )
     {
         super()
 
         // Options
         this.sources = sources
+
+        // Loading strategy protocol
+        // A world is constructed with an explicit mode ('batch' or 'progressive')
+        // and must call start() exactly once; start() dispatches to the matching
+        // strategy so a world can never be constructed without a loading strategy.
+        this.mode = mode
+        this.worldName = worldName
+        this.started = false
 
         // Setup
         this.experience = new Experience
@@ -45,9 +53,45 @@ export class Resources extends EventEmitter
         this.sceneReady = false // Check if scene is ready
 
         this.setLoaders()
-        
-        // We don't start loading automatically anymore
-        // The World will call startProgressiveLoading instead
+
+        // We don't start loading automatically anymore.
+        // The World is responsible for calling start() (see start() below).
+        // Make the failure loud: if nobody kicks off loading shortly after
+        // construction, warn naming the world so an empty canvas with zero
+        // network requests is never a silent outcome again.
+        setTimeout(() => {
+            if (!this.started) {
+                console.warn(`Resources: start() was never called for world "${this.worldName}"; nothing will load and the canvas will stay empty.`);
+            }
+        }, 2000);
+    }
+
+    // START
+    // The single explicit entry point every world must call. Dispatches to the
+    // right loading strategy based on the mode chosen per world at construction.
+    // Keeps the existing strategy methods as the implementations it dispatches to;
+    // it does not change what either strategy actually loads.
+    start(options = {}) {
+        if (this.started) {
+            console.warn(`Resources: start() called more than once for world "${this.worldName}"; ignoring the extra call.`);
+            return;
+        }
+        this.started = true;
+
+        switch (this.mode) {
+            case 'progressive':
+                this.startProgressiveLoading(
+                    options.initialBatchSize,
+                    options.backgroundBatchSize
+                );
+                break;
+            case 'batch':
+                // This world has no moodboard batches, so load everything directly.
+                this.loadOtherResources();
+                break;
+            default:
+                console.warn(`Resources: start() called for world "${this.worldName}" with no loading mode set; nothing will load.`);
+        }
     }
 
     // SET LOADERS
