@@ -14,7 +14,7 @@ Composer 2.x, Node ≥ 20.19. Deploy via rsync to IONOS
 
 ```bash
 # First-time setup
-(cd app && composer install)
+(cd app && composer install)   # installs app/kirby — gitignored, Composer-managed, never committed
 npm ci
 
 # Everyday dev — two terminals
@@ -32,7 +32,10 @@ PORT=8011 bash scripts/smoke.sh
 
 See `readme/QUICK_START.md` for the full walkthrough, including the
 `config.localhost.php` / `config.127.0.0.1.php` convention that keeps
-dev-only settings (`debug`, `url`, `vite.server`) out of production.
+dev-only settings (`debug`, `vite.server`) out of production. Neither file
+sets `url` — Kirby infers the origin from the request — so the dev server
+works on any port; `PORT=8011` is this repo's convention because 8000 is
+often already held by an unrelated local service.
 
 ## House rules
 
@@ -45,12 +48,28 @@ dev-only settings (`debug`, `url`, `vite.server`) out of production.
   (`php -v`, `ls`) only, and only after asking the user first.
 - `bash scripts/smoke.sh` is the verification gate — leave it at least as
   green as you found it (it should be fully green from Phase 2 onward of
-  the Kirby 5 recovery plan).
+  the Kirby 5 recovery plan). It aborts with a clear message instead of
+  passing if its target port is already held by another process or its
+  own `php -S` dies, and it asserts the CSS bundle, all five webfonts,
+  and the home showreel video (derived from rendered markup) return 200,
+  plus that the home page markup carries no hand-built `/content/` path.
 - Match the surrounding file's style: tabs in `app/site` templates/
   snippets/plugins, 4 spaces in `app/site/config/config.php`, 2 spaces in
   Vite configs and `dev/js`.
 - Do not commit unless explicitly asked; leave changes staged/unstaged
   for review.
+- `app/kirby/` is gitignored and never committed — it's installed by
+  Composer from `app/composer.json` (pinned to `getkirby/cms ^5.5`), both
+  locally (`composer install`) and by `scripts/deploy.sh`, which runs
+  `composer install --no-dev --optimize-autoloader` before the build.
+- `scripts/deploy.sh` runs a preflight before rsync: it aborts if a tree
+  the deploy must push (`app/assets/bundle`, `app/kirby/bootstrap.php`,
+  `app/index.php`, `app/.htaccess`) is missing or empty, and warns
+  without aborting if a server-owned tree (fonts, `app/content`,
+  `app/video`, Three.js meshes/textures, PDFs) is absent locally — those
+  are excluded from its `--delete` mirror on purpose.
+- `npm run dev:assets-only` and `vite.assets-only.config.js` were removed
+  as dead — unused by any script, test or doc.
 
 ## Background
 
