@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   // Set root to dev directory for consistency
@@ -19,7 +22,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: resolve(__dirname, 'dev/js/index.js'),
-        three: resolve(__dirname, 'dev/js/three/runExperience.js'),
       },
       output: {
         dir: resolve(__dirname, 'app/assets/bundle'),
@@ -60,9 +62,6 @@ export default defineConfig({
       include: [/node_modules/]
     }
   },
-  
-  // Asset handling
-  publicDir: 'assets',
   
   // CSS preprocessing
   css: {

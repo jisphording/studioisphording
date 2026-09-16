@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite --config vite.config.dev.js",
+    "prebuild": "node scripts/copy-draco.mjs",
     "build": "vite build --config vite.config.build.js",
-    "build:media": "php utils/build-media-cache.php",
     "preview": "vite preview --config vite.config.build.js",
-    "php": "php -S localhost:8000 -t app app/kirby/router.php",
-    "dev:assets-only": "vite --config vite.assets-only.config.js"
+    "php": "php -S localhost:8000 -t app app/kirby/router.php"
   },
   "keywords": [],
   "author": "",
