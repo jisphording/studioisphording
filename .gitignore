@@ -62,3 +62,6 @@ app/site/config/config.127.0.0.1.php
 # scratch copy of live-server files that conflict with git's version,
 # kept for manual diffing/merging — see scripts/deploy.sh
 ionos-live-reference/
+
+# local perf snapshots (scripts/perf.sh)
+/perf/
