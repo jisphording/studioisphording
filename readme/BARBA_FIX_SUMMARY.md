@@ -142,3 +142,29 @@ html.is-transitioning .loadingScreen {
 - Improved error handling
 
 The loading screen animation should now work properly during page transitions!
+
+## Readiness gate (Phase 5)
+
+The cover no longer opens on a fixed timer — it holds until the incoming page is
+actually presentable, then reveals.
+
+- `waitForPageReady(container, { timeout })` races three readiness signals —
+  `document.fonts.ready`, `img.decode()` for every image intersecting the
+  viewport, and a one-shot `canplay`/`loadeddata` for every `<video autoplay>`
+  (skipped when `readyState >= 2`) — against a single ceiling. It **always
+  resolves**, never rejects or hangs, and clears all listeners in a `finally`
+  so a timed-out navigation cannot leak them onto a detached container.
+- Timing is tunable in one place at the top of the module: `READY_TIMEOUT_MS`
+  (3000, the ceiling), `MIN_COVER_MS` (400, a floor so a warm cache does not
+  flash open), `REVEAL_DURATION_S` (0.7, down from the old 1.8s now that the
+  cover does real work) and `CROSSFADE_DURATION_S` (0.3).
+- `enter()` awaits `Promise.all([waitForPageReady(...), minCover])` after the two
+  rAF ticks, then starts the reveal — so the reveal never starts before the floor
+  and never later than floor + ceiling. On a timeout it still reveals; a visibly
+  incomplete page beats a stuck loader.
+- **Reduced motion:** with `prefers-reduced-motion: reduce`, both wipes collapse
+  to a short opacity cross-fade, but the readiness gate still runs (the gate is
+  correctness, the wipe is decoration).
+
+Note: the production bundle strips `console.*`, so the log lines above appear
+only in the Vite dev build.

@@ -7,6 +7,121 @@
 
 import { animGsap } from './animGsap.mjs'
 
+// ---------- Transition timing (tunable in one place) ---------- //
+
+// Ceiling for the readiness gate. The reveal never waits longer than this after
+// the cover floor, even if an asset never finishes loading. A visibly
+// incomplete page is better than a stuck loader.
+const READY_TIMEOUT_MS = 3000;
+
+// Minimum time the cover stays closed, measured from the moment the wipe-in
+// completes. Stops a warm cache from producing a jarring instant flash-open.
+const MIN_COVER_MS = 400;
+
+// Duration of the reveal wipe. Now that the cover does real work (it holds until
+// the incoming page is ready), the reveal no longer has to stall for content, so
+// it is far shorter than the old 1.8s. With the 0.8s wipe-in and the 0.4s cover
+// floor, this keeps the warm-cache transition at ~0.8 + 0.4 + 0.7 = 1.9s, under
+// the ~2s target.
+const REVEAL_DURATION_S = 0.7;
+
+// Duration of the reduced-motion cross-fade that replaces both wipes.
+const CROSSFADE_DURATION_S = 0.3;
+
+/**
+ * Whether the user has asked for reduced motion. Read live on each transition so
+ * a mid-session change of the OS setting is honoured without a reload.
+ * @returns {boolean}
+ */
+function prefersReducedMotion() {
+    return typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * Wait until the incoming container is presentable, then resolve.
+ *
+ * Races the readiness signals (fonts, visible images, autoplay video) against a
+ * single timeout. It ALWAYS resolves - never rejects, never hangs - so a slow or
+ * broken asset can only ever delay the reveal up to the timeout, never block it.
+ * Every listener is attached with { once: true } and removed in a finally, so a
+ * timed-out navigation cannot leak listeners onto a detached container.
+ *
+ * @param {HTMLElement} container - the incoming Barba container
+ * @param {Object} [opts]
+ * @param {number} [opts.timeout=READY_TIMEOUT_MS] - ceiling in ms
+ * @returns {Promise<void>}
+ */
+export function waitForPageReady(container, { timeout = READY_TIMEOUT_MS } = {}) {
+    const cleanups = [];
+    const ready = Promise.all(collectReadinessSignals(container, cleanups));
+
+    let timer;
+    const ceiling = new Promise(resolve => {
+        timer = setTimeout(resolve, timeout);
+    });
+
+    return Promise.race([ready, ceiling])
+        .catch(() => {}) // defensive: the gate must never reject
+        .finally(() => {
+            clearTimeout(timer);
+            cleanups.forEach(fn => {
+                try { fn(); } catch (_) { /* detached node */ }
+            });
+        });
+}
+
+/**
+ * Collect the readiness signals for a container. Each signal is a Promise that
+ * only ever resolves (failures are caught to a no-op), so Promise.all over them
+ * cannot reject. Any event listeners registered here push their teardown onto
+ * `cleanups` so waitForPageReady can clear them after a timeout.
+ * @param {HTMLElement} container
+ * @param {Function[]} cleanups
+ * @returns {Promise<*>[]}
+ */
+function collectReadinessSignals(container, cleanups) {
+    const signals = [];
+
+    // (a) Web fonts applied. document.fonts.ready resolves once all pending
+    // font loads settle; guard for browsers without the Font Loading API.
+    if (document.fonts && document.fonts.ready) {
+        signals.push(Promise.resolve(document.fonts.ready).catch(() => {}));
+    }
+
+    // (b) Every <img> that intersects the initial viewport. Off-screen images
+    // are not worth holding the cover for.
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const vw = window.innerWidth || document.documentElement.clientWidth;
+    container.querySelectorAll('img').forEach(img => {
+        const rect = img.getBoundingClientRect();
+        const inView = rect.bottom > 0 && rect.top < vh &&
+            rect.right > 0 && rect.left < vw;
+        if (!inView || img.complete) return;
+        // decode() waits for the bytes and the decode; catch so a 404 image
+        // cannot reject the gate.
+        const decoded = img.decode ? img.decode() : Promise.resolve();
+        signals.push(Promise.resolve(decoded).catch(() => {}));
+    });
+
+    // (c) Every autoplaying <video>. readyState >= 2 (HAVE_CURRENT_DATA) means
+    // the first frame is available; otherwise wait for canplay/loadeddata.
+    container.querySelectorAll('video[autoplay]').forEach(video => {
+        if (video.readyState >= 2) return;
+        signals.push(new Promise(resolve => {
+            const onReady = () => resolve();
+            video.addEventListener('canplay', onReady, { once: true });
+            video.addEventListener('loadeddata', onReady, { once: true });
+            cleanups.push(() => {
+                video.removeEventListener('canplay', onReady);
+                video.removeEventListener('loadeddata', onReady);
+            });
+        }));
+    });
+
+    return signals;
+}
+
 /**
  * Main function to initialize Barba.js page transitions with loading screen animations
  * Sets up smooth page transitions with GSAP-powered loading animations and proper cleanup
@@ -81,10 +196,35 @@ function initializeBarbaTransitions(barba, gsap, ScrollTrigger, loader) {
             async leave(data) {
                 console.log('Barba: leave transition triggered', data.current.url.href);
                 await animateLoaderIn(gsap, loader);
+
+                // Take ownership of the swap: remove the outgoing container now,
+                // while the loader fully covers the viewport. This is Barba's
+                // documented container-ownership pattern; Barba's own later
+                // removal becomes a no-op on this detached node. Without it the
+                // reveal (animateLoaderOut) would uncover the page we just left.
+                data.current.container.remove();
             },
             async enter(data) {
                 console.log('Barba: enter transition triggered', data.next.url.href);
+
+                // Start the minimum cover floor now: leave() already awaited the
+                // wipe-in, so at this point the cover fully hides the viewport.
+                // The floor guarantees the cover is up for at least MIN_COVER_MS
+                // even when everything is already cached.
+                const minCover = new Promise(resolve => setTimeout(resolve, MIN_COVER_MS));
+
                 await prepareNewPage(ScrollTrigger);
+                assertSingleContainer();
+
+                // Hold the reveal until BOTH the incoming page is presentable
+                // (bounded by READY_TIMEOUT_MS) and the cover floor has elapsed.
+                // On a timeout, waitForPageReady still resolves, so the loader
+                // always opens.
+                await Promise.all([
+                    waitForPageReady(data.next.container, { timeout: READY_TIMEOUT_MS }),
+                    minCover
+                ]);
+
                 await animateLoaderOut(gsap, loader);
             }
         }]
@@ -98,24 +238,39 @@ function initializeBarbaTransitions(barba, gsap, ScrollTrigger, loader) {
  */
 function prepareNewPage(ScrollTrigger) {
     return new Promise(resolve => {
-        // Use multiple requestAnimationFrame to ensure DOM is painted
+        // Two requestAnimationFrame ticks let the browser paint the new
+        // container before the wipe opens. (Phase 5 replaces this guesswork
+        // with a real asset-readiness signal; no fixed setTimeout stands in
+        // for one here.)
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                setTimeout(() => {
-                    // Re-initialize animations for the new page
-                    animGsap();
-                    
-                    // Restart video autoplay
-                    restartVideos();
-                    
-                    // Force ScrollTrigger refresh
-                    ScrollTrigger.refresh();
-                    console.log('Barba: New page ready, resolving enter transition');
-                    resolve();
-                }, 100);
+                // The outgoing container was removed at the end of leave(), so
+                // these all run against the new container only.
+                animGsap();
+
+                // Restart video autoplay
+                restartVideos();
+
+                // Force ScrollTrigger refresh
+                ScrollTrigger.refresh();
+                console.log('Barba: New page ready, resolving enter transition');
+                resolve();
             });
         });
     });
+}
+
+/**
+ * Warn loudly if the DOM does not hold exactly one Barba container before the
+ * reveal. With the outgoing container removed at the end of leave() and the new
+ * one appended by Barba, the count must be 1 for the whole animateLoaderOut
+ * tween - anything else means the reveal can flash the page we just left.
+ */
+function assertSingleContainer() {
+    const count = document.querySelectorAll('[data-barba="container"]').length;
+    if (count !== 1) {
+        console.warn(`Barba: expected exactly 1 container before the reveal, found ${count} - the outgoing page may flash during animateLoaderOut`);
+    }
 }
 
 /**
@@ -141,7 +296,28 @@ function restartVideos() {
  */
 function animateLoaderIn(gsap, loader) {
     console.log('Barba: loaderIn animation starting');
-    
+
+    // Reduced motion: collapse the wipe to a short cross-fade. The readiness
+    // gate still runs (it is correctness, not decoration).
+    if (prefersReducedMotion()) {
+        return gsap.timeline()
+            .set(loader, {
+                autoAlpha: 0,
+                scaleX: 1,
+                xPercent: 0,
+                yPercent: -50,
+                transformOrigin: 'center center'
+            })
+            .to(loader, {
+                duration: CROSSFADE_DURATION_S,
+                autoAlpha: 1,
+                ease: 'power1.inOut',
+                onComplete: () => {
+                    console.log('Barba: loaderIn cross-fade complete');
+                }
+            });
+    }
+
     return gsap.timeline()
         .set(loader, {
             autoAlpha: 1,
@@ -169,9 +345,29 @@ function animateLoaderIn(gsap, loader) {
  */
 function animateLoaderOut(gsap, loader) {
     console.log('Barba: loaderAway animation starting');
-    
+
+    // Reduced motion: cross-fade the cover out instead of wiping it. Reset back
+    // to the hidden wipe state afterwards so the next (possibly non-reduced)
+    // transition starts from a known geometry.
+    if (prefersReducedMotion()) {
+        return gsap.to(loader, {
+            duration: CROSSFADE_DURATION_S,
+            autoAlpha: 0,
+            ease: 'power1.inOut',
+            onComplete: () => {
+                console.log('Barba: loaderAway cross-fade complete');
+                gsap.set(loader, {
+                    autoAlpha: 0,
+                    scaleX: 0,
+                    xPercent: -5,
+                    transformOrigin: 'left center'
+                });
+            }
+        });
+    }
+
     return gsap.to(loader, {
-        duration: 1.8,
+        duration: REVEAL_DURATION_S,
         scaleX: 0,
         xPercent: 5,
         transformOrigin: 'right center',
