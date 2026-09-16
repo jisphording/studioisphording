@@ -30,7 +30,7 @@ Kirby::plugin('studio-isphording/site-methods', [
 		// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 		//
 		// Helper function to generate responsive image markup with multiple sizes
-		// IMPORTANT: These sizes and quality settings must match exactly with utils/build-media-cache.php
+		// IMPORTANT: These sizes and quality settings are generated on demand by Kirby's own crop()/thumb() (see getThumbnail() above)
 		'getResponsiveImage' => function ($image, $alt, $class = '', $sizes = null) {
 			// Generate multiple image sizes for responsive display - matching media cache exactly
 			$thumbSmall = kirby()->site()->getThumbnail($image, 490, 390, 60);     // Small: mobile and low-res displays
