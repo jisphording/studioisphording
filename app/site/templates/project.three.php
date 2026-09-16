@@ -19,7 +19,7 @@
 
 				<!-- PROJECT GALLERY -->
 				<?php snippet('project-gallery', [
-					'videoPath' => 'app/video/',
+					'videoPath' => 'video/',
 					'useResponsiveImages' => true
 				]) ?>
 

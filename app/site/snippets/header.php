@@ -14,6 +14,9 @@
 
 	<title><?= $site->title()->esc() ?> | <?= $page->title()->esc() ?></title>
 
+	<link rel="preload" as="font" type="font/woff2" href="<?= url('assets/fonts/RadioGrotesk-Regular.woff2') ?>" crossorigin>
+	<link rel="preload" as="font" type="font/woff2" href="<?= url('assets/fonts/Grafier-Regular.woff2') ?>" crossorigin>
+
 	<link rel="stylesheet" href="<?= url('assets/bundle/app.css') ?>">
 
 	<?= vite('js/index.js') ?>

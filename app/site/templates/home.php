@@ -13,21 +13,29 @@
 			</div>
 			<!-- Showreel Video -->
 			<section class="showreel__video parallax__layer--back">
-				<?php 
+				<?php
 				// Get the showreel field value
 				$showreelName = $page->showreel()->value();
-				
-				// Use direct content paths to bypass media processing issues
-				$contentPath = '/content/' . $page->diruri() . '/';
+
+				// Resolve each variant through Kirby's own file objects so URLs
+				// go through the media route, not the blocked /content/ tree.
+				$showreelPoster = $page->file($showreelName . '.jpg');
+				$showreelMp4    = $page->file($showreelName . '.mp4');
+				$showreelWebm   = $page->file($showreelName . '.webm');
 				?>
-				
-				<video playsinline autoplay muted loop poster="<?= $contentPath . $showreelName ?>.jpg">
-					<source src="<?= $contentPath . $showreelName ?>.mp4" type="video/mp4" />
-					<source src="<?= $contentPath . $showreelName ?>.webm" type="video/webm" />
-					<source src="<?= $contentPath . $showreelName ?>.ogg" type="video/ogg" />
-					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $contentPath . $showreelName ?>.mp4">download it</a>
+
+				<?php if ($showreelMp4 || $showreelWebm): ?>
+				<video playsinline autoplay muted loop<?= $showreelPoster ? ' poster="' . $showreelPoster->url() . '"' : '' ?>>
+					<?php if ($showreelMp4): ?>
+					<source src="<?= $showreelMp4->url() ?>" type="video/mp4" />
+					<?php endif ?>
+					<?php if ($showreelWebm): ?>
+					<source src="<?= $showreelWebm->url() ?>" type="video/webm" />
+					<?php endif ?>
+					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $showreelMp4 ? $showreelMp4->url() : $showreelWebm->url() ?>">download it</a>
 					and watch it with your favorite video player!
 				</video>
+				<?php endif ?>
 			</section>
 		</section>
 

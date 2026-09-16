@@ -18,21 +18,21 @@ $videoPath = $videoPath ?? null;
 	
 	if ($videoPath) {
 		// Custom video handling for three.js projects
-		// Check which videos exist in the custom video directory
+		// Check which videos exist in the custom video directory (a real
+		// webroot-relative folder, e.g. app/video/, outside the content tree)
 		foreach($page->images()->filterBy('filename', '!*=', '_keyvisual')->filterBy('filename', '!*=', 'intro-img') as $image):
 			$baseName = pathinfo($image->filename(), PATHINFO_FILENAME);
-			$video_dir = $videoPath;
 			$file_video_mp4 = $baseName . ".mp4";
 			$file_video_webm = $baseName . ".webm";
-			$filetocheck = $video_dir . $file_video_mp4;
-			
-			if (file_exists($filetocheck)): 
+			$filetocheck = kirby()->root('index') . '/' . $videoPath . $file_video_mp4;
+
+			if (file_exists($filetocheck)):
 				$displayedVideos[] = $baseName; ?>
 				<li>
 					<figure>
 						<video class="showcase__grid--image" playsinline autoplay muted loop>
-							<source src="<?= $site->url('') . '/' . $video_dir . $file_video_mp4 ?>" type="video/mp4">
-							<source src="<?= $site->url('') . '/' . $video_dir . $file_video_webm ?>" type="video/webm">
+							<source src="<?= url($videoPath . $file_video_mp4) ?>" type="video/mp4">
+							<source src="<?= url($videoPath . $file_video_webm) ?>" type="video/webm">
 						</video>
 					</figure>
 				</li>
