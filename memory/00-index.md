@@ -20,6 +20,14 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-008 | [add-rsync-excludes-for-every-gitignored-runtime-tree-plus-a-pref](decisions/008-add-rsync-excludes-for-every-gitignored-runtime-tree-plus-a-pref.md) | 02-frontend-fidelity-and-deploy-safety/decisions/8 |
 | MEM-009 | [treat-the-repo-as-the-source-of-truth-and-note-the-drift-do-not](decisions/009-treat-the-repo-as-the-source-of-truth-and-note-the-drift-do-not.md) | 02-frontend-fidelity-and-deploy-safety/decisions/9 |
 | MEM-010 | [plan-improvements-md-is-captured-byte-for-byte-into-this-plan-fo](decisions/010-plan-improvements-md-is-captured-byte-for-byte-into-this-plan-fo.md) | 02-frontend-fidelity-and-deploy-safety/decisions/10 |
+| MEM-011 | [app-site-only-as-passed-to-the-refactor-skill-scan-py-app-site-j](decisions/011-app-site-only-as-passed-to-the-refactor-skill-scan-py-app-site-j.md) | refactor-app-site/decisions/1 |
+| MEM-012 | [off](decisions/012-off.md) | refactor-app-site/decisions/2 |
+| MEM-013 | [the-scan-s-empty-hotspots-is-accepted-as-correct-the-plan-is-bui](decisions/013-the-scan-s-empty-hotspots-is-accepted-as-correct-the-plan-is-bui.md) | refactor-app-site/decisions/3 |
+| MEM-014 | [replace-site-displayshowcase-and-site-pullrelatedpages-with-snip](decisions/014-replace-site-displayshowcase-and-site-pullrelatedpages-with-snip.md) | refactor-app-site/decisions/4 |
+| MEM-015 | [move-remove-br-tags-and-create-tags-from-snippets-utils-php-into](decisions/015-move-remove-br-tags-and-create-tags-from-snippets-utils-php-into.md) | refactor-app-site/decisions/5 |
+| MEM-016 | [keep-getthumbnail-getresponsiveimage-signatures-replace-the-ten](decisions/016-keep-getthumbnail-getresponsiveimage-signatures-replace-the-ten.md) | refactor-app-site/decisions/6 |
+| MEM-017 | [escape-text-context-field-output-with-escape-or-esc-except-field](decisions/017-escape-text-context-field-output-with-escape-or-esc-except-field.md) | refactor-app-site/decisions/7 |
+| MEM-018 | [phpunit-12-as-a-require-dev-dependency-in-app-composer-json-conf](decisions/018-phpunit-12-as-a-require-dev-dependency-in-app-composer-json-conf.md) | refactor-app-site/decisions/8 |
 
 ### Conventions
 
@@ -28,6 +36,17 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-001 | [any-change-to-dev-css-or-dev-js-requires-npm-run-build-before-sm](conventions/001-any-change-to-dev-css-or-dev-js-requires-npm-run-build-before-sm.md) | 02-frontend-fidelity-and-deploy-safety/conventions/2 |
 | MEM-002 | [prefer-kirby-s-own-url-helpers-page-file-url-file-url-over-hand](conventions/002-prefer-kirby-s-own-url-helpers-page-file-url-file-url-over-hand.md) | 02-frontend-fidelity-and-deploy-safety/conventions/4 |
 | MEM-003 | [font-video-and-transition-fixes-must-be-verified-against-a-real](conventions/003-font-video-and-transition-fixes-must-be-verified-against-a-real.md) | 02-frontend-fidelity-and-deploy-safety/conventions/5 |
+| MEM-019 | [every-phase-ends-with-npm-run-test-php-green-then-a-green-port-8](conventions/019-every-phase-ends-with-npm-run-test-php-green-then-a-green-port-8.md) | refactor-app-site/conventions/1 |
+| MEM-020 | [every-phase-is-behaviour-preserving-before-editing-save-the-rend](conventions/020-every-phase-is-behaviour-preserving-before-editing-save-the-rend.md) | refactor-app-site/conventions/2 |
+| MEM-021 | [run-php-l-on-every-php-file-the-phase-touches](conventions/021-run-php-l-on-every-php-file-the-phase-touches.md) | refactor-app-site/conventions/3 |
+| MEM-022 | [read-app-content-freely-to-check-what-fields-contain-but-never-w](conventions/022-read-app-content-freely-to-check-what-fields-contain-but-never-w.md) | refactor-app-site/conventions/4 |
+| MEM-023 | [no-change-to-dev-or-app-assets-bundle-is-in-scope-no-npm-run-bui](conventions/023-no-change-to-dev-or-app-assets-bundle-is-in-scope-no-npm-run-bui.md) | refactor-app-site/conventions/5 |
+| MEM-024 | [tests-live-in-tests-php-mirroring-the-app-site-path-of-the-unit](conventions/024-tests-live-in-tests-php-mirroring-the-app-site-path-of-the-unit.md) | refactor-app-site/conventions/6 |
+| MEM-025 | [tests-boot-a-real-kirby-instance-through-tests-php-kirbytestcase](conventions/025-tests-boot-a-real-kirby-instance-through-tests-php-kirbytestcase.md) | refactor-app-site/conventions/7 |
+| MEM-026 | [every-phase-adds-or-updates-tests-for-the-behaviour-it-touches-i](conventions/026-every-phase-adds-or-updates-tests-for-the-behaviour-it-touches-i.md) | refactor-app-site/conventions/8 |
+| MEM-027 | [known-bugs-are-documented-by-tests-asserting-the-correct-behavio](conventions/027-known-bugs-are-documented-by-tests-asserting-the-correct-behavio.md) | refactor-app-site/conventions/9 |
+| MEM-028 | [each-phase-spot-checks-that-its-new-tests-have-teeth-temporarily](conventions/028-each-phase-spot-checks-that-its-new-tests-have-teeth-temporarily.md) | refactor-app-site/conventions/10 |
+| MEM-029 | [test-files-use-tabs-matching-app-site-php-style](conventions/029-test-files-use-tabs-matching-app-site-php-style.md) | refactor-app-site/conventions/11 |
 
 ## Purge log
 
