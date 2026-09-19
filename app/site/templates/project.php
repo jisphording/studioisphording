@@ -35,7 +35,7 @@
 			
 			<div>    
 				<!-- Sub Pages Loop -->
-				<?php $site->pullRelatedPages('projects', 8) ?>
+				<?php snippet('related-grid', ['parent' => 'projects', 'limit' => 8]) ?>
 			</div>
 
 		</section>

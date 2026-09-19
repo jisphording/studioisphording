@@ -6,6 +6,9 @@ npm-debug.log*
 composer.phar
 *.log
 
+# phpunit
+.phpunit.cache/
+
 # os
 .DS_Store
 

@@ -17,5 +17,8 @@
         "post-create-project-cmd": [
             "composer install"
         ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12"
     }
 }

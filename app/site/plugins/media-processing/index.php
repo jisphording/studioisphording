@@ -1,7 +1,6 @@
 <?php
 
-// Disabled custom media processing plugin to allow Kirby's native media processing to work
-// The custom route was interfering with Kirby 4.8's built-in media handling system
+// Clears a file's thumb job directory on file.create:after so thumbs regenerate.
 
 Kirby::plugin('studio-isphording/media-processing', [
     'hooks' => [
@@ -15,5 +14,4 @@ Kirby::plugin('studio-isphording/media-processing', [
             }
         }
     ]
-    // Removed custom routes to let Kirby handle media processing natively
 ]);

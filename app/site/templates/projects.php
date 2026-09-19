@@ -7,7 +7,7 @@
 	<section class="section__main projects__showcase">
 
 		<!-- Showcase Loop -->
-		<?php $site->displayShowcase('projects', 99) ?>
+		<?php snippet('showcase-grid', ['parent' => 'projects', 'limit' => 99]) ?>
 
 		<!-- Link to all projects -->
 		<p class="projects__showcase--more">
@@ -22,7 +22,7 @@
           <?php if($coverImage = $project->images()->filterBy('filename', '*=', '_keyvisual')->first()): ?>
             <?= $site->getResponsiveImage($coverImage, $project->title(), 'project-list-image') ?>
           <?php endif ?>
-          <figcaption><?= $project->title() ?> <small><?= $project->year() ?></small></figcaption>
+          <figcaption><?= $project->title()->titleHtml() ?> <small><?= $project->year()->escape() ?></small></figcaption>
         </figure>
       </a>
     </li>

@@ -6,9 +6,9 @@
 			<!-- Showreel Title -->
 			<div class="showreel__title--wrapper parallax__layer--title">
 				<div class="showreel__title">
-					<h3><?= $page->topline() ?></h3>
-					<h1><?= $page->title() ?></h1>
-					<h2><?= $page->subline() ?></h2>
+					<h3><?= $page->topline()->escape() ?></h3>
+					<h1><?= $page->title()->escape() ?></h1>
+					<h2><?= $page->subline()->escape() ?></h2>
 				</div>
 			</div>
 			<!-- Showreel Video -->
@@ -53,7 +53,7 @@
 			<section class="projects__showcase">
 
 				<!-- Showcase Loop -->
-				<?php $site->displayShowcase('projects', 14) ?>
+				<?php snippet('showcase-grid', ['parent' => 'projects', 'limit' => 14]) ?>
 
 				<!-- Link to all projects -->
 				<!--p class="projects__showcase--more">

@@ -34,6 +34,4 @@
 
 	<header class="header">
 		<?php snippet('menu-main') ?>
-		
-		<?php snippet('utils') ?>
 	</header>

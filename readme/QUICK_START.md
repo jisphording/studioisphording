@@ -86,7 +86,36 @@ bash scripts/smoke.sh
 # Port 8000 is often already taken on this machine (an unrelated local
 # service) — PORT=8011 is the house convention for this repo:
 PORT=8011 bash scripts/smoke.sh
+
+# PHP unit tests: boot a real Kirby against throwaway fixtures and pin the
+# behaviour of app/site (site methods, snippets, snippet references). Fast,
+# no server, no network, never touches app/content.
+npm run test:php
 ```
+
+### Writing a PHP test
+
+Tests live in `tests/php/`, mirroring the `app/site` path of the unit under
+test (`tests/php/plugins/…`, `tests/php/snippets/…`), and phpunit is a
+`require-dev` dependency (never deployed). Extend `KirbyTestCase` for a booted
+Kirby with `$this->snippetHtml()`, `$this->captureOutput()` and `$this->dom()`
+helpers over a fresh copy of `tests/php/fixtures/`; assert against the parsed
+DOM, not raw strings. A test for a known bug asserts the *correct* behaviour,
+carries `#[Group('known-bug')]` (excluded from the default run), and is
+un-grouped by the phase that fixes the bug —
+`app/vendor/bin/phpunit --group known-bug` runs just those.
+
+### Escaping output in templates and snippets
+
+Every `<?= … ?>` that prints a content field must escape it:
+`$page->field()->escape()` (or `esc($string)`) for plain text,
+`->kirbytext()` for Markdown fields, and `->titleHtml()` (helpers plugin) for
+`title`/`titlelong`, which escapes everything except the `<mark>` and `<br>`
+markup titles are authored with. A field that genuinely must print raw HTML
+carries a justification inside the tag: `<?= $page->embed() // raw: <reason> ?>`.
+`tests/php/OutputEscapingGuardTest.php` fails, listing file:line, for any echo
+that does neither; `tests/php/EscapingTest.php` renders hostile fixture values
+(`tests/php/fixtures/content/{home,about,escaping}`) through the real output.
 
 ## Project structure
 

@@ -3,7 +3,7 @@
 	<!-- Showreel Title -->
 	<div class="showreel__title--wrapper parallax__layer--title">
 		<div class="showreel__title">
-			<h1><?= $page->titlelong() ?></h1>
+			<h1><?= $page->titlelong()->titleHtml() ?></h1>
 		</div>
 	</div>
 	<!-- Intro Video -->

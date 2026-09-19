@@ -19,7 +19,7 @@
 					<?php if($moodImage = $page->file($page->mood_01())): ?>
 						<?= $site->getResponsiveImage($moodImage, $page->mood_01_txt(), 'mood-image') ?>
 					<?php endif ?>
-					<p class="bildunterschrift"><?= $page->mood_01_txt() ?></p>
+					<p class="bildunterschrift"><?= $page->mood_01_txt()->escape() ?></p>
 				</section>
 					
 				<!-- about experience -->
@@ -59,14 +59,7 @@
 			<!-- END - ABOUT BODY CONTENT -->
 				
 			<!-- OFFICE LOCATIONS -->
-			<!--article class="locations">
-				<h3>Locations</h3>
 
-				<= $page->locations()->kirbytext() ?>
-
-				<php snippet('visitenkarte-bln') ?>
-			</article-->
-				
 		</main>
 		<!-- END - ABOUT PAGE MAIN CONTENT -->
 

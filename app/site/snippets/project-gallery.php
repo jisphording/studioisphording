@@ -1,4 +1,7 @@
 <?php
+
+use Kirby\Cms\Html;
+
 /**
  * Project Gallery Snippet
  * Handles both videos and images with WebP prioritization and duplicate handling
@@ -89,23 +92,29 @@ $videoPath = $videoPath ?? null;
 			if ($selectedImage): ?>
 				<li>
 					<figure class="showcase__grid--image">
-						<?php if ($useResponsiveImages): ?>
-							<?php 
+						<?php
+						$responsiveImage = null;
+
+						if ($useResponsiveImages) {
 							try {
-								echo $site->getResponsiveImage($selectedImage, $page->title(), 'showcase__grid--image--inside');
+								$responsiveImage = $site->getResponsiveImage($selectedImage, $page->title()->value(), 'showcase__grid--image--inside');
 							} catch (Exception $e) {
-								// Fallback: create a basic responsive image using thumb method
-								$thumb = $site->getThumbnail($selectedImage, 800, 640, 85);
-								echo '<img src="' . $thumb->url() . '" alt="' . $page->title() . '" class="showcase__grid--image--inside">';
+								// Fall through to the fallback thumb below.
 							}
-							?>
-						<?php else: ?>
-							<?php 
-							// Fallback: create a basic responsive image using thumb method
+						}
+
+						if ($responsiveImage !== null) {
+							echo $responsiveImage;
+						} else {
+							// Fallback: a basic thumb image, used when responsive images
+							// are off or getResponsiveImage() threw.
 							$thumb = $site->getThumbnail($selectedImage, 800, 640, 85);
-							?>
-							<img src="<?= $thumb->url() ?>" alt="<?= $page->title() ?>" class="showcase__grid--image--inside">
-						<?php endif; ?>
+							echo Html::img($thumb->url(), [
+								'alt'   => $page->title()->value(),
+								'class' => 'showcase__grid--image--inside',
+							]);
+						}
+						?>
 					</figure>
 				</li>
 			<?php endif;

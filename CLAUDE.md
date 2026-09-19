@@ -4,7 +4,7 @@
 
 Kirby CMS 5.5 (flat-file, PHP) under `app/`, multi-language (de default,
 en, it, es — content exists for de/en/it), custom plugins in
-`app/site/plugins` (gallery, media-processing, site-methods,
+`app/site/plugins` (helpers, media-processing, site-methods,
 vite-manifest; no Panel/blueprints in use). Front-end built with Vite 8 +
 Sass + Three.js from `dev/` into `app/assets/bundle`. PHP 8.3–8.5,
 Composer 2.x, Node ≥ 20.19. Deploy via rsync to IONOS
@@ -23,6 +23,13 @@ npm run php     # PHP dev server via Kirby's router (localhost:8000)
 
 # Build
 npm run build
+
+# PHP unit tests — boot a real Kirby against throwaway fixtures and pin
+# app/site behaviour (site methods, snippets, snippet references). Fast,
+# no server, no network. Known-bug tests assert the correct (not-yet-shipped)
+# behaviour and are excluded from the default run.
+npm run test:php
+app/vendor/bin/phpunit --group known-bug   # runs only the known-bug tests
 
 # Verification gate — must stay green
 bash scripts/smoke.sh
@@ -57,13 +64,29 @@ often already held by an unrelated local service.
   not something an agent runs.
 - **Never ssh to the server with a write command.** Read-only checks
   (`php -v`, `ls`) only, and only after asking the user first.
-- `bash scripts/smoke.sh` is the verification gate — leave it at least as
-  green as you found it (it should be fully green from Phase 2 onward of
-  the Kirby 5 recovery plan). It aborts with a clear message instead of
-  passing if its target port is already held by another process or its
-  own `php -S` dies, and it asserts the CSS bundle, all five webfonts,
-  and the home showreel video (derived from rendered markup) return 200,
-  plus that the home page markup carries no hand-built `/content/` path.
+- `npm run test:php` (PHPUnit) and `bash scripts/smoke.sh` are the
+  verification gate — leave both at least as green as you found them.
+  `npm run test:php` must exit 0; `scripts/smoke.sh` should be fully green
+  from Phase 2 onward of the Kirby 5 recovery plan. smoke aborts with a
+  clear message instead of passing if its target port is already held by
+  another process or its own `php -S` dies, and it asserts the CSS bundle,
+  all five webfonts, and the home showreel video (derived from rendered
+  markup) return 200, plus that the home page markup carries no hand-built
+  `/content/` path.
+- PHP tests live in `tests/php/` (outside `app/`, so `scripts/deploy.sh`
+  never ships them), mirroring the `app/site` path under test. They extend
+  `tests/php/KirbyTestCase.php`, which boots a real Kirby against a
+  throwaway copy of `tests/php/fixtures/` and never touches `app/content`.
+  Known bugs are pinned by `#[Group('known-bug')]` tests asserting the
+  correct behaviour, excluded from the default run and un-grouped by the
+  phase that fixes each bug. phpunit is a `require-dev` dependency —
+  `composer install --no-dev` (what the deploy runs) removes it. See
+  `readme/QUICK_START.md` for how to write one.
+- Escape every content field a template/snippet echoes (`->escape()`,
+  `esc()`, `->kirbytext()`, or `->titleHtml()` for titles carrying `<mark>`/
+  `<br>`); intentionally raw output needs `// raw: <reason>` inside the `<?=`
+  tag. `tests/php/OutputEscapingGuardTest.php` enforces it — see
+  `readme/QUICK_START.md`.
 - **Always test code changes.** Before changing code, find and run the
   tests that cover it; if none do, write sensible ones in the same change
   (pin current behaviour first when refactoring, and add a test that fails
