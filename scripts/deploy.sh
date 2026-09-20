@@ -113,6 +113,7 @@ EXCLUDES=(
   --exclude='/site/accounts/'
   --exclude='/site/config/config.localhost.php'
   --exclude='/site/config/config.127.0.0.1.php'
+  --exclude='/site/config/config.studioisphording.ddev.site.php'
   --exclude='/media/'
   # Server-owned binaries — protect from --delete, never push.
   --exclude='/content/'

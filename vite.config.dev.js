@@ -1,8 +1,18 @@
 import { defineConfig } from 'vite'
 import { resolve, dirname } from 'path'
+import { readFileSync } from 'fs'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+
+// `npm run dev:https` (VITE_HTTPS=1) serves Vite over TLS with mkcert certs from
+// .certs/, so pages on https://*.ddev.site are not blocked as mixed content
+// (Safari refuses http://localhost scripts on an https page).
+const useHttps = process.env.VITE_HTTPS === '1'
+const https = useHttps ? {
+  key: readFileSync(resolve(__dirname, '.certs/localhost-key.pem')),
+  cert: readFileSync(resolve(__dirname, '.certs/localhost.pem'))
+} : undefined
 
 export default defineConfig({
   // Set root to dev directory for proper file watching
@@ -38,6 +48,7 @@ export default defineConfig({
   server: {
     port: 9001, // Explicitly set to 9001 as it was found to be available
     host: '0.0.0.0',
+    https,
     open: 'http://localhost:8000', // Open PHP server instead of Vite dev server
     cors: true,
     

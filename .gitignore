@@ -68,3 +68,6 @@ ionos-live-reference/
 
 # local perf snapshots (scripts/perf.sh)
 /perf/
+
+# mkcert dev certs (npm run dev:https)
+.certs/
