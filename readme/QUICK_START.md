@@ -87,11 +87,41 @@ bash scripts/smoke.sh
 # service) — PORT=8011 is the house convention for this repo:
 PORT=8011 bash scripts/smoke.sh
 
+# JS unit tests: Vitest over tests/js/, pinning the behaviour of the
+# front-end modules in dev/js (Three.js Resources/EventEmitter, the Barba
+# readiness gate). No WebGL, no network, no PHP server — Three.js loaders,
+# the Experience singleton and the GSAP/Barba window globals are replaced
+# with the shared fakes in tests/js/helpers/.
+npm test
+npm run test:watch   # same suite, re-running on change
+
 # PHP unit tests: boot a real Kirby against throwaway fixtures and pin the
 # behaviour of app/site (site methods, snippets, snippet references). Fast,
 # no server, no network, never touches app/content.
 npm run test:php
 ```
+
+### Writing a JS test
+
+Tests live in `tests/js/`, mirroring the `dev/js` path of the module under test
+(`tests/js/three/utils/Resources.test.mjs` covers
+`dev/js/three/utils/Resources.mjs`). They never live inside `dev/js`, so the
+Vite bundle and the refactor scan stay test-free. `vitest.config.js` is
+standalone — it deliberately does not import `vite.config.build.js`, so the
+terser/draco/manifest machinery never runs during tests.
+
+The default environment is Node. A test that needs a DOM opts in with a
+`// @vitest-environment jsdom` docblock on the first line. Nothing real is ever
+loaded: use the shared fakes in `tests/js/helpers/` — `fakeLoader.mjs` for the
+Three.js loaders (records `load()` calls, settles them on demand with
+`resolve(path)` / `reject(path)`), `fakeExperience.mjs` for the `Experience`
+singleton (`vi.mock` factory), and `globals.mjs` for `window.gsap` and a
+`matchMedia` stub.
+
+A characterization test that documents a *known bug* asserts the correct
+behaviour and is marked `it.fails`, which Vitest counts as passing while the bug
+is present; the phase that fixes the bug flips it back to `it`. Never weaken an
+existing assertion to get green.
 
 ### Writing a PHP test
 

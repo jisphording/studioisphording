@@ -24,6 +24,12 @@ npm run php     # PHP dev server via Kirby's router (localhost:8000)
 # Build
 npm run build
 
+# JS unit tests — Vitest over tests/js/, mirroring the dev/js path under
+# test. No WebGL, no network, no PHP server; DOM tests opt into jsdom with a
+# `// @vitest-environment jsdom` docblock. Runs in under a second.
+npm test
+npm run test:watch
+
 # PHP unit tests — boot a real Kirby against throwaway fixtures and pin
 # app/site behaviour (site methods, snippets, snippet references). Fast,
 # no server, no network. Known-bug tests assert the correct (not-yet-shipped)
@@ -64,15 +70,25 @@ often already held by an unrelated local service.
   not something an agent runs.
 - **Never ssh to the server with a write command.** Read-only checks
   (`php -v`, `ls`) only, and only after asking the user first.
-- `npm run test:php` (PHPUnit) and `bash scripts/smoke.sh` are the
-  verification gate — leave both at least as green as you found them.
-  `npm run test:php` must exit 0; `scripts/smoke.sh` should be fully green
+- `npm test` (Vitest), `npm run test:php` (PHPUnit) and
+  `bash scripts/smoke.sh` are the verification gate — leave all three at
+  least as green as you found them.
+  `npm test` and `npm run test:php` must exit 0; `scripts/smoke.sh` should be fully green
   from Phase 2 onward of the Kirby 5 recovery plan. smoke aborts with a
   clear message instead of passing if its target port is already held by
   another process or its own `php -S` dies, and it asserts the CSS bundle,
   all five webfonts, and the home showreel video (derived from rendered
   markup) return 200, plus that the home page markup carries no hand-built
   `/content/` path.
+- JS tests live in `tests/js/` (outside `app/` and outside `dev/js`, so
+  neither `scripts/deploy.sh` nor the Vite bundle ever picks them up),
+  mirroring the `dev/js` path under test — e.g.
+  `tests/js/three/utils/EventEmitter.test.mjs`. Shared fakes for the
+  Three.js loaders, the `Experience` singleton and the GSAP/Barba window
+  globals live in `tests/js/helpers/`; reuse them rather than loading
+  anything real. Characterization tests that document a known bug assert
+  the *correct* behaviour via `it.fails`, which the phase fixing that bug
+  flips back to `it`. See `readme/QUICK_START.md`.
 - PHP tests live in `tests/php/` (outside `app/`, so `scripts/deploy.sh`
   never ships them), mirroring the `app/site` path under test. They extend
   `tests/php/KirbyTestCase.php`, which boots a real Kirby against a
