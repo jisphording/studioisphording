@@ -18,11 +18,7 @@ import { Debug } from './../utils/Debug.mjs'
 import { Resources } from './../utils/Resources.mjs'
 
 // EXPERIENCE WORLDS & RESOURCES
-import { World as World_01 } from '../projects/isphording-inneneinrichtung/World.mjs'
-import World_01_Sources from '../projects/isphording-inneneinrichtung/World_Sources.mjs'
-
-import { World as World_02 } from '../projects/moodboard/World.mjs'
-import World_02_Sources from '../projects/moodboard/World_Sources.mjs'
+import { worlds } from '../worlds.mjs'
 
 // Storing the singleton instance
 let instance = null
@@ -46,7 +42,7 @@ export class Experience
 		instance = this
 
 		// ### DEV ### - Global Access
-		window.experience = this
+		if ( import.meta.env.DEV ) window.experience = this
 
 		// OPTIONS
 		this.canvas = canvas
@@ -60,14 +56,16 @@ export class Experience
 		this.debug = new Debug()
 
 		// SPECIFIC WORLD
-		// This is probably really verbose and shoould be refactored.
-		if ( world == 'World_01' ) {
-			this.resources = new Resources( World_01_Sources, 'batch', 'isphording-inneneinrichtung' )
-			this.world = new World_01()
+		// Resources must exist before the World is constructed: World reads experience.resources.
+		this.world = null
+		const entry = Object.hasOwn( worlds, world ) ? worlds[ world ] : null
+
+		if ( entry ) {
+			this.resources = new Resources( entry.sources, entry.mode, entry.name )
+			this.world = new entry.World()
 		}
-		else if ( world == 'World_02' ) {
-			this.resources = new Resources( World_02_Sources, 'progressive', 'moodboard' )
-			this.world = new World_02()
+		else {
+			console.error( `Experience: unknown world "${ world }". Registered worlds: ${ Object.keys( worlds ).join( ', ' ) }` )
 		}
 
 		// LISTEN TO EVENT EMITTERS
@@ -99,7 +97,7 @@ export class Experience
 
 	update()
 	{
-		this.world.update()
+		if ( this.world ) this.world.update()
 		this.camera.update()
 		this.renderer.update()
 	}

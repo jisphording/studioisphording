@@ -43,7 +43,7 @@ export class ImageZoom {
 
         const close = document.createElement('button');
         close.className = 'lightbox-close';
-        close.innerHTML = '&times;';
+        close.textContent = '×';
         close.setAttribute('aria-label', 'Close image lightbox');
 
         overlay.appendChild(img);
@@ -53,12 +53,17 @@ export class ImageZoom {
         const abortController = new AbortController();
 
         const closeLightbox = () => {
-            document.body.removeChild(overlay);
+            if (overlay.parentNode === document.body) {
+                document.body.removeChild(overlay);
+            }
             this.panControls.enable();
             abortController.abort();
         };
 
-        close.addEventListener('click', closeLightbox, { signal: abortController.signal });
+        close.addEventListener('click', (event) => {
+            event.stopPropagation();
+            closeLightbox();
+        }, { signal: abortController.signal });
         overlay.addEventListener('click', closeLightbox, { signal: abortController.signal });
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {

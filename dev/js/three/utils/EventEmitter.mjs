@@ -6,7 +6,7 @@
  * EventEmitter Class
  * 
  * A flexible event management system based on Bruno Simon's EventEmitter
- * Enhanced with batch processing capabilities and middleware support
+ * Enhanced with batch processing capabilities
  * 
  * @see https://gist.github.com/brunosimon/120acda915e6629e3a4d497935b16bdf
  */
@@ -14,7 +14,6 @@ export default class EventEmitter {
     constructor() {
         this.callbacks = {}
         this.callbacks.base = {}
-        this.middleware = {}
         this.processingHandlers = {}
     }
 
@@ -62,9 +61,10 @@ export default class EventEmitter {
     /**
      * Remove event listener(s)
      * @param {string} _names - Event name(s) to remove
+     * @param {Function} [callback] - Remove only this callback; omit to remove every listener for the name
      * @returns {EventEmitter} This instance for chaining
      */
-    off(_names) {
+    off(_names, callback) {
         // Errors
         if (typeof _names === 'undefined' || _names === '') {
             console.warn('wrong name')
@@ -86,28 +86,34 @@ export default class EventEmitter {
 
             // Remove specific callback in namespace
             else {
-                // Default
-                if (name.namespace === 'base') {
-                    // Try to remove from each namespace
-                    for (const namespace in this.callbacks) {
-                        if (this.callbacks[namespace] instanceof Object && this.callbacks[namespace][name.value] instanceof Array) {
-                            delete this.callbacks[namespace][name.value]
+                // Default: try each namespace
+                const namespaces = name.namespace === 'base'
+                    ? Object.keys(this.callbacks)
+                    : [name.namespace]
 
-                            // Remove namespace if empty
-                            if (Object.keys(this.callbacks[namespace]).length === 0)
-                                delete this.callbacks[namespace]
-                        }
+                namespaces.forEach((namespace) => {
+                    const listeners = this.callbacks[namespace]
+
+                    if (!(listeners instanceof Object) || !(listeners[name.value] instanceof Array))
+                        return
+
+                    if (typeof callback === 'function') {
+                        const index = listeners[name.value].indexOf(callback)
+                        if (index > -1)
+                            listeners[name.value].splice(index, 1)
+
+                        // Prune the name once its last callback is gone
+                        if (listeners[name.value].length === 0)
+                            delete listeners[name.value]
                     }
-                }
-
-                // Specified namespace
-                else if (this.callbacks[name.namespace] instanceof Object && this.callbacks[name.namespace][name.value] instanceof Array) {
-                    delete this.callbacks[name.namespace][name.value]
+                    else {
+                        delete listeners[name.value]
+                    }
 
                     // Remove namespace if empty
-                    if (Object.keys(this.callbacks[name.namespace]).length === 0)
-                        delete this.callbacks[name.namespace]
-                }
+                    if (Object.keys(listeners).length === 0)
+                        delete this.callbacks[namespace]
+                })
             }
         })
 
@@ -118,7 +124,7 @@ export default class EventEmitter {
      * Trigger an event
      * @param {string} _name - Event name to trigger
      * @param {*} _args - Arguments to pass to callbacks
-     * @returns {*} Result from callbacks
+     * @returns {*} Result of the first callback that ran, or null if none did
      */
     trigger(_name, _args) {
         // Errors
@@ -128,16 +134,19 @@ export default class EventEmitter {
         }
 
         let finalResult = null
-        let result = null
+        let hasResult = false
+
+        const run = (callback) => {
+            const result = callback.apply(this, args)
+
+            if (!hasResult) {
+                finalResult = result
+                hasResult = true
+            }
+        }
 
         // Default args
         const args = !(_args instanceof Array) ? [_args] : _args
-
-        // Apply middleware if exists
-        const middlewareResult = this.applyMiddleware(_name, args)
-        if (middlewareResult !== undefined) {
-            args[0] = middlewareResult
-        }
 
         // Resolve names (should only have one event)
         let name = this.resolveNames(_name)
@@ -150,13 +159,7 @@ export default class EventEmitter {
             // Try to find callback in each namespace
             for (const namespace in this.callbacks) {
                 if (this.callbacks[namespace] instanceof Object && this.callbacks[namespace][name.value] instanceof Array) {
-                    this.callbacks[namespace][name.value].forEach(function(callback) {
-                        result = callback.apply(this, args)
-
-                        if (typeof finalResult === 'undefined') {
-                            finalResult = result
-                        }
-                    })
+                    this.callbacks[namespace][name.value].slice().forEach(run)
                 }
             }
         }
@@ -169,49 +172,11 @@ export default class EventEmitter {
             }
 
             if (this.callbacks[name.namespace][name.value]) {
-                this.callbacks[name.namespace][name.value].forEach(function(callback) {
-                    result = callback.apply(this, args)
-
-                    if (typeof finalResult === 'undefined')
-                        finalResult = result
-                })
+                this.callbacks[name.namespace][name.value].slice().forEach(run)
             }
         }
 
         return finalResult
-    }
-
-    /**
-     * Register middleware for an event
-     * Middleware can transform data before it reaches event handlers
-     * @param {string} eventName - Event name to add middleware for
-     * @param {Function} middleware - Middleware function
-     * @returns {EventEmitter} This instance for chaining
-     */
-    use(eventName, middleware) {
-        if (!this.middleware[eventName]) {
-            this.middleware[eventName] = []
-        }
-        this.middleware[eventName].push(middleware)
-        return this
-    }
-
-    /**
-     * Apply middleware to event data
-     * @param {string} eventName - Event name
-     * @param {Array} args - Event arguments
-     * @returns {*} Transformed data or undefined
-     */
-    applyMiddleware(eventName, args) {
-        if (!this.middleware[eventName] || this.middleware[eventName].length === 0) {
-            return undefined
-        }
-
-        let data = args[0]
-        for (const middleware of this.middleware[eventName]) {
-            data = middleware(data)
-        }
-        return data
     }
 
     /**
@@ -261,66 +226,6 @@ export default class EventEmitter {
         })
 
         return this
-    }
-
-    /**
-     * Create a scoped event handler with automatic cleanup
-     * @param {Object} context - Context object containing dependencies
-     * @returns {Object} Scoped event handler methods
-     */
-    createScopedHandler(context) {
-        const registeredEvents = []
-        
-        return {
-            on: (eventName, callback) => {
-                this.on(eventName, callback)
-                registeredEvents.push({ name: eventName, callback })
-            },
-            
-            off: (eventName) => {
-                this.off(eventName)
-                const index = registeredEvents.findIndex(e => e.name === eventName)
-                if (index > -1) {
-                    registeredEvents.splice(index, 1)
-                }
-            },
-            
-            cleanup: () => {
-                registeredEvents.forEach(event => {
-                    this.off(event.name)
-                })
-                registeredEvents.length = 0
-            },
-            
-            context
-        }
-    }
-
-    /**
-     * Wait for an event to occur (Promise-based)
-     * @param {string} eventName - Event name to wait for
-     * @param {number} [timeout] - Optional timeout in milliseconds
-     * @returns {Promise} Promise that resolves when event occurs
-     */
-    waitFor(eventName, timeout) {
-        return new Promise((resolve, reject) => {
-            let timeoutId
-            
-            const handler = (data) => {
-                if (timeoutId) clearTimeout(timeoutId)
-                this.off(eventName, handler)
-                resolve(data)
-            }
-            
-            this.on(eventName, handler)
-            
-            if (timeout) {
-                timeoutId = setTimeout(() => {
-                    this.off(eventName, handler)
-                    reject(new Error(`Timeout waiting for event: ${eventName}`))
-                }, timeout)
-            }
-        })
     }
 
     /**
