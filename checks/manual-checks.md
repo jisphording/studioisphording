@@ -50,3 +50,14 @@ Each entry is a `### MC-nn — <headline>` block with the following bolded keys:
 **Verified against**: null
 **Status**: unverified
 **Blocked reason**:
+
+### MC-03 — Both Three.js worlds render in the production bundle; moodboard batch sequencing and failed-texture tolerance unchanged
+
+**Claim**: "Both Three.js worlds render in the production bundle; moodboard batch sequencing and failed-texture tolerance unchanged"
+**Doc**: plan/refactor-dev-js/03-resources-collapse-the-duplicated-batch-completion-and-remove-dead-loading-state.md
+**Covers**: dev/js/three/utils/Resources.mjs, dev/js/three/projects/moodboard/ProgressiveLoader.mjs
+**Procedure**: Build (`npm run build`), serve the production bundle (`cd app && php -S 0.0.0.0:<port> kirby/router.php`) and browse that same origin so the dev-only config.localhost.php / config.127.0.0.1.php never load. World_01: open /de/projects/isphording-inneneinrichtung and confirm the `[data-world="World_01"]` canvas renders the display model (phase 3 confirmed this — GLB request 200, model visible in a screenshot). World_02 (moodboard): **currently unreachable** — no page under app/content uses the `moodboard` template and no route serves it, so the batch sequencing and broken-image tolerance are covered only by `tests/js/three/utils/Resources.test.mjs`. Re-run this check in full once a moodboard page exists.
+**Last verified**: null
+**Verified against**: null
+**Status**: unverified
+**Blocked reason**: World_02 has no reachable page; World_01 half was observed in phase 3 but not recorded by a human.

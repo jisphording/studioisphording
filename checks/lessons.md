@@ -53,4 +53,12 @@ Each entry is a `### LS-nn — <headline>` block with the following bolded keys:
 **Approver**: null
 **Status**: candidate
 
+### LS-04 — Browser-QA the production bundle by browsing the exact origin…
+
+**Lesson**: Browser-QA the production bundle by browsing the exact origin php -S binds (http://0.0.0.0:<port>) — via the LAN IP every asset URL still renders as 0.0.0.0 and is CORS-blocked, so the bundle never runs and the world looks broken.
+**Anchor**: readme/QUICK_START.md
+**Added**: 2026-09-20
+**Approver**: null
+**Status**: candidate
+
 (End of file)
