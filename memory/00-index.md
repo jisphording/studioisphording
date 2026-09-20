@@ -28,6 +28,12 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-016 | [keep-getthumbnail-getresponsiveimage-signatures-replace-the-ten](decisions/016-keep-getthumbnail-getresponsiveimage-signatures-replace-the-ten.md) | refactor-app-site/decisions/6 |
 | MEM-017 | [escape-text-context-field-output-with-escape-or-esc-except-field](decisions/017-escape-text-context-field-output-with-escape-or-esc-except-field.md) | refactor-app-site/decisions/7 |
 | MEM-018 | [phpunit-12-as-a-require-dev-dependency-in-app-composer-json-conf](decisions/018-phpunit-12-as-a-require-dev-dependency-in-app-composer-json-conf.md) | refactor-app-site/decisions/8 |
+| MEM-030 | [experience-singleton-stays-the-service-locator](decisions/030-experience-singleton-stays-the-service-locator.md) | refactor-dev-js/decisions/2 |
+| MEM-031 | [rate-sinks-by-data-taint-not-by-sink-name](decisions/031-rate-sinks-by-data-taint-not-by-sink-name.md) | refactor-dev-js/decisions/3 |
+| MEM-032 | [js-unit-suite-runs-on-vitest-5-plus-jsdom](decisions/032-js-unit-suite-runs-on-vitest-5-plus-jsdom.md) | refactor-dev-js/decisions/7 |
+| MEM-033 | [characterization-tests-first-then-seam-tests-per-phase](decisions/033-characterization-tests-first-then-seam-tests-per-phase.md) | refactor-dev-js/decisions/8 |
+| MEM-034 | [npm-test-stays-out-of-smoke-sh-and-deploy-sh](decisions/034-npm-test-stays-out-of-smoke-sh-and-deploy-sh.md) | refactor-dev-js/decisions/10 |
+| MEM-035 | [webgl-gsap-and-barba-stay-under-manual-browser-qa](decisions/035-webgl-gsap-and-barba-stay-under-manual-browser-qa.md) | refactor-dev-js/decisions/11 |
 
 ### Conventions
 
@@ -47,6 +53,9 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-027 | [known-bugs-are-documented-by-tests-asserting-the-correct-behavio](conventions/027-known-bugs-are-documented-by-tests-asserting-the-correct-behavio.md) | refactor-app-site/conventions/9 |
 | MEM-028 | [each-phase-spot-checks-that-its-new-tests-have-teeth-temporarily](conventions/028-each-phase-spot-checks-that-its-new-tests-have-teeth-temporarily.md) | refactor-app-site/conventions/10 |
 | MEM-029 | [test-files-use-tabs-matching-app-site-php-style](conventions/029-test-files-use-tabs-matching-app-site-php-style.md) | refactor-app-site/conventions/11 |
+| MEM-036 | [browser-qa-runs-the-production-bundle](conventions/036-browser-qa-runs-the-production-bundle.md) | refactor-dev-js/conventions/3 |
+| MEM-037 | [animbarba-path-and-export-stay-stable](conventions/037-animbarba-path-and-export-stay-stable.md) | refactor-dev-js/conventions/5 |
+| MEM-038 | [test-files-use-2-space-indentation](conventions/038-test-files-use-2-space-indentation.md) | refactor-dev-js/conventions/9 |
 
 ## Purge log
 
