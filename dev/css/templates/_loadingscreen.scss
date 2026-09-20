@@ -97,7 +97,15 @@ html.js-ready .loadingScreen {
 
 /* When barba is transitioning, let GSAP fully control the loading screen */
 html.is-transitioning .loadingScreen {
-    visibility: visible !important;
-    opacity: 1 !important;
     transition: none !important; /* Disable CSS transitions during GSAP animations */
+}
+
+/* The wipe is driven by scaleX, so the cover can be forced fully opaque. With
+   reduced motion the JS cross-fades autoAlpha instead, and !important here
+   would pin it at 1 and turn the fade into a hard cut. */
+@media (prefers-reduced-motion: no-preference) {
+    html.is-transitioning .loadingScreen {
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
 }

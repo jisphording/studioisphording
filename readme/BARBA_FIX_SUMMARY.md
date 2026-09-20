@@ -143,6 +143,18 @@ html.is-transitioning .loadingScreen {
 
 The loading screen animation should now work properly during page transitions!
 
+## Module layout
+
+`dev/js/animation/animBarba.mjs` is the orchestrator (`animBarba()`, library
+checks, `barba.init` transition, hooks) and re-exports `waitForPageReady`.
+The rest lives in `dev/js/animation/barba/`:
+
+- `timing.mjs` — timing constants and `prefersReducedMotion()`
+- `readiness.mjs` — `waitForPageReady`, `collectReadinessSignals`
+- `loaderTween.mjs` — `animateLoaderIn`, `animateLoaderOut`
+- `pageState.mjs` — `prepareNewPage`, `assertSingleContainer`, `restartVideos`,
+  transition classes, `resetPageElements`, `resetParallaxElements`
+
 ## Readiness gate (Phase 5)
 
 The cover no longer opens on a fixed timer — it holds until the incoming page is
@@ -154,7 +166,7 @@ actually presentable, then reveals.
   (skipped when `readyState >= 2`) — against a single ceiling. It **always
   resolves**, never rejects or hangs, and clears all listeners in a `finally`
   so a timed-out navigation cannot leak them onto a detached container.
-- Timing is tunable in one place at the top of the module: `READY_TIMEOUT_MS`
+- Timing is tunable in one place, `barba/timing.mjs`: `READY_TIMEOUT_MS`
   (3000, the ceiling), `MIN_COVER_MS` (400, a floor so a warm cache does not
   flash open), `REVEAL_DURATION_S` (0.7, down from the old 1.8s now that the
   cover does real work) and `CROSSFADE_DURATION_S` (0.3).
