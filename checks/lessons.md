@@ -61,4 +61,12 @@ Each entry is a `### LS-nn — <headline>` block with the following bolded keys:
 **Approver**: null
 **Status**: candidate
 
+### LS-05 — Build a pipeline spine against a stub encoder interface…
+
+**Lesson**: Build a pipeline spine against a stub encoder interface first — config resolution, naming, cache and manifest become fully unit-testable before the heavy dependency (sharp/ffmpeg) is installed, and the real encoder drops into a contract that already has tests.
+**Anchor**: scripts/media/encoder.mjs
+**Added**: 2026-09-21
+**Approver**: null
+**Status**: candidate
+
 (End of file)

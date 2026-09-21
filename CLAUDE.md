@@ -10,6 +10,11 @@ Sass + Three.js from `dev/` into `app/assets/bundle`. PHP 8.3–8.5,
 Composer 2.x, Node ≥ 20.19. Deploy via rsync to IONOS
 (`scripts/deploy.sh`).
 
+Build-time media pipeline in `scripts/media/` (config resolution, derivative
+naming, content-hash cache, manifest writer), configured by `media.config.mjs`
+at the repo root and emitting derivatives plus `manifest.json` into
+`app/assets/media/`. It only ever *reads* `app/content/`.
+
 ## Commands
 
 ```bash
@@ -65,6 +70,15 @@ often already held by an unrelated local service.
 
 - **Never modify `app/content/`** — it's live content, not test fixture
   data.
+- **Media pipeline invariants.** Pipeline JS lives in `scripts/media/` —
+  never in `dev/js` (the Vite bundle picks it up) and never under `app/`
+  (`scripts/deploy.sh` ships it). The single output root for every
+  derivative is `app/assets/media/`, the one tree that is both gitignored
+  and actually pushed by the deploy's rsync. Quality intent is an
+  SSIMULACRA2 `target` score or an explicit per-codec `quality` map —
+  never one scalar across AVIF/WebP/JPEG, whose scales are not comparable.
+  Masters live only on this workstation, so a fresh clone cannot run the
+  pipeline without the master archive present.
 - **Never run `scripts/deploy.sh` without `--dry-run`.** Review the
   dry-run output before any real deploy; the real deploy is a human call,
   not something an agent runs.
@@ -82,8 +96,9 @@ often already held by an unrelated local service.
   `/content/` path.
 - JS tests live in `tests/js/` (outside `app/` and outside `dev/js`, so
   neither `scripts/deploy.sh` nor the Vite bundle ever picks them up),
-  mirroring the `dev/js` path under test — e.g.
-  `tests/js/three/utils/EventEmitter.test.mjs`. Shared fakes for the
+  mirroring the path under test — `dev/js/...` under
+  `tests/js/...` (e.g. `tests/js/three/utils/EventEmitter.test.mjs`) and
+  `scripts/media/...` under `tests/js/media/...`. Shared fakes for the
   Three.js loaders, the `Experience` singleton and the GSAP/Barba window
   globals live in `tests/js/helpers/`; reuse them rather than loading
   anything real. Characterization tests that document a known bug assert

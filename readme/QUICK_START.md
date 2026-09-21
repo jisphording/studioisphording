@@ -103,10 +103,13 @@ npm run test:php
 
 ### Writing a JS test
 
-Tests live in `tests/js/`, mirroring the `dev/js` path of the module under test
+Tests live in `tests/js/`, mirroring the path of the module under test
 (`tests/js/three/utils/Resources.test.mjs` covers
-`dev/js/three/utils/Resources.mjs`). They never live inside `dev/js`, so the
-Vite bundle and the refactor scan stay test-free. `vitest.config.js` is
+`dev/js/three/utils/Resources.mjs`; `tests/js/media/cache.test.mjs` covers
+`scripts/media/cache.mjs`). They never live inside `dev/js`, so the
+Vite bundle and the refactor scan stay test-free. Media-pipeline tests use a
+temp directory for both the fake content tree and the media root — they never
+read `app/content/`. `vitest.config.js` is
 standalone — it deliberately does not import `vite.config.build.js`, so the
 terser/draco/manifest machinery never runs during tests.
 
