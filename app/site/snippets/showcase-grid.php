@@ -16,7 +16,13 @@ if (!$parentPage) {
 	return;
 }
 
-$subpages = $parentPage->children()->limit($limit); ?>
+$subpages = $parentPage->children()->limit($limit);
+
+// Only the very first grid item is the measured LCP candidate on both /de
+// and /de/projects (perf snapshot RES-01) — eagerly loading more than that
+// one image would spend bytes without moving LCP.
+$eagerCount = 1;
+$index = 0; ?>
 
 <ul class="showcase__grid">
 
@@ -32,7 +38,7 @@ $subpages = $parentPage->children()->limit($limit); ?>
 	<figure class="showcase__grid--image">
 
 		<!-- Responsive Image -->
-		<?= kirby()->site()->getResponsiveImage($image, 'Project: ' . $subpage->title(), 'showcase__grid--image--inside') ?>
+		<?= kirby()->site()->getResponsiveImage($image, 'Project: ' . $subpage->title(), 'showcase__grid--image--inside', null, $index < $eagerCount) ?>
 
 	</figure>
 
@@ -47,6 +53,6 @@ $subpages = $parentPage->children()->limit($limit); ?>
 		</a>
 	</li>
 
-<?php endforeach ?>
+<?php $index++; endforeach ?>
 
 </ul>

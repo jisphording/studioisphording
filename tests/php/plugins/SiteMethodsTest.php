@@ -60,22 +60,32 @@ final class SiteMethodsTest extends KirbyTestCase
 		$this->assertSame(1, $imgs->length, 'exactly one <img>');
 		$img = $imgs->item(0);
 
-		$this->assertStringContainsString('-490x390-q60.', $img->getAttribute('src'), 'src is the 490-wide thumb');
+		$this->assertStringContainsString('-480x384-q60.', $img->getAttribute('src'), 'src is the 480-wide thumb');
 		$this->assertSame('lazy', $img->getAttribute('loading'));
+		$this->assertFalse($img->hasAttribute('fetchpriority'), 'non-priority images carry no fetchpriority');
 		$this->assertSame('showcase', $img->getAttribute('class'));
 		$this->assertSame('Alpha keyvisual', $img->getAttribute('alt'));
 
 		$this->assertSame(
-			[490, 800, 1200, 1600, 1920, 2160, 2560, 3200, 3840, 4320],
+			[480, 800, 1200, 1600, 2000, 2560],
 			$this->srcsetWidths($img->getAttribute('srcset')),
-			'ten srcset candidates in the documented order'
+			'six pruned srcset candidates in the documented order'
 		);
 
 		$this->assertSame(
-			'(max-width: 768px) 490px, (max-width: 1024px) 800px, (max-width: 1440px) 1200px, (max-width: 1920px) 1600px, (max-width: 2160px) 1920px, (max-width: 2560px) 2160px, (max-width: 3200px) 2560px, (max-width: 3840px) 3200px, (max-width: 4320px) 3840px, 4320px',
+			'(max-width: 1024px) 140vw, 50.6vw',
 			$img->getAttribute('sizes'),
-			'default sizes attribute when none is passed'
+			'default sizes attribute reflects the real single/two-column grid geometry, scaled by the CSS transform'
 		);
+	}
+
+	public function testGetResponsiveImagePriorityEmitsEagerAndFetchpriority(): void
+	{
+		$html  = $this->kirby->site()->getResponsiveImage($this->keyvisual(), 'Alpha keyvisual', 'showcase', null, true);
+		$img   = $this->dom($html)->query('//img')->item(0);
+
+		$this->assertSame('eager', $img->getAttribute('loading'));
+		$this->assertSame('high', $img->getAttribute('fetchpriority'));
 	}
 
 	public function testGetResponsiveImageUsesGivenSizes(): void

@@ -24,13 +24,19 @@
 				$showreelWebm   = $page->file($showreelName . '.webm');
 				?>
 
+				<?php // preload="none": the reel is 22.6 MB (RES-02) and is not the
+				// LCP element (the first showcase grid image is), so it must
+				// not compete for bandwidth before first paint. The poster
+				// stays as the fast-loading fallback frame. Revisit once
+				// phase 6's re-encode shrinks the reel enough to make eager
+				// buffering affordable again. ?>
 				<?php if ($showreelMp4 || $showreelWebm): ?>
-				<video playsinline autoplay muted loop<?= $showreelPoster ? ' poster="' . $showreelPoster->url() . '"' : '' ?>>
-					<?php if ($showreelMp4): ?>
-					<source src="<?= $showreelMp4->url() ?>" type="video/mp4" />
-					<?php endif ?>
+				<video playsinline autoplay muted loop preload="none"<?= $showreelPoster ? ' poster="' . $showreelPoster->url() . '"' : '' ?>>
 					<?php if ($showreelWebm): ?>
 					<source src="<?= $showreelWebm->url() ?>" type="video/webm" />
+					<?php endif ?>
+					<?php if ($showreelMp4): ?>
+					<source src="<?= $showreelMp4->url() ?>" type="video/mp4" />
 					<?php endif ?>
 					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $showreelMp4 ? $showreelMp4->url() : $showreelWebm->url() ?>">download it</a>
 					and watch it with your favorite video player!

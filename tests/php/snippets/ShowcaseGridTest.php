@@ -34,6 +34,28 @@ final class ShowcaseGridTest extends KirbyTestCase
 		);
 	}
 
+	public function testShowcaseGridOnlyFirstImageIsEagerAndHighPriority(): void
+	{
+		// RES-01: the perf snapshot names the first grid image as the LCP
+		// element on both /de and /de/projects, so only it should skip
+		// native lazy-loading; the rest must stay lazy.
+		$html  = $this->snippetHtml('showcase-grid', ['parent' => 'projects', 'limit' => 3]);
+		$xpath = $this->dom($html);
+
+		$images = $xpath->query("//figure[contains(@class,'showcase__grid--image')]//img");
+		$this->assertSame(3, $images->length);
+
+		$first = $images->item(0);
+		$this->assertSame('eager', $first->getAttribute('loading'));
+		$this->assertSame('high', $first->getAttribute('fetchpriority'));
+
+		for ($i = 1; $i < $images->length; $i++) {
+			$rest = $images->item($i);
+			$this->assertSame('lazy', $rest->getAttribute('loading'), "image $i stays lazy");
+			$this->assertFalse($rest->hasAttribute('fetchpriority'), "image $i carries no fetchpriority");
+		}
+	}
+
 	public function testShowcaseGridDefaultLimitRendersAllChildrenWhenFewerThanEight(): void
 	{
 		// No limit passed -> default of 8. The fixture has three projects, so
