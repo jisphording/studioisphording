@@ -132,6 +132,14 @@ describe('validateConfig', () => {
     expect(() => validateConfig(eager)).toThrow(/`eager` must be a boolean/)
   })
 
+  it('rejects a non-positive or oversized tolerance', () => {
+    for (const tolerance of [0, -1, 11, '2']) {
+      const config = base()
+      config.overrides = [{ match: 'a/**', tolerance }]
+      expect(() => validateConfig(config)).toThrow(/`tolerance` must be a band half-width/)
+    }
+  })
+
   it('requires a non-empty match on every override', () => {
     const config = base()
     config.overrides = [{ target: 90 }]
@@ -213,7 +221,11 @@ describe('encoderSettings', () => {
   const resolved = { target: 86, quality: { avif: 64 }, eager: true, widths: [480], formats: ['avif'] }
 
   it('uses the target when no raw quality is set for the format', () => {
-    expect(encoderSettings(resolved, 'webp')).toEqual({ format: 'webp', mode: 'target', target: 86 })
+    expect(encoderSettings(resolved, 'webp')).toEqual({ format: 'webp', mode: 'target', target: 86, tolerance: 2 })
+  })
+
+  it('carries an explicit band tolerance, which changes what the loop accepts', () => {
+    expect(encoderSettings({ ...resolved, tolerance: 1 }, 'webp')).toMatchObject({ target: 86, tolerance: 1 })
   })
 
   it('uses the raw quality escape hatch when the format has one', () => {
@@ -271,11 +283,27 @@ describe('loadConfig', () => {
     const config = await loadConfig()
 
     // 88-92 visually lossless for keyvisual/hero, 82-86 excellent elsewhere.
-    expect(resolveSettings(config, 'projects/01-a/a-00_keyvisual.jpg').target).toBeGreaterThanOrEqual(88)
-    expect(resolveSettings(config, 'home/landing_reel.jpg').eager).toBe(true)
+    // The band is target +/- tolerance (DEFAULT_TOLERANCE when unset).
+    const band = (path) => {
+      const { target, tolerance = 2 } = resolveSettings(config, path)
+      return [target - tolerance, target + tolerance]
+    }
 
-    const gallery = resolveSettings(config, 'projects/01-a/a-02-landing-page.jpg')
-    expect(gallery.target).toBeGreaterThanOrEqual(82)
-    expect(gallery.target).toBeLessThanOrEqual(86)
+    expect(band('projects/01-a/a-00_keyvisual.jpg')).toEqual([88, 92])
+    expect(band('home/landing_reel.jpg')).toEqual([88, 92])
+    expect(resolveSettings(config, 'home/landing_reel.jpg').eager).toBe(true)
+    expect(band('projects/01-a/a-02-landing-page.jpg')).toEqual([82, 86])
+  })
+})
+
+describe('budget', () => {
+  const base = { target: 84, widths: [100], formats: ['jpeg'] }
+
+  it('resolves a video budget from an override and rejects a non-byte value', () => {
+    const config = validateConfig({ default: base, overrides: [{ match: 'home/reel.mp4', budget: 8000000 }] })
+    expect(resolveSettings(config, 'home/reel.mp4').budget).toBe(8000000)
+    expect(resolveSettings(config, 'home/other.mp4').budget).toBeUndefined()
+    expect(() => validateConfig({ default: { ...base, budget: '8MB' } })).toThrow(/budget/)
+    expect(() => validateConfig({ default: { ...base, budget: 0 } })).toThrow(/budget/)
   })
 })

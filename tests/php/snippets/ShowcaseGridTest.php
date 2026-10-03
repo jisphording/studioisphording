@@ -56,6 +56,18 @@ final class ShowcaseGridTest extends KirbyTestCase
 		}
 	}
 
+	public function testShowcaseGridRendersPictureForManifestHitAndKeepsEagerFlag(): void
+	{
+		// alpha is in the fixture manifest, beta/gamma are not: the first
+		// (eager) item is a <picture>, the rest fall back to thumb <img>s.
+		$xpath = $this->dom($this->snippetHtml('showcase-grid', ['parent' => 'projects', 'limit' => 3]));
+
+		$this->assertSame(1, $xpath->query('//picture')->length);
+		$first = $xpath->query('//picture//img')->item(0);
+		$this->assertSame('eager', $first->getAttribute('loading'));
+		$this->assertSame('high', $first->getAttribute('fetchpriority'));
+	}
+
 	public function testShowcaseGridDefaultLimitRendersAllChildrenWhenFewerThanEight(): void
 	{
 		// No limit passed -> default of 8. The fixture has three projects, so

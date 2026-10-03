@@ -125,4 +125,20 @@ final class ProjectGalleryTest extends KirbyTestCase
 		$this->assertSame(1, $imgs->length);
 		$this->assertSame('Gamma "Broken" Project', $imgs->item(0)->getAttribute('alt'));
 	}
+
+	public function testGalleryDoesNotGroupImagesByBaseName(): void
+	{
+		// <picture> negotiates formats, so a WebP/JPG pair is no longer
+		// collapsed to one: a stored sibling renders as its own item.
+		$page = $this->kirby->site()->find('projects/02-beta');
+		copy($page->root() . '/beta-work-01.png', $page->root() . '/beta-work-01.webp');
+		$this->app();
+
+		$html = $this->snippetHtml('project-gallery', [
+			'page' => $this->kirby->site()->find('projects/02-beta'),
+			'site' => $this->kirby->site(),
+		]);
+
+		$this->assertSame(2, $this->dom($html)->query('//img')->length);
+	}
 }

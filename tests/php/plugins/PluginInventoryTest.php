@@ -14,6 +14,7 @@ final class PluginInventoryTest extends KirbyTestCase
 		$this->assertSame(
 			[
 				'studio-isphording/helpers',
+				'studioisphording/media-manifest',
 				'studio-isphording/media-processing',
 				'studio-isphording/site-methods',
 				'studioisphording/vite-manifest',
