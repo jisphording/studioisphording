@@ -69,5 +69,10 @@ ionos-live-reference/
 # local perf snapshots (scripts/perf.sh)
 /perf/
 
+# media pipeline: locally built scorer (scripts/media/setup-scorer.sh) and the
+# quality-search cache (scripts/media/cache.mjs) — workstation-only
+/tools/
+/.cache/
+
 # mkcert dev certs (npm run dev:https)
 .certs/

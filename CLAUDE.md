@@ -4,7 +4,7 @@
 
 Kirby CMS 5.5 (flat-file, PHP) under `app/`, multi-language (de default,
 en, it, es — content exists for de/en/it), custom plugins in
-`app/site/plugins` (helpers, media-processing, site-methods,
+`app/site/plugins` (helpers, media-manifest, media-processing, site-methods,
 vite-manifest; no Panel/blueprints in use). Front-end built with Vite 8 +
 Sass + Three.js from `dev/` into `app/assets/bundle`. PHP 8.3–8.5,
 Composer 2.x, Node ≥ 20.19. Deploy via rsync to IONOS
@@ -14,6 +14,11 @@ Build-time media pipeline in `scripts/media/` (config resolution, derivative
 naming, content-hash cache, manifest writer), configured by `media.config.mjs`
 at the repo root and emitting derivatives plus `manifest.json` into
 `app/assets/media/`. It only ever *reads* `app/content/`.
+The `media-manifest` plugin reads that manifest and the `responsive-image`
+snippet renders `<picture>` (AVIF/WebP/JPEG) from it; a manifest miss falls
+back to `getResponsiveImage()` thumbs (still called directly by `about.php`
+and `projects.php`, so it is a live path, not dead code). Full pipeline
+reference: `readme/MEDIA_PIPELINE.md`.
 
 ## Commands
 
@@ -28,6 +33,23 @@ npm run php     # PHP dev server via Kirby's router (localhost:8000)
 
 # Build
 npm run build
+
+# Media derivatives (deliberate, NOT part of build) — sharp AVIF/WebP/JPEG
+# into app/assets/media/; a warm run is a no-op. Flags: --dry-run, --prefix <content path>.
+# A scoped (--prefix) or dry run never writes manifest.json.
+# Quality is SSIMULACRA2-targeted (encode-score-adjust); without the scorer it
+# is mapped from a calibration table and the run says so. Bands and how to
+# change them: readme/PERFORMANCE.md "Fidelity bands".
+bash scripts/media/setup-scorer.sh         # one-time: ssimulacra2 into tools/ (gitignored)
+node scripts/media/index.mjs scorer        # is the scorer available?
+npm run media:images -- --prefix projects/02-screw-driver
+
+# Video ladder — AV1/WebM, VP9/WebM, H.264/MP4 + poster into app/assets/media/
+# (ffmpeg on PATH). Never part of build. The AV1 rung is stepped up in CRF until
+# it fits the `budget` in media.config.mjs (never trims duration/fps; reports a
+# miss at the floor). Unlike images, a scoped run DOES write manifest.json: video
+# runs merge their `videos` entries into it instead of replacing it.
+npm run media:video -- --prefix home/
 
 # JS unit tests — Vitest over tests/js/, mirroring the dev/js path under
 # test. No WebGL, no network, no PHP server; DOM tests opt into jsdom with a
@@ -79,6 +101,12 @@ often already held by an unrelated local service.
   never one scalar across AVIF/WebP/JPEG, whose scales are not comparable.
   Masters live only on this workstation, so a fresh clone cannot run the
   pipeline without the master archive present.
+  The scorer binary (`tools/`) and the quality-search cache
+  (`.cache/media/quality.json`) are workstation-only and gitignored; tests
+  mock the scorer and never invoke a real binary.
+  `scripts/deploy.sh`'s preflight *requires* `app/assets/media/manifest.json`:
+  the tree is inside the `--delete` mirror, so deploying without it would wipe
+  the live derivatives.
 - **Never run `scripts/deploy.sh` without `--dry-run`.** Review the
   dry-run output before any real deploy; the real deploy is a human call,
   not something an agent runs.

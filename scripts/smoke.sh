@@ -163,28 +163,35 @@ for path in "${ASSET_PATHS[@]}"; do
   fi
 done
 
-# Derive the showreel video URL from the rendered home page instead of
-# hardcoding it, so a content rename doesn't silently stop testing it.
-VIDEO_PATH=$(grep -o '<source src="[^"]*"' "$HOME_BODY_FILE" | head -1 | sed -E 's/<source src="([^"]*)"/\1/')
+# Derive every showreel URL (each <source src> plus the poster) from the
+# rendered home page instead of hardcoding them, so a content rename or a
+# ladder change doesn't silently stop testing them. Kirby's attr escaping
+# entity-encodes ':' and '/', so those are decoded before the request.
+HERO_PATHS=$(
+  {
+    grep -o '<source src="[^"]*"' "$HOME_BODY_FILE" | sed -E 's/<source src="([^"]*)"/\1/'
+    grep -o '<video[^>]* poster="[^"]*"' "$HOME_BODY_FILE" | sed -E 's/.* poster="([^"]*)"/\1/'
+  } | sed -e 's/&#x3A;/:/g' -e 's/&#x2F;/\//g' -e 's/&amp;/\&/g'
+)
 rm -f "$HOME_BODY_FILE"
 
-if [[ -z "$VIDEO_PATH" ]]; then
+if [[ -z "$HERO_PATHS" ]]; then
   printf "%-40s %-6s %s\n" "(showreel video)" "n/a" "FAIL"
   FAIL=1
 else
-  video_url="$VIDEO_PATH"
-  if [[ "$video_url" != http* ]]; then
-    video_url="${BASE_URL}${VIDEO_PATH}"
-  fi
-  status=$(curl -s -o /dev/null -w "%{http_code}" "$video_url" || echo "000")
-  result="PASS"
-  if [[ "$status" != "200" ]]; then
-    result="FAIL"
-  fi
-  printf "%-40s %-6s %s\n" "$VIDEO_PATH" "$status" "$result"
-  if [[ "$result" == "FAIL" ]]; then
-    FAIL=1
-  fi
+  while IFS= read -r hero_path; do
+    hero_url="$hero_path"
+    if [[ "$hero_url" != http* ]]; then
+      hero_url="${BASE_URL}${hero_path}"
+    fi
+    status=$(curl -s -o /dev/null -w "%{http_code}" "$hero_url" || echo "000")
+    result="PASS"
+    if [[ "$status" != "200" ]]; then
+      result="FAIL"
+      FAIL=1
+    fi
+    printf "%-40s %-6s %s\n" "$hero_path" "$status" "$result"
+  done <<< "$HERO_PATHS"
 fi
 
 if [[ "$FAIL" -ne 0 ]]; then

@@ -83,6 +83,12 @@ require_tree "assets/bundle"       "built by npm run build"
 require_tree "kirby/bootstrap.php" "installed by composer install"
 require_tree "index.php"           "Kirby site entry point"
 require_tree ".htaccess"           "Apache rewrite rules"
+# Media derivatives (AVIF/WebP/JPEG, AV1/VP9/H.264 + manifest.json) are built
+# on the workstation by npm run media:images / media:video and are NOT excluded
+# below, so the --delete mirror owns them: an empty local tree would wipe the
+# live derivatives and drop every image to the slower thumb fallback. Required,
+# not merely warned about.
+require_tree "assets/media/manifest.json" "built by npm run media:images / media:video"
 # Server-owned binaries git does not carry and the build does not regenerate:
 # their absence locally is fine because the excludes below stop --delete from
 # ever touching the server's copies.

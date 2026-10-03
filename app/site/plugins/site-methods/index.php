@@ -75,7 +75,7 @@ Kirby::plugin('studio-isphording/site-methods', [
 			// up, where the grid's hover zoom (`.showcase__grid--item:hover
 			// img { scale: 1.1 }`) is the largest render.
 			if (!$sizes) {
-				$sizes = '(max-width: 1024px) 140vw, 50.6vw';
+				$sizes = mediaDefaultSizes();
 			}
 
 			$attributes = [
