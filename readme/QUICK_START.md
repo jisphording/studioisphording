@@ -193,6 +193,7 @@ server. Three categories:
 | `app/index.php`, `app/.htaccess`, favicons | git-tracked-elsewhere / hand-maintained | gitignored here | pushed every deploy |
 | `app/kirby/`, `app/vendor/` | Composer | no | reinstalled on the deploy host |
 | `app/assets/bundle/` | build (`npm run build`) | no | rebuilt + pushed every deploy |
+| `app/assets/media/` | media pipeline (`npm run media:images` / `media:video`) | no | pushed every deploy; preflight requires `manifest.json` |
 | `app/assets/three/libs/draco/` | build (`prebuild`) | no | regenerated + pushed every deploy |
 | `app/assets/fonts/` | **server** | no | **never pushed, never deleted** |
 | `app/assets/pdf/` | **server** | no | **never pushed, never deleted** |
@@ -221,11 +222,17 @@ what `scripts/deploy.sh` does (composer install, then `npm run build`). The
 server-owned trees above do **not** need restoring locally to deploy: the
 deploy leaves them untouched on the server. The preflight step aborts
 before rsync if a tree the deploy *must* push is missing or empty
-(`app/assets/bundle`, `app/kirby/bootstrap.php`, `app/index.php`,
+(`app/assets/bundle`, `app/assets/media/manifest.json`, `app/kirby/bootstrap.php`, `app/index.php`,
 `app/.htaccess`) and only warns when a server-owned tree is absent locally.
 If you do want the full WebGL/font experience in local `npm run preview`,
 restore `app/assets/fonts/` and `app/assets/three/{meshes,textures}/` from
 the live site.
+
+## Media pipeline
+
+Image/video derivatives under `app/assets/media/` are built on the workstation
+with `npm run media:images` / `npm run media:video` (needs the master archive,
+so not runnable on a fresh clone). See `readme/MEDIA_PIPELINE.md`.
 
 ## Known status notes
 
