@@ -42,6 +42,24 @@
 //   * A master absent from `images` is not an error. The caller degrades to
 //     Kirby's existing thumb path, never to a broken image.
 //
+// VIDEO ADDITION (additive, still version 1 — the PHP side ignores it until
+// phase 7). The top-level `videos` key is present only when a video run has
+// written entries:
+//
+//   "videos": {
+//     "<content-relative master path>": {          // e.g. "home/landing_reel.mp4"
+//       "width": <int>, "height": <int>, "duration": <seconds>,
+//       "poster": "<key into `images`>",             // a first-class image entry
+//       "variants": [
+//         { "codec": "av1" | "vp9" | "h264", "type": "<source type attr>",
+//           "bytes": <int>, "crf": <int|null>, "url": "assets/media/<...>" }
+//       ]                                            // sorted av1, vp9, h264
+//     }
+//   }
+//
+// `images` and `videos` are written by two separate commands, so each command
+// merges into the file rather than replacing it (see the helpers below).
+//
 // The file is written atomically (temp file + rename) with sorted keys and no
 // timestamp, so it is byte-identical for identical input and diffs cleanly.
 // ============================================================================
@@ -184,4 +202,36 @@ export const readManifest = async (mediaRoot) => {
     if (error.code === 'ENOENT') return null
     throw error
   }
+}
+
+const sortedKeys = (object) =>
+  Object.fromEntries(Object.keys(object).sort().map((key) => [key, object[key]]))
+
+/**
+ * Overlay `patch` on `base` (both plain manifest data), per master key, so a
+ * scoped video run keeps every other entry. Either may be null/partial.
+ */
+export const mergeManifestData = (base, patch) => {
+  const images = sortedKeys({ ...base?.images, ...patch?.images })
+  const videos = sortedKeys({ ...base?.videos, ...patch?.videos })
+  return {
+    version: MANIFEST_VERSION,
+    images,
+    ...(Object.keys(videos).length > 0 ? { videos } : {})
+  }
+}
+
+/**
+ * A fresh, full images manifest replaces the old `images` — stale masters
+ * disappear — but must not lose the video state: the `videos` map and the
+ * poster entries those videos point at (extracted frames are not in app/content,
+ * so an images run never rediscovers them).
+ */
+export const keepVideoState = (existing, data) => {
+  const posters = {}
+  for (const video of Object.values(existing?.videos ?? {})) {
+    const entry = existing.images?.[video.poster]
+    if (entry && !data.images[video.poster]) posters[video.poster] = entry
+  }
+  return mergeManifestData({ videos: existing?.videos }, { images: { ...data.images, ...posters } })
 }

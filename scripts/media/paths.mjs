@@ -114,3 +114,45 @@ export const parseDerivativeName = (name) => {
 
   return { dir: dir === '.' ? '' : dir, base, width: Number(width), hash, format }
 }
+
+// --- video derivatives --------------------------------------------------------
+//
+// Name:  <content-relative-dir>/<basename>.<codec>.<hash>.<ext>
+// e.g.   home/landing_reel.av1.a1b2c3d4.webm
+//
+// Videos are not resized, so there is no width segment; the codec takes its
+// place. The `type` is what a <source type> attribute carries, so a browser can
+// skip a rung it cannot decode without downloading it. Declared order is the
+// correct <source> order: AV1 first, H.264 as the universal floor.
+
+export const VIDEO_CODECS = {
+  av1: { ext: 'webm', type: 'video/webm; codecs="av01.0.08M.08"' },
+  vp9: { ext: 'webm', type: 'video/webm; codecs="vp09.00.40.08"' },
+  h264: { ext: 'mp4', type: 'video/mp4; codecs="avc1.640028"' }
+}
+
+export const VIDEO_CODEC_ORDER = Object.keys(VIDEO_CODECS)
+
+export const videoCodec = (codec) => {
+  const entry = VIDEO_CODECS[codec]
+  if (!entry) throw new Error(`paths: unsupported video codec ${JSON.stringify(codec)}.`)
+  return entry
+}
+
+export const videoDerivativeName = (contentPath, codec, hash) => {
+  if (typeof contentPath !== 'string' || contentPath.length === 0) {
+    throw new Error('paths: a content-relative master path is required.')
+  }
+  if (typeof hash !== 'string' || !/^[0-9a-f]+$/.test(hash)) {
+    throw new Error(`paths: hash must be a lowercase hex string, got ${JSON.stringify(hash)}.`)
+  }
+  const dir = posix.dirname(contentPath)
+  const name = `${stripExtension(posix.basename(contentPath))}.${codec}.${hash}.${videoCodec(codec).ext}`
+  return dir === '.' ? name : posix.join(dir, name)
+}
+
+export const videoDerivativeFile = (mediaRoot, contentPath, codec, hash) =>
+  posix.join(mediaRoot, videoDerivativeName(contentPath, codec, hash))
+
+export const videoDerivativeUrlPath = (contentPath, codec, hash) =>
+  posix.join(MEDIA_DIR, videoDerivativeName(contentPath, codec, hash))

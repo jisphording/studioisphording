@@ -9,12 +9,15 @@
 //   {
 //     async probe(masterFile) -> { width, height }
 //     async encode({ masterFile, width, format, settings }) -> { data: Buffer|Uint8Array, width, height }
+//     async reference({ masterFile, width }) -> PNG bytes of the master at that width, lossless
+//     async decode(data) -> PNG bytes of an encoded candidate
 //   }
 //
-// `settings` is encoderSettings(resolved, format) from config.mjs — either
-// { format, mode: 'target', target } or { format, mode: 'quality', quality }.
-// An encoder that cannot honour a target must say so by throwing, never by
-// silently falling back to a default quality.
+// `settings` is always { format, mode: 'quality', quality }: a `target` is
+// resolved to a quality by quality.mjs before the encoder sees it. An encoder
+// handed a target must throw, never silently fall back to a default quality.
+// reference() and decode() exist for the SSIMULACRA2 scorer, which compares
+// two same-size PNGs.
 
 /**
  * A deterministic in-memory encoder for tests: it produces bytes derived from
@@ -38,6 +41,15 @@ export const createStubEncoder = ({ intrinsic = { width: 4000, height: 3000 } } 
       const height = Math.max(1, Math.round((width * intrinsic.height) / intrinsic.width))
       const body = `${masterFile}|${width}|${format}|${JSON.stringify(settings)}`
       return { data: Buffer.from(body), width, height }
+    },
+
+    async reference({ masterFile, width }) {
+      return Buffer.from(`reference|${masterFile}|${width}`)
+    },
+
+    // Identity: a fake scorer can read the settings back out of the candidate.
+    async decode(data) {
+      return Buffer.from(data)
     }
   }
 }

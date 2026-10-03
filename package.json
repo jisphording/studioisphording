@@ -16,7 +16,9 @@
     "php": "php -S localhost:8000 -t app app/kirby/router.php",
     "perf": "bash scripts/perf.sh",
     "perf:compare": "node scripts/perf/compare.mjs",
-    "test:perf": "node --test scripts/perf/test/*.test.mjs"
+    "test:perf": "node --test scripts/perf/test/*.test.mjs",
+    "media:images": "node scripts/media/index.mjs images",
+    "media:video": "node scripts/media/index.mjs video"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,7 @@
     "lighthouse": "^13.4.1",
     "puppeteer-core": "^25.11.0",
     "sass": "^1.104.1",
+    "sharp": "^0.35.5",
     "stats-js": "^1.0.1",
     "terser": "^5.51.2",
     "vite": "^8.3.0",

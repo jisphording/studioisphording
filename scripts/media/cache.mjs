@@ -13,11 +13,20 @@
 // Encoder settings come from config.mjs's encoderSettings(), which deliberately
 // excludes `eager`, `widths` and `formats` — those steer which variants exist
 // and how they render, not what any one encode produces. Flipping `eager` must
-// not invalidate a warm cache.
+// not invalidate a warm cache. For a `target` setting the caller adds
+// `method` ('measured' | 'mapped'), so a variant encoded from the fallback
+// mapping is re-encoded once the scorer becomes available.
+//
+// Second layer, the quality cache: the SSIMULACRA2 loop's *result* — the
+// resolved quality per (master hash, width, format, target, tolerance) — kept
+// in a JSON file outside the deployed tree (.cache/media/quality.json). If a
+// derivative is deleted, the next run encodes it once at the known quality
+// instead of searching again.
 
 import { createHash } from 'node:crypto'
-import { existsSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
+import { dirname } from 'node:path'
 import { derivativeFile, derivativeName, derivativeUrlPath } from './paths.mjs'
 
 export const HASH_LENGTH = 8
@@ -78,4 +87,49 @@ export const cacheDecision = ({ mediaRoot, contentPath, width, format, masterHas
   const hit = existsSync(file)
 
   return { hash, name, file, url, hit, bytes: hit ? statSync(file).size : null }
+}
+
+// Bump when the encoders change in a way that moves the quality a target
+// resolves to (e.g. a different AVIF effort), to invalidate every search.
+export const QUALITY_SEARCH_VERSION = 1
+
+/** Key of one quality search: (master hash, width, format, target, tolerance). */
+export const qualityKey = ({ masterHash, width, format, target, tolerance }) =>
+  createHash('sha256')
+    .update(canonicalJson({ v: QUALITY_SEARCH_VERSION, masterHash, width, format, target, tolerance }))
+    .digest('hex')
+    .slice(0, 16)
+
+/** An in-memory quality cache — what tests and a dry run use. */
+export const createMemoryQualityCache = (entries = {}) => {
+  const store = { ...entries }
+  return {
+    get: (key) => store[key],
+    set: (key, value) => {
+      store[key] = value
+    },
+    toJSON: () => store,
+    save() {}
+  }
+}
+
+/**
+ * A quality cache persisted as JSON at `file`. A missing or unreadable file
+ * starts empty; save() writes atomically (temp file + rename) with sorted keys.
+ */
+export const createQualityCache = (file) => {
+  let entries = {}
+  try {
+    entries = JSON.parse(readFileSync(file, 'utf8')).entries ?? {}
+  } catch {
+    entries = {}
+  }
+  const cache = createMemoryQualityCache(entries)
+  cache.save = () => {
+    mkdirSync(dirname(file), { recursive: true })
+    const temp = `${file}.tmp`
+    writeFileSync(temp, `${canonicalJson({ version: QUALITY_SEARCH_VERSION, entries: cache.toJSON() })}\n`)
+    renameSync(temp, file)
+  }
+  return cache
 }

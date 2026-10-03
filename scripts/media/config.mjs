@@ -25,8 +25,12 @@ export const SUPPORTED_FORMATS = ['avif', 'webp', 'jpeg']
 
 // Keys an override may carry. Anything else is a typo and is rejected loudly
 // rather than silently ignored.
-const OVERRIDE_KEYS = ['match', 'target', 'quality', 'widths', 'formats', 'eager']
-const DEFAULT_KEYS = ['target', 'quality', 'widths', 'formats', 'eager']
+const OVERRIDE_KEYS = ['match', 'target', 'tolerance', 'quality', 'widths', 'formats', 'eager', 'budget']
+const DEFAULT_KEYS = ['target', 'tolerance', 'quality', 'widths', 'formats', 'eager', 'budget']
+
+// Half-width of the SSIMULACRA2 band around `target` when a block sets none:
+// target 90 means "land in 88-92".
+export const DEFAULT_TOLERANCE = 2
 
 class MediaConfigError extends Error {
   constructor(message) {
@@ -129,6 +133,12 @@ const validateBlock = (block, where, allowedKeys) => {
     }
   }
 
+  if (block.tolerance !== undefined) {
+    if (typeof block.tolerance !== 'number' || !Number.isFinite(block.tolerance) || block.tolerance <= 0 || block.tolerance > 10) {
+      fail(`${where}: \`tolerance\` must be a band half-width above 0 and at most 10, got ${JSON.stringify(block.tolerance)}.`)
+    }
+  }
+
   validateQuality(block.quality, where)
 
   if (block.widths !== undefined) {
@@ -151,6 +161,10 @@ const validateBlock = (block, where, allowedKeys) => {
         fail(`${where}: \`formats\` contains ${JSON.stringify(format)}; supported: ${SUPPORTED_FORMATS.join(', ')}.`)
       }
     }
+  }
+
+  if (block.budget !== undefined && !isPositiveInt(block.budget)) {
+    fail(`${where}: \`budget\` must be a transfer size in bytes (a positive integer), got ${JSON.stringify(block.budget)}.`)
   }
 
   if (block.eager !== undefined && typeof block.eager !== 'boolean') {
@@ -212,7 +226,7 @@ export const loadConfig = async (path = join(repoRoot, 'media.config.mjs')) => {
 /**
  * Resolve the effective settings for one content-relative master path.
  *
- * @returns {{target: number, widths: number[], formats: string[],
+ * @returns {{target: number, tolerance: number|undefined, widths: number[], formats: string[],
  *            quality: object|undefined, eager: boolean, matched: string[]}}
  */
 export const resolveSettings = (config, contentPath) => {
@@ -251,7 +265,7 @@ export const encoderSettings = (resolved, format) => {
   }
   const explicit = resolved.quality?.[format]
   return explicit === undefined
-    ? { format, mode: 'target', target: resolved.target }
+    ? { format, mode: 'target', target: resolved.target, tolerance: resolved.tolerance ?? DEFAULT_TOLERANCE }
     : { format, mode: 'quality', quality: explicit }
 }
 
