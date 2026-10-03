@@ -28,7 +28,7 @@ $subpages = $parentPage->children()->limit($limit); ?>
 		<a href="<?= $subpage->url() ?>">
 		<?php if($image = $subpage->keyvisual()): ?>
 		<div class="related__showcase--image-wrap">
-			<?= kirby()->site()->getResponsiveImage($image, 'Thumbnail for ' . $subpage->title(), 'rel-article-showcase--image') ?>
+			<?php snippet('responsive-image', ['file' => $image, 'alt' => 'Thumbnail for ' . $subpage->title(), 'class' => 'rel-article-showcase--image', 'sizes' => null, 'eager' => false]) ?>
 		</div>
 
 		<?php endif ?>

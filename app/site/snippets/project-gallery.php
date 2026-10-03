@@ -4,7 +4,7 @@ use Kirby\Cms\Html;
 
 /**
  * Project Gallery Snippet
- * Handles both videos and images with WebP prioritization and duplicate handling
+ * Handles both videos and images
  * 
  * @param bool $useResponsiveImages - Whether to use responsive images (default: true)
  * @param string $videoPath - Custom video path for three.js projects (default: uses Kirby videos)
@@ -33,10 +33,16 @@ $videoPath = $videoPath ?? null;
 				$displayedVideos[] = $baseName; ?>
 				<li>
 					<figure>
-						<video class="showcase__grid--image" playsinline autoplay muted loop>
-							<source src="<?= url($videoPath . $file_video_mp4) ?>" type="video/mp4">
-							<source src="<?= url($videoPath . $file_video_webm) ?>" type="video/webm">
-						</video>
+						<?php snippet('responsive-video', [
+							// app/video/ lies outside the content tree, so no manifest
+							// entry: the existing file URLs are the sources.
+							'file'     => null,
+							'fallback' => [
+								['url' => url($videoPath . $file_video_mp4), 'type' => 'video/mp4'],
+								['url' => url($videoPath . $file_video_webm), 'type' => 'video/webm'],
+							],
+							'class' => 'showcase__grid--image',
+						]) ?>
 					</figure>
 				</li>
 			<?php endif;
@@ -48,76 +54,58 @@ $videoPath = $videoPath ?? null;
 			$displayedVideos[] = $videoBaseName; ?>
 			<li>
 				<figure>
-					<video class="showcase__grid--image" playsinline autoplay muted loop>
-						<source src="<?= $video->url() ?>" type="<?= $video->mime() ?>">
-					</video>
+					<?php snippet('responsive-video', [
+						'file'     => $video,
+						'fallback' => [['url' => $video->url(), 'type' => $video->mime()]],
+						'class'    => 'showcase__grid--image',
+					]) ?>
 				</figure>
 			</li>
 		<?php endforeach;
 	}
 
-	// Then display images, filtering out keyvisual and intro images
-	// Group images by base name to handle WebP/JPG duplicates
-	$imageGroups = [];
-	foreach($page->images()->filterBy('filename', '!*=', '_keyvisual')->filterBy('filename', '!*=', 'intro-img') as $image) {
-		$baseName = pathinfo($image->filename(), PATHINFO_FILENAME);
-		$extension = strtolower($image->extension());
-		
-		if (!isset($imageGroups[$baseName])) {
-			$imageGroups[$baseName] = [];
-		}
-		$imageGroups[$baseName][$extension] = $image;
-	}
-	
-	// Process each image group, prioritizing WebP over other formats
-	foreach($imageGroups as $baseName => $images) {
-		// Check if there's a corresponding video file with the same base name
-		$videoAlreadyDisplayed = in_array($baseName, $displayedVideos);
-		
+	// Then display images, filtering out keyvisual and intro images. Format
+	// negotiation (AVIF/WebP/JPEG) is the <picture> element's job, so every
+	// image is listed once, as stored.
+	foreach($page->images()->filterBy('filename', '!*=', '_keyvisual')->filterBy('filename', '!*=', 'intro-img') as $selectedImage) {
+		$baseName = pathinfo($selectedImage->filename(), PATHINFO_FILENAME);
+
 		// Show image if no corresponding video was displayed
-		if (!$videoAlreadyDisplayed) {
-			// Prioritize WebP, then fallback to other formats
-			$selectedImage = null;
-			if (isset($images['webp'])) {
-				$selectedImage = $images['webp'];
-			} elseif (isset($images['jpg'])) {
-				$selectedImage = $images['jpg'];
-			} elseif (isset($images['jpeg'])) {
-				$selectedImage = $images['jpeg'];
-			} else {
-				// Fallback to first available image
-				$selectedImage = reset($images);
-			}
-			
-			if ($selectedImage): ?>
-				<li>
-					<figure class="showcase__grid--image">
-						<?php
-						$responsiveImage = null;
+		if (!in_array($baseName, $displayedVideos)): ?>
+			<li>
+				<figure class="showcase__grid--image">
+					<?php
+					$responsiveImage = null;
 
-						if ($useResponsiveImages) {
-							try {
-								$responsiveImage = $site->getResponsiveImage($selectedImage, $page->title()->value(), 'showcase__grid--image--inside');
-							} catch (Exception $e) {
-								// Fall through to the fallback thumb below.
-							}
-						}
-
-						if ($responsiveImage !== null) {
-							echo $responsiveImage;
-						} else {
-							// Fallback: a basic thumb image, used when responsive images
-							// are off or getResponsiveImage() threw.
-							$thumb = $site->getThumbnail($selectedImage, 800, 640, 85);
-							echo Html::img($thumb->url(), [
+					if ($useResponsiveImages) {
+						try {
+							$responsiveImage = snippet('responsive-image', [
+								'file'  => $selectedImage,
 								'alt'   => $page->title()->value(),
 								'class' => 'showcase__grid--image--inside',
-							]);
+								'sizes' => null,
+								'eager' => false,
+								'site'  => $site,
+							], true);
+						} catch (Exception $e) {
+							// Fall through to the fallback thumb below.
 						}
-						?>
-					</figure>
-				</li>
-			<?php endif;
-		}
+					}
+
+					if ($responsiveImage !== null) {
+						echo $responsiveImage;
+					} else {
+						// Fallback: a basic thumb image, used when responsive images
+						// are off or the responsive image threw.
+						$thumb = $site->getThumbnail($selectedImage, 800, 640, 85);
+						echo Html::img($thumb->url(), [
+							'alt'   => $page->title()->value(),
+							'class' => 'showcase__grid--image--inside',
+						]);
+					}
+					?>
+				</figure>
+			</li>
+		<?php endif;
 	} ?>
 </ul>

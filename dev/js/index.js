@@ -10,6 +10,9 @@ import './../css/main.scss'
 // Three.js Experience
 import { runExperience } from './three/runExperience.js'
 
+// Deferred start for below-the-fold videos (no-op where loading="lazy" is native)
+import lazyVideo from './media/lazyVideo.mjs'
+
 // Simple loading state
 let animBarba, animGsap, customCookieConsent;
 let modulesLoaded = false;
@@ -107,6 +110,12 @@ async function initializeApp() {
         console.error('❌ GSAP not available or animGsap function missing');
     }
     
+    // Defer below-the-fold videos; re-run for each page Barba swaps in
+    lazyVideo();
+    if (typeof window.barba !== 'undefined') {
+        window.barba.hooks.afterEnter(() => lazyVideo());
+    }
+
     // Show content
     document.documentElement.classList.remove('is-loading');
     document.documentElement.classList.add('js-ready');

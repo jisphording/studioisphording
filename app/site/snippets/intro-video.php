@@ -8,10 +8,15 @@
 	</div>
 	<!-- Intro Video -->
 	<section class="showreel__video parallax__layer--back">
-        <video class="mood__film" playsinline autoplay muted loop>
-			<?php if ($film = $page->mood_film()->toFile()): ?>
-			<source src="<?= $film->url() ?>">
-			<?php endif ?>
-		</video>
+		<?php
+		if ($film = $page->mood_film()->toFile()) {
+			snippet('responsive-video', [
+				'file'     => $film,
+				'fallback' => [['url' => $film->url(), 'type' => $film->mime()]],
+				'class'    => 'mood__film',
+				'hero'     => true,
+			]);
+		}
+		?>
 	</section>
 </section>

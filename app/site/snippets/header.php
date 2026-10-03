@@ -17,6 +17,10 @@
 	<link rel="preload" as="font" type="font/woff2" href="<?= url('assets/fonts/RadioGrotesk-Regular.woff2') ?>" crossorigin>
 	<link rel="preload" as="font" type="font/woff2" href="<?= url('assets/fonts/Grafier-Regular.woff2') ?>" crossorigin>
 
+	<?php if (!empty($preloadPoster)): ?>
+	<link rel="preload" as="image" href="<?= esc($preloadPoster, 'attr') ?>" fetchpriority="high">
+	<?php endif ?>
+
 	<link rel="stylesheet" href="<?= url('assets/bundle/app.css') ?>">
 
 	<?= vite('js/index.js') ?>

@@ -1,4 +1,19 @@
-<?php snippet('header') ?>
+<?php
+// Resolve each variant through Kirby's own file objects so URLs
+// go through the media route, not the blocked /content/ tree.
+$showreelName   = $page->showreel()->value();
+$showreelPoster = $page->file($showreelName . '.jpg');
+$showreelMp4    = $page->file($showreelName . '.mp4');
+$showreelWebm   = $page->file($showreelName . '.webm');
+$showreelMaster = $showreelMp4 ?: $showreelWebm;
+
+// The hero poster is an LCP candidate: header.php preloads it.
+$showreelEntry     = $showreelMaster ? getMediaVideoEntry($showreelMaster) : null;
+$showreelPosterUrl = ($showreelEntry ? getMediaPosterUrl($showreelEntry) : null)
+	?? ($showreelPoster ? $showreelPoster->url() : null);
+
+snippet('header', ['preloadPoster' => $showreelPosterUrl]);
+?>
 	<section class="parallax">
 
 		<!-- SHOWREEL -->
@@ -13,35 +28,25 @@
 			</div>
 			<!-- Showreel Video -->
 			<section class="showreel__video parallax__layer--back">
+				<?php // preload="none": the reel is not the LCP element (the first
+				// showcase grid image is) and must not compete for bandwidth
+				// before first paint; autoplay still starts it, and the poster
+				// is the fast-loading first frame. ?>
 				<?php
-				// Get the showreel field value
-				$showreelName = $page->showreel()->value();
-
-				// Resolve each variant through Kirby's own file objects so URLs
-				// go through the media route, not the blocked /content/ tree.
-				$showreelPoster = $page->file($showreelName . '.jpg');
-				$showreelMp4    = $page->file($showreelName . '.mp4');
-				$showreelWebm   = $page->file($showreelName . '.webm');
+				$fallback = [];
+				foreach ([$showreelWebm, $showreelMp4] as $f) {
+					if ($f) {
+						$fallback[] = ['url' => $f->url(), 'type' => $f->mime()];
+					}
+				}
+				snippet('responsive-video', [
+					'file'     => $showreelMaster,
+					'fallback' => $fallback,
+					'poster'   => $showreelPosterUrl,
+					'hero'     => true,
+					'preload'  => 'none',
+				]);
 				?>
-
-				<?php // preload="none": the reel is 22.6 MB (RES-02) and is not the
-				// LCP element (the first showcase grid image is), so it must
-				// not compete for bandwidth before first paint. The poster
-				// stays as the fast-loading fallback frame. Revisit once
-				// phase 6's re-encode shrinks the reel enough to make eager
-				// buffering affordable again. ?>
-				<?php if ($showreelMp4 || $showreelWebm): ?>
-				<video playsinline autoplay muted loop preload="none"<?= $showreelPoster ? ' poster="' . $showreelPoster->url() . '"' : '' ?>>
-					<?php if ($showreelWebm): ?>
-					<source src="<?= $showreelWebm->url() ?>" type="video/webm" />
-					<?php endif ?>
-					<?php if ($showreelMp4): ?>
-					<source src="<?= $showreelMp4->url() ?>" type="video/mp4" />
-					<?php endif ?>
-					Sorry, your browser doesn't support embedded videos, but don't worry, you can <a href="<?= $showreelMp4 ? $showreelMp4->url() : $showreelWebm->url() ?>">download it</a>
-					and watch it with your favorite video player!
-				</video>
-				<?php endif ?>
 			</section>
 		</section>
 
