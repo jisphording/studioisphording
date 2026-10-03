@@ -34,6 +34,18 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-033 | [characterization-tests-first-then-seam-tests-per-phase](decisions/033-characterization-tests-first-then-seam-tests-per-phase.md) | refactor-dev-js/decisions/8 |
 | MEM-034 | [npm-test-stays-out-of-smoke-sh-and-deploy-sh](decisions/034-npm-test-stays-out-of-smoke-sh-and-deploy-sh.md) | refactor-dev-js/decisions/10 |
 | MEM-035 | [webgl-gsap-and-barba-stay-under-manual-browser-qa](decisions/035-webgl-gsap-and-barba-stay-under-manual-browser-qa.md) | refactor-dev-js/decisions/11 |
+| MEM-039 | [app-assets-media-not-the-project-folders-beside-the-masters](decisions/039-app-assets-media-not-the-project-folders-beside-the-masters.md) | 03-media-compression-and-delivery/decisions/1 |
+| MEM-040 | [video-derivatives-and-posters-also-go-to-app-assets-media-so-dep](decisions/040-video-derivatives-and-posters-also-go-to-app-assets-media-so-dep.md) | 03-media-compression-and-delivery/decisions/2 |
+| MEM-041 | [ssimulacra2-score-as-the-primary-knob-88-92-for-hero-keyvisual-8](decisions/041-ssimulacra2-score-as-the-primary-knob-88-92-for-hero-keyvisual-8.md) | 03-media-compression-and-delivery/decisions/3 |
+| MEM-042 | [install-bootstrap-ssimulacra2-on-this-machine-as-part-of-phase-4](decisions/042-install-bootstrap-ssimulacra2-on-this-machine-as-part-of-phase-4.md) | 03-media-compression-and-delivery/decisions/4 |
+| MEM-043 | [re-encode-only-to-a-transfer-byte-budget-duration-framing-and-fr](decisions/043-re-encode-only-to-a-transfer-byte-budget-duration-framing-and-fr.md) | 03-media-compression-and-delivery/decisions/5 |
+| MEM-044 | [sharp-libvips-for-image-resize-and-encode-ffmpeg-libsvtav1-libvp](decisions/044-sharp-libvips-for-image-resize-and-encode-ffmpeg-libsvtav1-libvp.md) | 03-media-compression-and-delivery/decisions/6 |
+| MEM-045 | [avif-webp-jpeg-in-that-source-order-no-jpeg-xl](decisions/045-avif-webp-jpeg-in-that-source-order-no-jpeg-xl.md) | 03-media-compression-and-delivery/decisions/7 |
+| MEM-046 | [av1-webm-vp9-webm-h-264-mp4-in-that-source-order](decisions/046-av1-webm-vp9-webm-h-264-mp4-in-that-source-order.md) | 03-media-compression-and-delivery/decisions/8 |
+| MEM-047 | [a-version-controlled-media-config-mjs-at-the-repo-root-resolved](decisions/047-a-version-controlled-media-config-mjs-at-the-repo-root-resolved.md) | 03-media-compression-and-delivery/decisions/9 |
+| MEM-048 | [retained-as-a-fallback-for-any-image-the-manifest-does-not-cover](decisions/048-retained-as-a-fallback-for-any-image-the-manifest-does-not-cover.md) | 03-media-compression-and-delivery/decisions/10 |
+| MEM-049 | [masters-stay-on-the-workstation-only-gitignored-and-deploy-exclu](decisions/049-masters-stay-on-the-workstation-only-gitignored-and-deploy-exclu.md) | 03-media-compression-and-delivery/decisions/11 |
+| MEM-050 | [480-800-1200-1600-2000-2560-down-from-ten-steps-3200w-3840w-and](decisions/050-480-800-1200-1600-2000-2560-down-from-ten-steps-3200w-3840w-and.md) | 03-media-compression-and-delivery/decisions/12 |
 
 ### Conventions
 

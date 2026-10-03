@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "images": {
+    "projects/01-alpha/alpha_keyvisual.png": {
+      "width": 1600,
+      "height": 1000,
+      "eager": true,
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/projects/01-alpha/alpha_keyvisual-480-aaaa.avif"
+        },
+        {
+          "format": "avif",
+          "width": 1200,
+          "height": 750,
+          "bytes": 3000,
+          "url": "assets/media/projects/01-alpha/alpha_keyvisual-1200-bbbb.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 300,
+          "bytes": 1500,
+          "url": "assets/media/projects/01-alpha/alpha_keyvisual-480-cccc.webp"
+        },
+        {
+          "format": "webp",
+          "width": 1200,
+          "height": 750,
+          "bytes": 4000,
+          "url": "assets/media/projects/01-alpha/alpha_keyvisual-1200-dddd.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 300,
+          "bytes": 2000,
+          "url": "assets/media/projects/01-alpha/alpha_keyvisual-480-eeee.jpg"
+        },
+        {
+          "format": "jpeg",
+          "width": 1200,
+          "height": 750,
+          "bytes": 6000,
+          "url": "assets/media/projects/01-alpha/alpha_keyvisual-1200-ffff.jpg"
+        }
+      ]
+    },
+    "home/reel.jpg": {
+      "width": 1920,
+      "height": 1080,
+      "eager": false,
+      "variants": [
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 720,
+          "bytes": 1000,
+          "url": "assets/media/home/reel.poster-1280-qqqq.jpg"
+        },
+        {
+          "format": "jpeg",
+          "width": 1920,
+          "height": 1080,
+          "bytes": 2000,
+          "url": "assets/media/home/reel.poster-1920-pppp.jpg"
+        }
+      ]
+    }
+  },
+  "videos": {
+    "home/reel.mp4": {
+      "width": 1920,
+      "height": 1080,
+      "duration": 5,
+      "poster": "home/reel.jpg",
+      "variants": [
+        {
+          "codec": "av1",
+          "type": "video/webm; codecs=\"av01.0.08M.08\"",
+          "bytes": 1,
+          "crf": 38,
+          "url": "assets/media/home/reel.av1.1111.webm"
+        },
+        {
+          "codec": "vp9",
+          "type": "video/webm; codecs=\"vp09.00.40.08\"",
+          "bytes": 2,
+          "crf": 34,
+          "url": "assets/media/home/reel.vp9.2222.webm"
+        },
+        {
+          "codec": "h264",
+          "type": "video/mp4; codecs=\"avc1.640028\"",
+          "bytes": 3,
+          "crf": 23,
+          "url": "assets/media/home/reel.h264.3333.mp4"
+        }
+      ]
+    }
+  }
+}
