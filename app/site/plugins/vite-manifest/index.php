@@ -19,25 +19,29 @@
 
 /**
  * Retrieves the Vite manifest file content.
- * The manifest is loaded once and cached for subsequent calls.
+ * The manifest is loaded once per path and cached for subsequent calls.
  *
  * @return array The decoded content of the manifest.json file, or an empty array if not found.
  */
 function getViteManifest() {
-    static $manifest = null;
-    
-    if ($manifest === null) {
-        $manifestPath = kirby()->root('assets') . '/bundle/.vite/manifest.json';
-        
+    static $manifests = [];
+
+    $manifestPath = kirby()->root('assets') . '/bundle/.vite/manifest.json';
+
+    if (!array_key_exists($manifestPath, $manifests)) {
+        $manifest = [];
+
         if (file_exists($manifestPath)) {
-            $manifestContent = file_get_contents($manifestPath);
-            $manifest = json_decode($manifestContent, true);
-        } else {
-            $manifest = [];
+            $decoded = json_decode((string)file_get_contents($manifestPath), true);
+            if (is_array($decoded)) {
+                $manifest = $decoded;
+            }
         }
+
+        $manifests[$manifestPath] = $manifest;
     }
-    
-    return $manifest;
+
+    return $manifests[$manifestPath];
 }
 
 /**
@@ -57,24 +61,93 @@ function getViteAssetUrl($entry) {
 }
 
 /**
+ * Whether a manifest chunk belongs to the WebGL experience: it is the
+ * vendor-three chunk, lives under js/three/, or statically imports (directly
+ * or transitively) a chunk that does.
+ *
+ * @param string $key The manifest key of the chunk.
+ * @param array $seen Keys already visited (guards against import cycles).
+ * @return bool
+ */
+function isViteThreeChunk($key, array $seen = []) {
+    $manifest = getViteManifest();
+    $chunk = $manifest[$key] ?? null;
+
+    if ($chunk === null || in_array($key, $seen, true)) {
+        return false;
+    }
+
+    if (($chunk['name'] ?? '') === 'vendor-three' || str_starts_with($chunk['src'] ?? '', 'js/three/')) {
+        return true;
+    }
+
+    $seen[] = $key;
+    foreach ($chunk['imports'] ?? [] as $import) {
+        if (isViteThreeChunk($import, $seen)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * Collects a chunk's manifest key followed by every chunk it statically
+ * imports, transitively, without duplicates. Entry chunks are skipped: the
+ * page already loads them with their own <script>.
+ *
+ * @param string $key The manifest key of the chunk.
+ * @param array $keys Keys collected so far.
+ * @return array
+ */
+function collectViteStaticChunks($key, array $keys = []) {
+    $manifest = getViteManifest();
+
+    if (!isset($manifest[$key]) || !empty($manifest[$key]['isEntry']) || in_array($key, $keys, true)) {
+        return $keys;
+    }
+
+    $keys[] = $key;
+    foreach ($manifest[$key]['imports'] ?? [] as $import) {
+        $keys = collectViteStaticChunks($import, $keys);
+    }
+
+    return $keys;
+}
+
+/**
  * Retrieves the URLs of dynamic imports associated with a given Vite entry.
  * These are assets that are loaded on demand by the main entry.
  *
+ * Three.js and the worlds are only reachable through a dynamic import, and
+ * only pages rendering a #webgl canvas run it, so their chunks are left out
+ * unless $webgl is true. On a WebGL page the Three dynamic imports are
+ * returned together with the chunks they statically import (vendor-three),
+ * so the whole experience starts downloading with the page.
+ *
  * @param string $entry The entry name (e.g., 'js/index.js').
+ * @param bool $webgl Whether the page renders a #webgl canvas.
  * @return array An array of URLs for the dynamic imports.
  */
-function getViteDynamicImports($entry) {
+function getViteDynamicImports($entry, $webgl = false) {
     $manifest = getViteManifest();
-    $imports = [];
-    
-    if (isset($manifest[$entry]['dynamicImports'])) {
-        foreach ($manifest[$entry]['dynamicImports'] as $import) {
-            if (isset($manifest[$import]['file'])) {
-                $imports[] = url('assets/bundle/' . $manifest[$import]['file']);
-            }
+    $keys = [];
+
+    foreach ($manifest[$entry]['dynamicImports'] ?? [] as $import) {
+        if (!isViteThreeChunk($import)) {
+            $keys[] = $import;
+        } elseif ($webgl) {
+            $keys = collectViteStaticChunks($import, $keys);
         }
     }
-    
+
+    $imports = [];
+    foreach (array_unique($keys) as $key) {
+        if (isset($manifest[$key]['file'])) {
+            $imports[] = url('assets/bundle/' . $manifest[$key]['file']);
+        }
+    }
+
     return $imports;
 }
 
@@ -83,10 +156,11 @@ function getViteDynamicImports($entry) {
  * This helps browsers preload modules for faster loading.
  *
  * @param string $entry The entry name (e.g., 'js/index.js').
+ * @param bool $webgl Whether the page renders a #webgl canvas.
  * @return string HTML string containing modulepreload links.
  */
-function vitePreloadLinks($entry) {
-    $dynamicImports = getViteDynamicImports($entry);
+function vitePreloadLinks($entry, $webgl = false) {
+    $dynamicImports = getViteDynamicImports($entry, $webgl);
     $html = '';
     
     foreach ($dynamicImports as $importUrl) {
@@ -102,9 +176,11 @@ function vitePreloadLinks($entry) {
  * In production mode, it loads bundled assets from the manifest.
  *
  * @param string $entry The entry name of the asset (e.g., 'dev/js/index.js' for development, 'js/index.js' for production).
+ * @param bool $webgl Whether the page renders a #webgl canvas (Page::rendersWebgl());
+ *                    only then are the Three.js chunks modulepreloaded.
  * @return string HTML string containing the script tags for the Vite assets.
  */
-function vite($entry) {
+function vite($entry, $webgl = false) {
     $html = '';
     if (option('debug')) {
         // In development, load from Vite dev server
@@ -118,7 +194,7 @@ function vite($entry) {
         // In production, load from manifest
         $manifest = getViteManifest();
         if (isset($manifest[$entry])) {
-            $html .= vitePreloadLinks($entry);
+            $html .= vitePreloadLinks($entry, $webgl);
             $html .= '<script type="module" src="' . getViteAssetUrl($entry) . '"></script>' . "\n";
         }
     }

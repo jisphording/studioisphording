@@ -7,6 +7,11 @@ use Kirby\Cms\Html;
 //
 // This "plugin" contains a few custom functions used across multiple pages on different sites.
 
+// Templates that render a #webgl canvas (the canvas / canvas-minimal snippets).
+// Only these pages load and modulepreload the Three.js chunks; PageMethodsTest
+// fails if a template starts or stops rendering #webgl without updating this.
+const WEBGL_TEMPLATES = ['moodboard', 'project.three'];
+
 Kirby::plugin('studio-isphording/site-methods', [
   'siteMethods' => [
 
@@ -104,6 +109,15 @@ Kirby::plugin('studio-isphording/site-methods', [
 		// snippets both use it instead of repeating the filterBy() lookup.
 		'keyvisual' => function () {
 			return $this->images()->filterBy('filename', '*=', '_keyvisual')->first();
+		},
+
+		// RENDERS WEBGL
+		// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+		//
+		// Whether the page's template renders the #webgl canvas, i.e. whether
+		// the header should modulepreload the Three.js chunks (see vite()).
+		'rendersWebgl' => function (): bool {
+			return in_array($this->template()->name(), WEBGL_TEMPLATES, true);
 		}
   ]
 ]);

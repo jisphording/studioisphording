@@ -7,8 +7,8 @@
 // CSS for app integration on site
 import './../css/main.scss'
 
-// Three.js Experience
-import { runExperience } from './three/runExperience.js'
+// Three.js Experience — dynamically imported only on pages with a #webgl canvas
+import { startWebgl } from './utils/startWebgl.mjs'
 
 // Deferred start for below-the-fold videos (no-op where loading="lazy" is native)
 import lazyVideo from './media/lazyVideo.mjs'
@@ -122,11 +122,8 @@ async function initializeApp() {
     
     console.log('✅ App initialization complete');
 
-    // Run Three.js Experience based on projec page
-    const webglCanvas = document.querySelector('#webgl');
-    if (webglCanvas && webglCanvas.dataset.world) {
-        runExperience('#webgl', webglCanvas.dataset.world);
-    }
+    // Run Three.js Experience based on project page (loads three on demand)
+    startWebgl();
 }
 
 // Start loading
