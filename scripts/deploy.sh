@@ -32,8 +32,16 @@ done
 #    committed, so the deploy target has to (re)build it from app/composer.json
 #    before anything else runs.
 # ---------------------------------------------------------------------------
-echo "→ Installing Composer dependencies…"
-(cd "$ROOT/app" && composer install --no-dev --optimize-autoloader)
+#
+#    --no-dev prunes app/vendor (phpunit included), so a dry run must not do it:
+#    it would silently break `npm run test:php` locally. The preflight below
+#    still requires app/kirby/bootstrap.php, catching a missing Kirby core.
+if [ -n "$DRY_RUN" ]; then
+  echo "→ Skipping Composer install (dry-run) — would run: composer install --no-dev --optimize-autoloader"
+else
+  echo "→ Installing Composer dependencies…"
+  (cd "$ROOT/app" && composer install --no-dev --optimize-autoloader)
+fi
 
 # ---------------------------------------------------------------------------
 # 2. Build — guarantees app/assets/bundle is fresh.

@@ -10,14 +10,23 @@ Sass + Three.js from `dev/` into `app/assets/bundle`. PHP 8.3–8.5,
 Composer 2.x, Node ≥ 20.19. Deploy via rsync to IONOS
 (`scripts/deploy.sh`).
 
+Three.js is route-split: `dev/js/utils/startWebgl.mjs` dynamic-imports the
+experience only when a `#webgl` canvas exists, `dev/js/three/worlds.mjs` lazily
+loads one chunk per world, and `vite()` modulepreloads the Three chunks only
+for templates in `WEBGL_TEMPLATES` (site-methods plugin, exposed as
+`$page->rendersWebgl()`). A new template rendering `#webgl` must be added
+there — `PageMethodsTest` fails until it is. See
+`readme/VITE_OPTIMIZATION_SUMMARY.md`.
+
 Build-time media pipeline in `scripts/media/` (config resolution, derivative
 naming, content-hash cache, manifest writer), configured by `media.config.mjs`
 at the repo root and emitting derivatives plus `manifest.json` into
 `app/assets/media/`. It only ever *reads* `app/content/`.
 The `media-manifest` plugin reads that manifest and the `responsive-image`
 snippet renders `<picture>` (AVIF/WebP/JPEG) from it; a manifest miss falls
-back to `getResponsiveImage()` thumbs (still called directly by `about.php`
-and `projects.php`, so it is a live path, not dead code). Full pipeline
+back to `getResponsiveImage()` thumbs (reached only through that snippet's
+fallback — about.php and projects.php now use the snippet — so it is a live
+path, not dead code). Full pipeline
 reference: `readme/MEDIA_PIPELINE.md`.
 
 ## Commands
@@ -50,6 +59,13 @@ npm run media:images -- --prefix projects/02-screw-driver
 # miss at the floor). Unlike images, a scoped run DOES write manifest.json: video
 # runs merge their `videos` entries into it instead of replacing it.
 npm run media:video -- --prefix home/
+
+# Prune orphans — files under app/assets/media/ the manifest no longer
+# references (stale hashes after an encoder/format change). Report-only by
+# default; --apply deletes. Refuses without a readable manifest.json. Never
+# part of build; run after a full `media:images`.
+npm run media:prune
+npm run media:prune -- --apply
 
 # JS unit tests — Vitest over tests/js/, mirroring the dev/js path under
 # test. No WebGL, no network, no PHP server; DOM tests opt into jsdom with a
@@ -143,7 +159,8 @@ often already held by an unrelated local service.
   `readme/QUICK_START.md` for how to write one.
 - Escape every content field a template/snippet echoes (`->escape()`,
   `esc()`, `->kirbytext()`, or `->titleHtml()` for titles carrying `<mark>`/
-  `<br>`); intentionally raw output needs `// raw: <reason>` inside the `<?=`
+  `<br>`, or `->titleText()` for the same titles in `<title>`/attribute/alt
+  contexts, where markup must be stripped to plain words); intentionally raw output needs `// raw: <reason>` inside the `<?=`
   tag. `tests/php/OutputEscapingGuardTest.php` enforces it — see
   `readme/QUICK_START.md`.
 - **Always test code changes.** Before changing code, find and run the

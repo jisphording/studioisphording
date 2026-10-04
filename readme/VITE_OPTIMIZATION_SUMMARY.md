@@ -12,23 +12,29 @@ isolates Three.js into a single chunk:
 
 - **vendor-three**: everything imported from `node_modules/three`, split into its
   own chunk so it can be cached independently of app code
-- Everything else (animation glue, cookie consent, project-specific Three.js code)
-  stays in `app.bundle.js` or its dynamically-imported chunks — there is no
-  separate `three-modules`, `three-world` or `utils` chunk.
+- Everything else stays in `app.bundle.js` or its dynamically-imported chunks:
+  animation glue and cookie consent, the `runExperience` chunk (Experience,
+  camera, renderer, resources) and one chunk per world
+  (`dev/js/three/projects/<world>/index.mjs`).
 
 ### 2. Dynamic Imports
 The main entry point (`dev/js/index.js`) uses dynamic imports for better code
 splitting:
 - Animation modules (`animGsap`, `animBarba`) and cookie consent load
   asynchronously after the initial page render
+- **Three.js is route-split**: `dev/js/utils/startWebgl.mjs` imports
+  `three/runExperience.js` only when the page has a `#webgl` canvas with a
+  `data-world`, and `dev/js/three/worlds.mjs` is a registry of lazy loaders,
+  so `vendor-three` and the world chunks are never fetched on other routes.
+  `scripts/smoke.sh` fails if the built entry statically imports `vendor-three`
 - Reduces initial bundle size
 - Enables lazy loading of non-critical functionality
 
 ### 3. Build Configuration
-- **Single rollup entry**: `app` (`dev/js/index.js`) — Three.js is imported
-  statically from there rather than declared as a second rollup entry, so it
-  is bundled as a normal chunk instead of emitting its own top-level
-  `three.bundle.js` artifact
+- **Single rollup entry**: `app` (`dev/js/index.js`) — Three.js is reached
+  through a dynamic import from there rather than declared as a second rollup
+  entry, so it is bundled as a normal chunk instead of emitting its own
+  top-level `three.bundle.js` artifact
 - **Chunk Size Warning Limit**: Increased to 1MB (from 500kB) for vendor libraries
 - **Terser Minification**: Proper minification with source maps
 - **Hash-based Naming**: Chunks include content hashes for better caching
@@ -39,11 +45,22 @@ splitting:
 - Excluded development-only dependencies from optimization
 - Proper CommonJS handling for node_modules
 
+### 5. Modulepreload (PHP)
+`vite()` in `app/site/plugins/vite-manifest/index.php` modulepreloads the
+entry's dynamic imports. Chunks that reach `vendor-three` are preloaded —
+together with `vendor-three` itself — only when `vite('js/index.js', true)`
+is called, which `header.php` does for pages whose
+`$page->rendersWebgl()` is true (templates listed in `WEBGL_TEMPLATES` in the
+site-methods plugin; `tests/php/plugins/PageMethodsTest.php` fails if that
+list drifts from the templates that render `#webgl`).
+
 ## File Structure
 ```
 app/assets/bundle/
 ├── app.bundle.js - Main application entry
-├── vendor-three-[hash].js - Three.js library
+├── vendor-three-[hash].js - Three.js library (WebGL pages only)
+├── runExperience-[hash].js - the Experience (WebGL pages only)
+├── index-[hash].js - one chunk per world (only the page's world loads)
 ├── animBarba-[hash].js, animGsap-[hash].js, cookieconsent-[hash].js - dynamically-loaded chunks
 └── app.css - Compiled styles
 ```

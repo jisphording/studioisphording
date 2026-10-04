@@ -104,7 +104,15 @@ across those three codecs. Keyvisuals open a project and carry its art
 direction, so they get the visually-lossless band. Gallery images sit in a
 two-column grid at normal viewing distance, where "excellent" is enough and
 saves bytes. The upper edge of each band matters too: it stops the loop from
-spending bytes on fidelity nobody can see. The bands come from the research
+spending bytes on fidelity nobody can see.
+
+**Keyvisual exception (WebP dropped).** Keyvisuals are encoded as AVIF +
+JPEG only (`formats: ['avif', 'jpeg']` in `media.config.mjs`). Lossy WebP could
+not reach the 88–92 band on detailed keyvisuals (ceiling ~88, 24 `MISS` lines
+before the change, 0 after) and showed banding on dark backdrop gradients.
+AVIF covers most clients; JPEG is the full-fidelity fallback.
+
+The bands come from the research
 dossier's recommendation (`plan/03-media-compression-and-delivery/
 research-media-compression-lazy-loading.md`, RES-19/RES-29).
 
@@ -237,3 +245,55 @@ still use the old files until phase 7.
 
 Budget 8,000,000 bytes on the AV1 rung: **met** (3 attempts, 79 s for the whole
 run including the poster). VP9 and H.264 are not budgeted and stay heavy.
+
+## Three.js route split, measured 2026-10-04
+
+`vendor-three` (651 KB, 161 KB gzip) used to be a static import of
+`app.bundle.js`, so every route downloaded and parsed it. It is now reached
+only through `dev/js/utils/startWebgl.mjs`'s dynamic import on pages with a
+`#webgl` canvas, and each world is its own chunk. `app.bundle.js` went from
+80.9 KB to 4.1 KB. Snapshots `2026-10-04-00-00-00-before-split` vs
+`2026-10-04-00-12-44-after-split` (`npm run perf:compare`, Lighthouse
+simulated throttling, median of 3):
+
+| Mobile | FCP before | FCP after | LCP before | LCP after |
+| --- | --- | --- | --- | --- |
+| /de | 3.83 s | 1.88 s | 12.15 s | 7.65 s |
+| /de/projects | 3.98 s | 2.03 s | 11.10 s | 3.83 s |
+| /de/about | 3.68 s | 1.65 s | 6.90 s | 3.30 s |
+| /de/projects/01-phenotype-agency | 3.83 s | 1.88 s | 9.15 s | 4.58 s |
+| /de/projects/isphording-inneneinrichtung (WebGL) | 4.13 s | 6.00 s | 56.42 s | 8.63 s |
+
+The WebGL page is the one regression: its FCP got worse on mobile (+1.87 s)
+and desktop (+259 ms), while its TBT dropped to 0 and desktop main-thread
+work fell 19%. It now modulepreloads `vendor-three` from `<head>`, where that
+download competes with the render-critical CSS and fonts. Before the split it
+was found only after `app.bundle.js` had been parsed. The 56 s LCP before the
+split is an outlier, so don't read the −85% as a real gain.
+
+Browser check (2026-10-04): headless Chrome via the repo's puppeteer-core,
+production bundle, `php -S` bound to the LAN IP so the dev-mode configs don't
+apply. `/de`, `/de/about` and `/de/projects` fetched no `vendor-three`,
+`runExperience` or world chunk. `/de/projects/isphording-inneneinrichtung`
+fetched `runExperience`, `vendor-three` and only its own world chunk
+(`isphording-inneneinrichtung-*.js`), logged no console errors, and its
+screenshot shows World_01's display model rendered. World_02 (`moodboard`
+template) has no live content page, so only its unit tests cover it.
+
+## Plan 04 close-out, measured 2026-10-04
+
+Snapshots `2026-10-03-14-41-17-after-pipeline` (end of plan 03) vs
+`2026-10-04-00-36-43-after-plan-04` (`npm run perf:compare -- <before> <after>`;
+Lighthouse mobile, simulated throttling, median of 3). Plan 04's route split,
+responsive-image move for about/projects and keyvisual format change are all
+in the "after":
+
+| Mobile | Score | FCP | LCP | Transfer |
+| --- | --- | --- | --- | --- |
+| /de | 65 → 81 | 3.98 → 1.88 s | 12.38 → 4.80 s | 6.1 → 5.3 MB |
+| /de/projects | 65 → 87 | 3.98 → 2.03 s | 11.10 → 3.83 s | 2.4 → 1.7 MB |
+| /de/about | 67 → 91 | 3.68 → 1.73 s | 8.33 → 3.30 s | 5.1 → 3.9 MB |
+
+Deploy dry-run (`scripts/deploy.sh --dry-run`) leaves `app/vendor/bin/phpunit`
+in place; its only deletions are the four stale `animGsap`/`animBarba`
+bundle chunks. `npm run media:prune` reports 0 orphans (1696 files kept).

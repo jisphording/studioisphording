@@ -144,7 +144,11 @@ Every `<?= … ?>` that prints a content field must escape it:
 `$page->field()->escape()` (or `esc($string)`) for plain text,
 `->kirbytext()` for Markdown fields, and `->titleHtml()` (helpers plugin) for
 `title`/`titlelong`, which escapes everything except the `<mark>` and `<br>`
-markup titles are authored with. A field that genuinely must print raw HTML
+markup titles are authored with. In contexts that cannot render markup (`<title>`,
+`data-*`, `alt`, menu text) use `->titleText()` instead: it turns `<br>` into a
+space, strips every other tag and escapes (`'raw'` returns unescaped text for
+snippet params like `responsive-image`'s `alt`, which the snippet escapes
+itself). A field that genuinely must print raw HTML
 carries a justification inside the tag: `<?= $page->embed() // raw: <reason> ?>`.
 `tests/php/OutputEscapingGuardTest.php` fails, listing file:line, for any echo
 that does neither; `tests/php/EscapingTest.php` renders hostile fixture values
@@ -180,6 +184,12 @@ in `app/` (reinstalling the gitignored `app/kirby` core from
 rsyncs `app/` to the IONOS server. **Always run
 `bash scripts/deploy.sh --dry-run` first** and review the output before a
 real deploy — see `CLAUDE.md` for the house rule.
+
+A `--dry-run` **skips** the `composer install --no-dev` step (it prints what it
+would run) so it never prunes `app/vendor` — phpunit survives and
+`npm run test:php` keeps working. A real deploy still runs it. The behaviour is
+pinned by `npm run test:deploy` (`tests/deploy/deploy-dry-run.test.sh`, stubbed
+`composer`/`npm`/`rsync`/`ssh`).
 
 ### Which trees live where
 

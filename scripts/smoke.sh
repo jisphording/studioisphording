@@ -65,6 +65,9 @@ PATHS=(
   "/imprint"
   "/privacy"
 )
+# None of the fixed pages renders a #webgl canvas, so none may script or
+# modulepreload a Three.js / world chunk (route-split bundle).
+NON_WEBGL_PATHS=("${PATHS[@]}")
 while IFS= read -r dir; do
   # Kirby splits folder names at the first "_" into <num>_<slug>
   # (Dir::inventoryChild), so "berlin_im_wandel_der_zeiten" is served
@@ -129,6 +132,12 @@ for path in "${ALL_PATHS[@]}"; do
     if [[ "$result" == "PASS" ]] && grep -qE '(src|href)="[^"]*/content/' "$body_file"; then
       result="FAIL"
     fi
+    # Three.js is reached only through a dynamic import on #webgl pages.
+    for p in "${NON_WEBGL_PATHS[@]}"; do
+      if [[ "$path" == "/${path:1:2}${p}" ]] && grep -qE '(src|href)="[^"]*/assets/bundle/(vendor-three|runExperience|isphording-inneneinrichtung|moodboard)-[^"/]*\.js"' "$body_file"; then
+        result="FAIL"
+      fi
+    done
   fi
 
   if [[ "$path" == "/de/" ]]; then
@@ -192,6 +201,22 @@ else
     fi
     printf "%-40s %-6s %s\n" "$hero_path" "$status" "$result"
   done <<< "$HERO_PATHS"
+fi
+
+# The production entry must not statically import the vendor-three chunk:
+# that would download Three.js on every route regardless of the markup.
+VITE_MANIFEST="$ROOT/app/assets/bundle/.vite/manifest.json"
+if [[ -f "$VITE_MANIFEST" ]]; then
+  result="PASS"
+  if ! node -e '
+    const m = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+    const imports = (m["js/index.js"] || {}).imports || [];
+    process.exit(imports.some((k) => (m[k] || {}).name === "vendor-three") ? 1 : 0);
+  ' "$VITE_MANIFEST"; then
+    result="FAIL"
+    FAIL=1
+  fi
+  printf "%-40s %-6s %s\n" "(entry imports no vendor-three)" "n/a" "$result"
 fi
 
 if [[ "$FAIL" -ne 0 ]]; then

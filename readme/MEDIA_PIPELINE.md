@@ -21,6 +21,8 @@ node scripts/media/index.mjs scorer    # is the scorer available?
 npm run media:images                   # sharp: AVIF/WebP/JPEG into app/assets/media/
 npm run media:video                    # ffmpeg: AV1/WebM, VP9/WebM, H.264/MP4 + poster
 npm run media:images -- --dry-run      # report only; never writes
+npm run media:prune                    # list derivatives manifest.json no longer references
+npm run media:prune -- --apply         # ...and delete them
 npm run media:images -- --prefix projects/02-screw-driver   # scope to a content path
 ```
 
@@ -30,6 +32,20 @@ variants. Both need `npm ci` (sharp); video also needs `ffmpeg` on `PATH`.
 `images` and `video` both write `app/assets/media/manifest.json`. A dry run
 or a scoped `images` run never writes it; a scoped `video` run does, merging its
 `videos` entries into the existing file.
+
+### Pruning orphans
+
+Derivative names are content-hashed, so changing a master, width, format or
+encoder setting leaves the old file behind and the deploy keeps mirroring it.
+`media:prune` treats `manifest.json` as the source of truth: every image variant,
+video variant and poster `url` (plus `manifest.json` itself) is kept; any other
+regular file under `app/assets/media/` is an orphan. Without `--apply` it only
+reports count and bytes. It aborts, deleting nothing, if the manifest is
+missing, unparseable or references no files, or if a url points outside the
+media root; symlinks are not followed and emptied directories are removed. Run
+it after a full `media:images` (a scoped images run leaves the manifest
+unchanged, so it is safe, but the full run is what retires stale entries).
+Never chained into `build`.
 
 ## Cost: cold vs warm
 
@@ -41,7 +57,12 @@ image set (~1,700 variants) takes on the order of 20 minutes, plus a few
 minutes for the video ladder (the AV1 rung re-encodes in CRF steps until it fits
 its budget). The measured quality for each variant is cached in
 `.cache/media/quality.json` (workstation-only, gitignored) so later runs do not
-repeat the search.
+repeat the search. Each search is keyed on the master hash, width, format,
+target, tolerance **and that format's encoder options**
+(`scripts/media/encoder-options.mjs`, the single copy the encoder also reads),
+so changing an option such as AVIF `effort` invalidates that format's cached
+searches automatically. `QUALITY_SEARCH_VERSION` in `cache.mjs` is bumped by
+hand only for changes the options cannot express (e.g. the scoring method).
 
 Nothing prunes derivatives whose master or settings changed; the old hashed
 file stays in `app/assets/media/` and ships. Delete the tree and re-run if it
@@ -54,7 +75,7 @@ Version-controlled and unit-tested (`tests/js/media/config.test.mjs`). Shape:
 ```js
 export default {
   default:   { target: 84, widths: [480, 800, 1200, 1600, 2000], formats: ['avif', 'webp', 'jpeg'] },
-  overrides: [ { match: 'projects/**/*_keyvisual*', target: 90 }, … ]
+  overrides: [ { match: 'projects/**/*_keyvisual*', target: 90, formats: ['avif', 'jpeg'] }, … ]
 }
 ```
 
@@ -75,6 +96,13 @@ segments, `?`). The most specific matching glob wins, layered over `default`.
 | --- | --- |
 | 88–92 (target 90) | Project keyvisuals, the home hero poster — "visually lossless" |
 | 82–86 (target 84) | Everything else — "excellent", imperceptible at normal viewing |
+
+**Keyvisual exception:** `projects/**/*_keyvisual*` ships AVIF + JPEG only, no
+WebP. Lossy WebP tops out near score 88 on detailed keyvisuals (a band MISS)
+and bands on dark backdrop gradients; the `responsive-image` snippet simply
+skips the absent WebP `<source>`. Dropping the format leaves the old
+`*_keyvisual*.webp` files on disk until they are pruned; they are no longer in
+the manifest.
 
 Why those bands, how to change them, and the validation run:
 [PERFORMANCE.md "Fidelity bands"](PERFORMANCE.md).
@@ -124,9 +152,11 @@ Kirby thumb system (`getResponsiveImage()` / `getThumbnail()` in
 `app/site/plugins/site-methods/`, `config.thumbs`, the `/media/` route and the
 `media-processing` plugin). These stay in place and are **not dead code**:
 `responsive-image.php` and `project-gallery.php` call them on a manifest miss,
-and `about.php` and `projects.php` still call `getResponsiveImage()` directly,
-bypassing the manifest. Do not remove them until those two templates move to
-the `responsive-image` snippet.
+and `about.php` and `projects.php` now render through the `responsive-image`
+snippet too (explicit `sizes` per class: `mood-image`/`mood-image-full`
+`100vw`, `mood-image-quarter` `(max-width: 767px) 100vw, 50vw`,
+`project-list-image` `100vw`; only the first about mood image is `eager`), so
+`getResponsiveImage()` is reached only through the snippet's fallback.
 
 ## Deploy
 
