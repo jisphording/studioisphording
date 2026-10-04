@@ -25,7 +25,7 @@ final class OutputEscapingGuardTest extends TestCase
 	/** Terminal methods whose result is escaped, markup-rendered or URL/slug-safe. */
 	private const SAFE_METHODS = [
 		'escape', 'esc', 'html', 'kirbytext', 'kirbytextinline', 'kt', 'kti',
-		'titleHtml', 'url', 'mime', 'slug', 'getResponsiveImage',
+		'titleHtml', 'titleText', 'url', 'mime', 'slug', 'getResponsiveImage',
 	];
 
 	/** Functions whose return value is already escaped or not content. */

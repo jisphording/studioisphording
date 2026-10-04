@@ -1,0 +1,74 @@
+{
+  "_animGsap-AAAA0001.js": {
+    "file": "animGsap-AAAA0001.js",
+    "name": "animGsap"
+  },
+  "_vendor-three-AAAA0002.js": {
+    "file": "vendor-three-AAAA0002.js",
+    "name": "vendor-three"
+  },
+  "js/animation/animBarba.mjs": {
+    "file": "animBarba-AAAA0003.js",
+    "name": "animBarba",
+    "src": "js/animation/animBarba.mjs",
+    "isDynamicEntry": true,
+    "imports": [
+      "_animGsap-AAAA0001.js"
+    ]
+  },
+  "js/cookieconsent.js": {
+    "file": "cookieconsent-AAAA0004.js",
+    "name": "cookieconsent",
+    "src": "js/cookieconsent.js",
+    "isDynamicEntry": true
+  },
+  "js/three/runExperience.js": {
+    "file": "runExperience-AAAA0005.js",
+    "name": "runExperience",
+    "src": "js/three/runExperience.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "js/index.js",
+      "_vendor-three-AAAA0002.js"
+    ],
+    "dynamicImports": [
+      "js/three/projects/isphording-inneneinrichtung/index.mjs",
+      "js/three/projects/moodboard/index.mjs"
+    ]
+  },
+  "js/three/projects/isphording-inneneinrichtung/index.mjs": {
+    "file": "isphording-inneneinrichtung-AAAA0006.js",
+    "name": "isphording-inneneinrichtung",
+    "src": "js/three/projects/isphording-inneneinrichtung/index.mjs",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-three-AAAA0002.js",
+      "js/three/runExperience.js"
+    ]
+  },
+  "js/three/projects/moodboard/index.mjs": {
+    "file": "moodboard-AAAA0007.js",
+    "name": "moodboard",
+    "src": "js/three/projects/moodboard/index.mjs",
+    "isDynamicEntry": true,
+    "imports": [
+      "_vendor-three-AAAA0002.js",
+      "js/three/runExperience.js"
+    ]
+  },
+  "js/index.js": {
+    "file": "app.bundle.js",
+    "name": "app",
+    "src": "js/index.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "_animGsap-AAAA0001.js",
+      "js/animation/animBarba.mjs",
+      "js/cookieconsent.js",
+      "js/three/runExperience.js"
+    ],
+    "css": [
+      "app.css"
+    ]
+  }
+}

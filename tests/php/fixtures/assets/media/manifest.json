@@ -70,6 +70,153 @@
           "url": "assets/media/home/reel.poster-1920-pppp.jpg"
         }
       ]
+    },
+    "about/mood-01.png": {
+      "width": 1600,
+      "height": 1000,
+      "eager": false,
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-01-480-av480.avif"
+        },
+        {
+          "format": "avif",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-01-1200-av1200.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-01-480-we480.webp"
+        },
+        {
+          "format": "webp",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-01-1200-we1200.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-01-480-jp480.jpg"
+        },
+        {
+          "format": "jpeg",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-01-1200-jp1200.jpg"
+        }
+      ]
+    },
+    "about/mood-03.png": {
+      "width": 1600,
+      "height": 1000,
+      "eager": false,
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-03-480-av480.avif"
+        },
+        {
+          "format": "avif",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-03-1200-av1200.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-03-480-we480.webp"
+        },
+        {
+          "format": "webp",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-03-1200-we1200.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-03-480-jp480.jpg"
+        },
+        {
+          "format": "jpeg",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/about/mood-03-1200-jp1200.jpg"
+        }
+      ]
+    },
+    "work/1_listed-hit/hit_keyvisual.png": {
+      "width": 1600,
+      "height": 1000,
+      "eager": false,
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/work/1_listed-hit/hit_keyvisual-480-av480.avif"
+        },
+        {
+          "format": "avif",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/work/1_listed-hit/hit_keyvisual-1200-av1200.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/work/1_listed-hit/hit_keyvisual-480-we480.webp"
+        },
+        {
+          "format": "webp",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/work/1_listed-hit/hit_keyvisual-1200-we1200.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 300,
+          "bytes": 1000,
+          "url": "assets/media/work/1_listed-hit/hit_keyvisual-480-jp480.jpg"
+        },
+        {
+          "format": "jpeg",
+          "width": 1200,
+          "height": 750,
+          "bytes": 1000,
+          "url": "assets/media/work/1_listed-hit/hit_keyvisual-1200-jp1200.jpg"
+        }
+      ]
     }
   },
   "videos": {

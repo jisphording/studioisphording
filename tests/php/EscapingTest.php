@@ -80,7 +80,7 @@ final class EscapingTest extends KirbyTestCase
 		$this->assertSame('Mark', $xpath->query("//h1[@class='related__showcase--title']/mark")->item(0)?->textContent);
 
 		$tags = $xpath->query("//div[@class='related__showcase--tags']//li");
-		$this->assertSame(['<script>alert(1)</script>', ' R&D', ' "Quoted"'], array_map(fn ($li) => $li->textContent, iterator_to_array($tags)));
+		$this->assertSame(['<script>alert(1)</script>', 'R&D', '"Quoted"'], array_map(fn ($li) => $li->textContent, iterator_to_array($tags)));
 		$this->assertSame(0, $xpath->query("//div[@class='related__showcase--tags']//script")->length);
 	}
 
@@ -91,10 +91,10 @@ final class EscapingTest extends KirbyTestCase
 
 		$this->assertSame(0, $xpath->query('//script')->length);
 		$this->assertSame(
-			['<script>alert(1)</script>', ' R&D', ' "Quoted"'],
+			['<script>alert(1)</script>', 'R&D', '"Quoted"'], // phase 9: tags are trimmed now
 			array_map(fn ($li) => $li->textContent, iterator_to_array($xpath->query('//li')))
 		);
-		$this->assertStringContainsString('<li> R&amp;D</li>', $html, 'the ampersand is entity-escaped in the source');
+		$this->assertStringContainsString('<li>R&amp;D</li>', $html, 'the ampersand is entity-escaped in the source');
 	}
 
 	/**
