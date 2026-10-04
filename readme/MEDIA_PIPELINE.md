@@ -161,8 +161,11 @@ correct `<source>` order (AVIF → WebP → JPEG; AV1 → VP9 → H.264).
 - `app/site/plugins/media-manifest/` reads the manifest once per request
   (modelled on `vite-manifest`) and resolves a file to its variants.
 - `responsive-image` snippet renders `<picture>`; `responsive-video` renders
-  the `<video>` ladder (sources detached until near the viewport, via
-  `dev/js/media/lazyVideo.mjs`).
+  the `<video>` ladder. Hero videos get real `<source src>` + `autoplay`;
+  lazy ones ship `<source data-src>` with no `autoplay` (no bytes fetched) plus
+  a `<noscript>` twin with real `src`, and `dev/js/media/lazyVideo.mjs` restores
+  them near the viewport (immediately without IntersectionObserver or with
+  native lazy media).
 
 ### Thumb fallback
 

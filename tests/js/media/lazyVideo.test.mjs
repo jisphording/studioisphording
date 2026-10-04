@@ -68,8 +68,49 @@ describe('lazyVideo without native support', () => {
   })
 })
 
+const SERVER_LAZY = `
+  <video id="srv" loading="lazy" muted>
+    <source data-src="/b.webm" type="video/webm"><source data-src="/b.mp4" type="video/mp4">
+  </video>`
+
+describe('server-rendered data-src sources', () => {
+  beforeEach(() => { document.body.innerHTML = SERVER_LAZY })
+
+  it('restores data-src to src and plays on intersect', () => {
+    lazyVideo()
+    const video = document.getElementById('srv')
+    const [observer] = observers
+    expect(video.querySelector('source').hasAttribute('src')).toBe(false)
+
+    observer.callback([{ target: video, isIntersecting: true }])
+    expect(video.querySelector('source').getAttribute('src')).toBe('/b.webm')
+    expect(video.querySelectorAll('source')[1].getAttribute('src')).toBe('/b.mp4')
+    expect(video.querySelector('source[data-src]')).toBeNull()
+    expect(video.hasAttribute('autoplay')).toBe(true)
+    expect(play).toHaveBeenCalledTimes(1)
+  })
+
+  it('restores sources immediately on the native-lazy path', () => {
+    HTMLMediaElement.prototype.loading = 'auto'
+    expect(lazyVideo()).toBeNull()
+    const video = document.getElementById('srv')
+    expect(video.querySelector('source').getAttribute('src')).toBe('/b.webm')
+    expect(video.querySelector('source[data-src]')).toBeNull()
+    expect(video.hasAttribute('autoplay')).toBe(true)
+    expect(play).toHaveBeenCalledTimes(1)
+  })
+
+  it('restores sources immediately when IntersectionObserver is missing', () => {
+    vi.stubGlobal('IntersectionObserver', undefined)
+    expect(lazyVideo()).toBeNull()
+    const video = document.getElementById('srv')
+    expect(video.querySelector('source').getAttribute('src')).toBe('/b.webm')
+    expect(play).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('lazyVideo with native support', () => {
-  it('is a no-op', () => {
+  it('leaves already-src sources untouched and does not defer', () => {
     HTMLMediaElement.prototype.loading = 'auto'
     expect(lazyVideo()).toBeNull()
     expect(observers).toHaveLength(0)

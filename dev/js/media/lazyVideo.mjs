@@ -1,10 +1,13 @@
 // Deferred start for below-the-fold videos.
 //
-// The responsive-video snippet marks non-hero videos loading="lazy". Where the
-// browser honours that on media elements ('loading' in HTMLMediaElement.prototype)
-// this module does nothing. Elsewhere (Safari today) it detaches each lazy
-// video's sources and autoplay, then restores them when the video first nears
-// the viewport. Dependency-free; safe to call again after a Barba swap.
+// The responsive-video snippet renders non-hero videos loading="lazy" with
+// <source data-src> and no autoplay, so no browser fetches bytes up front. This
+// module restores data-src -> src and starts playback when the video first nears
+// the viewport. Without IntersectionObserver, or where the browser handles
+// loading="lazy" on media natively, there is nothing to wait for and sources are
+// restored immediately. Markup that still carries real src (older renders) is
+// detached and deferred the same way on the observer path. Dependency-free; safe
+// to call again after a Barba swap.
 
 const SELECTOR = 'video[loading="lazy"]'
 const ROOT_MARGIN = '200px'
@@ -30,10 +33,16 @@ const start = (video) => {
  *   support makes this a no-op (or there is nothing to defer)
  */
 export default function lazyVideo(root = document) {
-  if (supportsNativeLazyMedia() || typeof IntersectionObserver === 'undefined') return null
-
   const videos = Array.from(root.querySelectorAll(SELECTOR)).filter((v) => !('lazyVideo' in v.dataset))
   if (videos.length === 0) return null
+
+  if (supportsNativeLazyMedia() || typeof IntersectionObserver === 'undefined') {
+    videos.forEach((video) => {
+      video.dataset.lazyVideo = ''
+      if (video.querySelector('source[data-src]')) start(video)
+    })
+    return null
+  }
 
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {

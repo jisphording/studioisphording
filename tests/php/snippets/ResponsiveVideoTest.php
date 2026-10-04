@@ -25,7 +25,7 @@ final class ResponsiveVideoTest extends KirbyTestCase
 	private function sourceTypes(DOMXPath $xpath): array
 	{
 		$types = [];
-		foreach ($xpath->query('//video//source') as $source) {
+		foreach ($xpath->query('//video[not(ancestor::noscript)]//source') as $source) {
 			$types[] = $source->getAttribute('type');
 		}
 
@@ -41,7 +41,7 @@ final class ResponsiveVideoTest extends KirbyTestCase
 			'video/webm; codecs="vp09.00.40.08"',
 			'video/mp4; codecs="avc1.640028"',
 		], $this->sourceTypes($xpath));
-		$this->assertStringContainsString('reel.av1.1111.webm', $xpath->query('//source')->item(0)->getAttribute('src'));
+		$this->assertStringContainsString('reel.av1.1111.webm', $xpath->query('//source')->item(0)->getAttribute('data-src'));
 	}
 
 	public function testPosterComesFromTheManifestPosterEntry(): void
@@ -60,7 +60,7 @@ final class ResponsiveVideoTest extends KirbyTestCase
 
 	public function testPlaybackAttributesArePreserved(): void
 	{
-		$video = $this->render()->query('//video')->item(0);
+		$video = $this->render(['hero' => true])->query('//video')->item(0);
 
 		foreach (['playsinline', 'autoplay', 'muted', 'loop'] as $attr) {
 			$this->assertTrue($video->hasAttribute($attr), $attr);
@@ -71,6 +71,44 @@ final class ResponsiveVideoTest extends KirbyTestCase
 	{
 		$this->assertSame('lazy', $this->render()->query('//video')->item(0)->getAttribute('loading'));
 		$this->assertFalse($this->render(['hero' => true])->query('//video')->item(0)->hasAttribute('loading'));
+	}
+
+	public function testLazyVideoShipsDataSrcAndNoAutoplay(): void
+	{
+		$xpath = $this->render();
+		$video = $xpath->query('//body/video | //video[not(ancestor::noscript)]')->item(0);
+
+		$this->assertFalse($video->hasAttribute('autoplay'));
+		$this->assertSame(0, $xpath->query('//video[@loading="lazy"]//source[@src]')->length);
+		$sources = $xpath->query('//video[@loading="lazy"]//source[@data-src]');
+		$this->assertSame(3, $sources->length);
+		$this->assertStringContainsString('reel.av1.1111.webm', $sources->item(0)->getAttribute('data-src'));
+		$this->assertSame('video/webm; codecs="av01.0.08M.08"', $sources->item(0)->getAttribute('type'));
+	}
+
+	public function testLazyVideoCarriesANoscriptFallbackWithRealSources(): void
+	{
+		$html = $this->snippetHtml('responsive-video', [
+			'file'     => $this->kirby->site()->find('home')->file('reel.mp4'),
+			'fallback' => [],
+		]);
+
+		$this->assertMatchesRegularExpression('#<noscript>\s*<video[^>]*autoplay[^>]*>\s*<source src="[^"]*reel\.av1\.1111\.webm"#', $html);
+	}
+
+	public function testHeroVideoKeepsRealSrcAndAutoplayWithoutNoscript(): void
+	{
+		$html  = $this->snippetHtml('responsive-video', [
+			'file'     => $this->kirby->site()->find('home')->file('reel.mp4'),
+			'fallback' => [],
+			'hero'     => true,
+		]);
+		$xpath = $this->dom($html);
+
+		$this->assertTrue($xpath->query('//video')->item(0)->hasAttribute('autoplay'));
+		$this->assertSame(3, $xpath->query('//video//source[@src]')->length);
+		$this->assertSame(0, $xpath->query('//source[@data-src]')->length);
+		$this->assertStringNotContainsString('<noscript', $html);
 	}
 
 	public function testManifestMissFallsBackToTheGivenFileUrls(): void

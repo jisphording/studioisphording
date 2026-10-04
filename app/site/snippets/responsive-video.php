@@ -9,7 +9,9 @@
  * @var array                $fallback  [['url' => ..., 'type' => ...], ...] used on a manifest miss
  * @var string|null          $poster    poster URL used on a manifest miss
  * @var string               $class
- * @var bool                 $hero      above the fold: no loading="lazy"
+ * @var bool                 $hero      above the fold: real <source src> + autoplay. Otherwise
+ *                                      sources ship as data-src (no bytes fetched) plus a <noscript> twin;
+ *                                      dev/js/media/lazyVideo.mjs restores them near the viewport
  * @var string               $preload   none|metadata|auto (default none)
  */
 $file     = ($file ?? null) instanceof \Kirby\Cms\File ? $file : null;
@@ -34,9 +36,27 @@ if ($entry) {
 if (!$sources) {
 	return;
 }
+$attrs = ($class !== '' ? ' class="' . esc($class, 'attr') . '"' : '')
+	. ' playsinline muted loop preload="' . esc($preload, 'attr') . '"'
+	. ($poster ? ' poster="' . esc($poster, 'attr') . '"' : '');
 ?>
-<video<?php if ($class !== ''): ?> class="<?= esc($class, 'attr') ?>"<?php endif ?> playsinline autoplay muted loop preload="<?= esc($preload, 'attr') ?>"<?= $hero ? '' : ' loading="lazy"' ?><?php if ($poster): ?> poster="<?= esc($poster, 'attr') ?>"<?php endif ?>>
+<?php if ($hero): ?>
+<video<?= $attrs // raw: built above from esc()'d parts ?> autoplay>
 	<?php foreach ($sources as $source): ?>
 	<source src="<?= esc($source['url'], 'attr') ?>" type="<?= esc($source['type'], 'attr') ?>">
 	<?php endforeach ?>
 </video>
+<?php else: ?>
+<video<?= $attrs // raw: built above from esc()'d parts ?> loading="lazy">
+	<?php foreach ($sources as $source): ?>
+	<source data-src="<?= esc($source['url'], 'attr') ?>" type="<?= esc($source['type'], 'attr') ?>">
+	<?php endforeach ?>
+</video>
+<noscript>
+	<video<?= $attrs // raw: built above from esc()'d parts ?> autoplay>
+		<?php foreach ($sources as $source): ?>
+		<source src="<?= esc($source['url'], 'attr') ?>" type="<?= esc($source['type'], 'attr') ?>">
+		<?php endforeach ?>
+	</video>
+</noscript>
+<?php endif ?>
