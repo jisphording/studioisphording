@@ -4,7 +4,9 @@
 // registry, construction order (Resources before World), the unknown-world
 // path, and the singleton. Everything Experience constructs is mocked, and the
 // module keeps its singleton in module scope, so every case re-imports it
-// after vi.resetModules().
+// after vi.resetModules(). The registry itself is real — it imports nothing
+// eagerly — and the World_01 chunk it lazily imports is mocked; the world is
+// built asynchronously, so cases await `exp.ready`.
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
@@ -43,22 +45,16 @@ function mockModules() {
 const sources = [{ name: 'a', type: 'texture', path: '/a.png' }]
 
 function mockRegistry() {
-  vi.doMock('../../../../dev/js/three/worlds.mjs', () => ({
-    worlds: {
-      World_X: {
-        World: class {
-          constructor() {
-            order.push('World')
-          }
-          update() {
-            worldUpdate()
-          }
-        },
-        sources,
-        mode: 'batch',
-        name: 'x-world'
+  vi.doMock('../../../../dev/js/three/projects/isphording-inneneinrichtung/index.mjs', () => ({
+    World: class {
+      constructor() {
+        order.push('World')
       }
-    }
+      update() {
+        worldUpdate()
+      }
+    },
+    sources
   }))
 }
 
@@ -79,9 +75,11 @@ describe('Experience', () => {
 
   it('builds Resources from the registry entry before constructing the World', async () => {
     const Experience = await loadExperience()
-    const exp = new Experience({}, 'World_X', 0xffffff)
+    const exp = new Experience({}, 'World_01', 0xffffff)
+    expect(exp.world).toBeNull()
+    await exp.ready
 
-    expect(resourcesCtor).toHaveBeenCalledWith(sources, 'batch', 'x-world')
+    expect(resourcesCtor).toHaveBeenCalledWith(sources, 'batch', 'isphording-inneneinrichtung')
     expect(order.indexOf('Resources')).toBeGreaterThan(-1)
     expect(order.indexOf('Resources')).toBeLessThan(order.indexOf('World'))
     expect(exp.world).not.toBeNull()
@@ -94,10 +92,27 @@ describe('Experience', () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     const Experience = await loadExperience()
     const exp = new Experience({}, 'World_Nope', 0xffffff)
+    await exp.ready
 
     expect(error).toHaveBeenCalledOnce()
     expect(error.mock.calls[0][0]).toContain('World_Nope')
-    expect(error.mock.calls[0][0]).toContain('World_X')
+    expect(error.mock.calls[0][0]).toContain('World_01')
+    expect(exp.world).toBeNull()
+    expect(resourcesCtor).not.toHaveBeenCalled()
+    expect(() => exp.update()).not.toThrow()
+  })
+
+  it('logs a world chunk that fails to load and keeps running without a world', async () => {
+    vi.doMock('../../../../dev/js/three/projects/isphording-inneneinrichtung/index.mjs', () => {
+      throw new Error('chunk 404')
+    })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const Experience = await loadExperience()
+    const exp = new Experience({}, 'World_01', 0xffffff)
+    await exp.ready
+
+    expect(error).toHaveBeenCalledOnce()
+    expect(error.mock.calls[0][0]).toContain('World_01')
     expect(exp.world).toBeNull()
     expect(resourcesCtor).not.toHaveBeenCalled()
     expect(() => exp.update()).not.toThrow()
@@ -105,8 +120,9 @@ describe('Experience', () => {
 
   it('returns the same instance on a second construction', async () => {
     const Experience = await loadExperience()
-    const first = new Experience({}, 'World_X', 0xffffff)
+    const first = new Experience({}, 'World_01', 0xffffff)
     const second = new Experience()
+    await first.ready
 
     expect(second).toBe(first)
     expect(resourcesCtor).toHaveBeenCalledOnce()
@@ -115,7 +131,7 @@ describe('Experience', () => {
   it('sets window.experience when import.meta.env.DEV is true', async () => {
     vi.stubEnv('DEV', true)
     const Experience = await loadExperience()
-    const exp = new Experience({}, 'World_X', 0xffffff)
+    const exp = new Experience({}, 'World_01', 0xffffff)
 
     expect(typeof window.experience).toBe('object')
     expect(window.experience).toBe(exp)
@@ -125,7 +141,7 @@ describe('Experience', () => {
   it('does not set window.experience when import.meta.env.DEV is false', async () => {
     vi.stubEnv('DEV', false)
     const Experience = await loadExperience()
-    const exp = new Experience({}, 'World_X', 0xffffff)
+    const exp = new Experience({}, 'World_01', 0xffffff)
 
     expect(typeof window.experience).toBe('undefined')
   })

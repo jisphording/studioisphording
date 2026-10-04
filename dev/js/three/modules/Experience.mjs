@@ -18,7 +18,7 @@ import { Debug } from './../utils/Debug.mjs'
 import { Resources } from './../utils/Resources.mjs'
 
 // EXPERIENCE WORLDS & RESOURCES
-import { worlds } from '../worlds.mjs'
+import { loadWorld } from '../worlds.mjs'
 
 // Storing the singleton instance
 let instance = null
@@ -56,17 +56,22 @@ export class Experience
 		this.debug = new Debug()
 
 		// SPECIFIC WORLD
-		// Resources must exist before the World is constructed: World reads experience.resources.
+		// Each world is its own lazily imported chunk, so it is built once the
+		// chunk arrives; `ready` settles then. Until it does, update() renders the
+		// empty scene. Resources must exist before the World is constructed:
+		// World reads experience.resources.
 		this.world = null
-		const entry = Object.hasOwn( worlds, world ) ? worlds[ world ] : null
-
-		if ( entry ) {
-			this.resources = new Resources( entry.sources, entry.mode, entry.name )
-			this.world = new entry.World()
-		}
-		else {
-			console.error( `Experience: unknown world "${ world }". Registered worlds: ${ Object.keys( worlds ).join( ', ' ) }` )
-		}
+		this.ready = loadWorld( world )
+			.then( ( entry ) =>
+			{
+				if ( !entry ) return
+				this.resources = new Resources( entry.sources, entry.mode, entry.name )
+				this.world = new entry.World()
+			})
+			.catch( ( error ) =>
+			{
+				console.error( `Experience: failed to load world "${ world }"`, error )
+			})
 
 		// LISTEN TO EVENT EMITTERS
 		

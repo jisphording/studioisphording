@@ -16,6 +16,21 @@ describe('EventEmitter', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {})
   })
 
+  describe('name resolution', () => {
+    it("registers exactly 'a' and 'b' for on('a, b') and nothing under ''", () => {
+      const emitter = new EventEmitter()
+      emitter.on('a, b', () => {})
+
+      expect(Object.keys(emitter.callbacks.base).sort()).toEqual(['a', 'b'])
+      expect(emitter.resolveNames('a, b')).toEqual(['a', 'b'])
+    })
+
+    it('ignores leading, trailing and repeated separators', () => {
+      const emitter = new EventEmitter()
+      expect(emitter.resolveNames(' a ,/ b  ')).toEqual(['a', 'b'])
+    })
+  })
+
   describe('on / trigger', () => {
     it('calls a registered callback with a single argument', () => {
       const cb = vi.fn()

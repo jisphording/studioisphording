@@ -25,6 +25,7 @@ export class Resources extends EventEmitter
         this.mode = mode
         this.worldName = worldName
         this.started = false
+        this.readyFired = false
 
         // Setup
         this.experience = new Experience
@@ -154,6 +155,14 @@ export class Resources extends EventEmitter
             (file) => {
                 this.sourceLoaded(source, file);
                 console.log(source.name + ' loaded');
+            },
+            undefined,
+            (error) => {
+                // A failed source still settles: it is counted but not filed
+                // into items, matching a failed moodboard texture.
+                console.error(`Resources: Failed to load ${source.type} ${source.name}:`, error);
+                this.loaded++;
+                this.checkOverallLoadCompletion();
             }
         );
     }
@@ -289,7 +298,8 @@ export class Resources extends EventEmitter
     }
 
     checkOverallLoadCompletion() {
-        if (this.loaded === this.toLoad) {
+        if (this.loaded === this.toLoad && !this.readyFired) {
+            this.readyFired = true;
             console.log('Resources: All resources have been loaded.');
 
             // NOTIFY LEVEL

@@ -1,7 +1,8 @@
 // Guards the world registry (dev/js/three/worlds.mjs) and the World_Sources
 // lists it wires up, so a new world or a source-list typo fails here instead of
-// at runtime in the browser. The worlds import the Experience singleton, whose
-// real module cannot load headless, so it is replaced with the shared fake.
+// at runtime in the browser. Every world chunk is loaded through loadWorld(),
+// exactly as the Experience does. The worlds import the Experience singleton,
+// whose real module cannot load headless, so it is replaced with the shared fake.
 
 import { describe, it, expect, vi } from 'vitest'
 
@@ -10,7 +11,10 @@ vi.mock('../../../dev/js/three/modules/Experience.mjs', async () => {
   return experienceMockFactory()
 })
 
-const { worlds } = await import('../../../dev/js/three/worlds.mjs')
+const { worlds, loadWorld } = await import('../../../dev/js/three/worlds.mjs')
+const loaded = await Promise.all(
+  Object.keys(worlds).map(async (key) => [key, await loadWorld(key)])
+)
 
 const MODES = ['batch', 'progressive']
 const SOURCE_TYPES = ['gltfModel', 'texture', 'cubeTexture']
@@ -20,7 +24,7 @@ describe('worlds registry', () => {
     expect(Object.keys(worlds)).toEqual(['World_01', 'World_02'])
   })
 
-  describe.each(Object.entries(worlds))('%s', (_key, entry) => {
+  describe.each(loaded)('%s', (_key, entry) => {
     it('has a constructable World, a valid mode and a name', () => {
       expect(typeof entry.World).toBe('function')
       expect(entry.World.prototype).toBeDefined()

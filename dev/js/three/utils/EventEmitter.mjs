@@ -236,8 +236,7 @@ export default class EventEmitter {
     resolveNames(_names) {
         let names = _names
         names = names.replace(/[^a-zA-Z0-9 ,/.]/g, '')
-        names = names.replace(/[,/]+/g, ' ')
-        names = names.split(' ')
+        names = names.split(/[,\s/]+/).filter(Boolean)
 
         return names
     }

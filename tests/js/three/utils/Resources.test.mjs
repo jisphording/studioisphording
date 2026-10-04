@@ -255,6 +255,66 @@ describe('Resources', () => {
     })
   })
 
+  describe('failed loads and resourcesReady', () => {
+    it('counts a failed non-moodboard source, logs it, and still fires resourcesReady once', () => {
+      const resources = new Resources([
+        { name: 'model', type: 'gltfModel', path: '/model.glb' },
+        { name: 'floor', type: 'texture', path: '/floor.jpg' },
+        { name: 'env', type: 'cubeTexture', path: '/env/' }
+      ], 'batch', 'World_01')
+      const loaders = withFakeLoaders(resources)
+      const ready = vi.fn()
+      resources.on('resourcesReady', ready)
+
+      resources.start()
+      loaders.gltfLoader.reject('/model.glb')
+      loaders.textureLoader.reject('/floor.jpg')
+      expect(ready).not.toHaveBeenCalled()
+      loaders.cubeTextureLoader.resolve('/env/')
+
+      expect(resources.loaded).toBe(3)
+      expect(console.error).toHaveBeenCalledWith(
+        expect.stringContaining('model'), expect.any(Error)
+      )
+      expect(ready).toHaveBeenCalledTimes(1)
+      // A failed source is absent from items, as with failed moodboard textures.
+      expect(resources.items).not.toHaveProperty('model')
+      expect(resources.items).not.toHaveProperty('floor')
+    })
+
+    it('fires resourcesReady once when the last other source settles after the batches', () => {
+      const resources = new Resources([
+        { name: 'model', type: 'gltfModel', path: '/model.glb' },
+        ...moodboardSources(2)
+      ], 'progressive', 'World_02')
+      const loaders = withFakeLoaders(resources)
+      const ready = vi.fn()
+      resources.on('resourcesReady', ready)
+
+      resources.start({ initialBatchSize: 2, backgroundBatchSize: 2 })
+      loaders.textureLoader.resolve('/moodboard/1.jpg')
+      loaders.textureLoader.resolve('/moodboard/2.jpg')
+      expect(ready).not.toHaveBeenCalled()
+      loaders.gltfLoader.reject('/model.glb')
+
+      expect(ready).toHaveBeenCalledTimes(1)
+    })
+
+    it('fires resourcesReady at most once even when completion is checked repeatedly', () => {
+      const resources = new Resources([{ name: 'm', type: 'gltfModel', path: '/m.glb' }], 'batch', 'World_01')
+      const loaders = withFakeLoaders(resources)
+      const ready = vi.fn()
+      resources.on('resourcesReady', ready)
+
+      resources.start()
+      loaders.gltfLoader.resolve('/m.glb', { scene: {} })
+      resources.checkOverallLoadCompletion()
+      resources.trigger('batchProcessed')
+
+      expect(ready).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('loadSource() type routing', () => {
     it('routes each known source type to its matching loader', () => {
       const resources = new Resources([], 'batch', 'World_01')
