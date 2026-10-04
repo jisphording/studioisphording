@@ -92,6 +92,21 @@ export class Resources extends EventEmitter
         }
     }
 
+    // DESTROY
+    // Called when the Experience is torn down (Barba left the page). Drops
+    // every listener, so loads still in flight settle silently: no
+    // 'resourcesReady' builds world objects on a destroyed Experience and no
+    // 'batchProcessed' requests the next moodboard batch. Releases the Draco
+    // decoder workers. Safe to call more than once.
+    destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+
+        this.callbacks = { base: {} };
+        this.processingHandlers = {};
+        this.loaders.dracoLoader.dispose();
+    }
+
     // SET LOADERS
     setLoaders()
     {

@@ -405,4 +405,43 @@ describe('Resources', () => {
       expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('world "unknown"'))
     })
   })
+
+  describe('destroy()', () => {
+    it('silences resourcesReady for loads that settle after teardown', () => {
+      const resources = new Resources([{ name: 'model', type: 'gltfModel', path: '/model.glb' }], 'batch', 'World_01')
+      const loaders = withFakeLoaders(resources)
+      const ready = vi.fn()
+      resources.on('resourcesReady', ready)
+      resources.start()
+
+      resources.destroy()
+      loaders.gltfLoader.resolve('/model.glb')
+
+      expect(ready).not.toHaveBeenCalled()
+    })
+
+    it('requests no further moodboard batch after teardown', () => {
+      const resources = new Resources(moodboardSources(5), 'progressive', 'World_02')
+      const loaders = withFakeLoaders(resources)
+      resources.start({ initialBatchSize: 2, backgroundBatchSize: 3 })
+      loaders.textureLoader.resolve('/moodboard/1.jpg')
+      loaders.textureLoader.resolve('/moodboard/2.jpg')
+
+      resources.destroy()
+      resources.trigger('batchProcessed')
+      vi.runAllTimers()
+
+      expect(loaders.textureLoader.callCount).toBe(2)
+    })
+
+    it('disposes the Draco loader once, however often it is called', () => {
+      const resources = new Resources([], 'batch', 'World_01')
+      const dispose = vi.spyOn(resources.loaders.dracoLoader, 'dispose')
+
+      resources.destroy()
+      resources.destroy()
+
+      expect(dispose).toHaveBeenCalledOnce()
+    })
+  })
 })

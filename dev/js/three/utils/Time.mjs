@@ -23,7 +23,9 @@ export class Time extends EventEmitter
         this.delta = 16 
 
         // START ANIMATION LOOP
-        window.requestAnimationFrame(() =>
+        // The pending frame id is kept so destroy() can cancel the loop.
+        this.stopped = false
+        this.frame = window.requestAnimationFrame(() =>
         {
             this.tick()
         })
@@ -47,9 +49,21 @@ export class Time extends EventEmitter
         // NOTIFY EXPERIENCE
         this.trigger( 'tick' )
 
-        window.requestAnimationFrame(() =>
+        if ( this.stopped ) return
+
+        this.frame = window.requestAnimationFrame(() =>
         {
             this.tick()
         })
+    }
+
+    // D E S T R O Y
+    // Cancel the pending frame and stop ticking. Safe to call more than once.
+    destroy()
+    {
+        if ( this.stopped ) return
+
+        this.stopped = true
+        window.cancelAnimationFrame( this.frame )
     }
 }

@@ -27,6 +27,12 @@ splitting:
   `data-world`, and `dev/js/three/worlds.mjs` is a registry of lazy loaders,
   so `vendor-three` and the world chunks are never fetched on other routes.
   `scripts/smoke.sh` fails if the built entry statically imports `vendor-three`
+- **Barba lifecycle**: `startWebgl(root)` keeps the stop handle
+  `runExperience()` returns; `animBarba.mjs` calls `stopWebgl()` while the
+  cover hides a page holding `#webgl` (→ `Experience.destroy()`: rAF loop,
+  resize listener, controls, renderer, scene GPU resources, Draco workers,
+  singleton reset) and `startWebgl(container)` in `afterEnter`. Starting the
+  canvas already running is a no-op, so the initial load never starts twice
 - Reduces initial bundle size
 - Enables lazy loading of non-critical functionality
 

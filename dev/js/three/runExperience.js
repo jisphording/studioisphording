@@ -19,6 +19,7 @@ import { Experience } from './modules/Experience.mjs'
  * @param {string} canvas - The CSS selector for the canvas element (e.g., '#webgl').
  * @param {string} world - The identifier for the specific 3D world to be loaded (e.g., 'World_01').
  * @param {number} [clearColor] - The hexadecimal color value for clearing the renderer's output.
+ * @returns {(() => void) | null} stop - tears the experience down (null when no canvas matched)
  */
 export function runExperience( canvas, world, clearColor ) {
 
@@ -34,9 +35,10 @@ export function runExperience( canvas, world, clearColor ) {
 
     if ( import.meta.env.DEV ) console.log( 'runExperience in ' + canvas + ' ' + _world + ' ' + '0x_' + _clearColor )
 
-    if ( _canvas ) {
-        new Experience( _canvas, _world, _clearColor )
-    }
+    if ( !_canvas ) return null
+
+    const experience = new Experience( _canvas, _world, _clearColor )
+    return () => experience.destroy()
 }
 
 /**

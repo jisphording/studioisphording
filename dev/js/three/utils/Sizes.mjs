@@ -20,7 +20,8 @@ export class Sizes extends EventEmitter
         this.pixelRatio = Math.min( window.devicePixelRatio, 2 )
 
         // RESIZE EVENT
-        window.addEventListener( 'resize', () =>
+        // Named so destroy() can remove it again.
+        this.onResize = () =>
         {
             this.width = canvas.parentNode.offsetWidth
             this.height = canvas.parentNode.offsetHeight
@@ -28,6 +29,17 @@ export class Sizes extends EventEmitter
 
             // NOTIFY EXPERIENCE
             this.trigger( 'resize' )
-        }, { passive: true })
+        }
+        window.addEventListener( 'resize', this.onResize, { passive: true })
+    }
+
+    // D E S T R O Y
+    // Stop listening to window resizes. Safe to call more than once.
+    destroy()
+    {
+        if ( !this.onResize ) return
+
+        window.removeEventListener( 'resize', this.onResize )
+        this.onResize = null
     }
 }

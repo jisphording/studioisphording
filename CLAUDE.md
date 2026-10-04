@@ -17,7 +17,11 @@ page's own world chunk (never `vendor-three`) only for templates in
 `WEBGL_TEMPLATES` (site-methods plugin, exposed as `$page->rendersWebgl()`;
 the world comes from `$page->webglWorld()` / `webglWorldChunk()`). A new template rendering `#webgl` must be added
 there — `PageMethodsTest` fails until it is. See
-`readme/VITE_OPTIMIZATION_SUMMARY.md`.
+`readme/VITE_OPTIMIZATION_SUMMARY.md`. Across Barba transitions the
+Experience is torn down and restarted: `animBarba.mjs` calls `stopWebgl()`
+when leaving a container holding `#webgl` and `startWebgl(container)` in
+`afterEnter`; `Experience.destroy()` (with `Time`/`Sizes.destroy()`) resets
+the singleton. A world needing cleanup implements `destroy()`/`dispose()`.
 
 Build-time media pipeline in `scripts/media/` (config resolution, derivative
 naming, content-hash cache, manifest writer), configured by `media.config.mjs`

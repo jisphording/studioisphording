@@ -64,7 +64,8 @@ export class Experience
 		this.ready = loadWorld( world )
 			.then( ( entry ) =>
 			{
-				if ( !entry ) return
+				// Torn down (Barba left the page) before the chunk arrived
+				if ( !entry || this.destroyed ) return
 				this.resources = new Resources( entry.sources, entry.mode, entry.name )
 				this.world = new entry.World()
 			})
@@ -105,5 +106,58 @@ export class Experience
 		if ( this.world ) this.world.update()
 		this.camera.update()
 		this.renderer.update()
+	}
+
+	// D E S T R O Y
+	/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+	//
+	// Tear the running experience down when its page is left (Barba keeps the
+	// document alive): stop the loop and listeners, release GPU resources and
+	// the Resources listeners and Draco workers, and reset the singleton so the next WebGL page binds a
+	// new Experience to its own canvas. Safe to call more than once.
+
+	destroy()
+	{
+		if ( this.destroyed ) return
+		this.destroyed = true
+
+		this.time.destroy()
+		this.sizes.destroy()
+
+		if ( this.world )
+		{
+			if ( typeof this.world.destroy === 'function' ) this.world.destroy()
+			else if ( typeof this.world.dispose === 'function' ) this.world.dispose()
+		}
+
+		this.scene.traverse( disposeObject )
+		this.camera.controls?.dispose()
+		this.renderer.instance?.dispose()
+		this.resources?.destroy()
+		this.debug.ui?.destroy()
+
+		if ( import.meta.env.DEV && window.experience === this ) delete window.experience
+
+		if ( instance === this ) instance = null
+	}
+}
+
+// Dispose an object's geometry, its material(s) and every texture they hold.
+function disposeObject( object )
+{
+	object.geometry?.dispose()
+
+	const materials = Array.isArray( object.material ) ? object.material : [ object.material ]
+
+	for ( const material of materials )
+	{
+		if ( !material ) continue
+
+		for ( const value of Object.values( material ) )
+		{
+			if ( value?.isTexture ) value.dispose()
+		}
+
+		material.dispose()
 	}
 }

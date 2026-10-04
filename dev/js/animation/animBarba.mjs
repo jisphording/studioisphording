@@ -17,6 +17,7 @@ import {
     resetPageElements,
     syncPageClass
 } from './barba/pageState.mjs'
+import { startWebgl, stopWebgl } from '../utils/startWebgl.mjs'
 
 export { waitForPageReady }
 
@@ -95,6 +96,11 @@ function initializeBarbaTransitions(barba, gsap, ScrollTrigger, loader) {
                 console.log('Barba: leave transition triggered', data.current.url.href);
                 await animateLoaderIn(gsap, loader);
 
+                // Tear the WebGL experience down while the cover hides it, so
+                // its render loop, listeners and GPU resources do not outlive
+                // the page (afterEnter starts it again for a new #webgl page).
+                if (hasWebgl(data.current.container)) stopWebgl();
+
                 // Take ownership of the swap: remove the outgoing container now,
                 // while the loader fully covers the viewport. This is Barba's
                 // documented container-ownership pattern; Barba's own later
@@ -154,13 +160,25 @@ function setupBarbaHooks(barba, ScrollTrigger) {
         resetPageElements();
     });
 
-    // After entering new page
-    barba.hooks.afterEnter(() => {
-        console.log('Barba: afterEnter hook - transition complete');
+    // After entering new page: start the WebGL experience for its canvas.
+    // startWebgl() ignores a canvas it already runs, so Barba's afterEnter on
+    // the initial load does not double the start in index.js.
+    barba.hooks.afterEnter((data) => {
+        const container = data?.next?.container;
+        if (hasWebgl(container)) startWebgl(container);
     });
 
     // After all transition processes complete
     barba.hooks.after(() => {
         removeTransitionClasses();
     });
+}
+
+/**
+ * Whether a Barba container renders the WebGL canvas
+ * @param {HTMLElement} [container] - Barba container
+ * @returns {boolean}
+ */
+function hasWebgl(container) {
+    return Boolean(container?.querySelector('#webgl'));
 }
