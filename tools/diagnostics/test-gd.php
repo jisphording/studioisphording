@@ -22,7 +22,7 @@ if (extension_loaded('gd')) {
 }
 
 echo "\nTesting Kirby setup:\n";
-require_once 'app/kirby/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/app/kirby/bootstrap.php';
 $kirby = new Kirby();
 echo "Kirby loaded: " . (class_exists('Kirby') ? 'SUCCESS' : 'FAILED') . "\n";
 

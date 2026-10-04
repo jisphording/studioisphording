@@ -71,7 +71,8 @@ ionos-live-reference/
 
 # media pipeline: locally built scorer (scripts/media/setup-scorer.sh) and the
 # quality-search cache (scripts/media/cache.mjs) — workstation-only
-/tools/
+/tools/*
+!/tools/diagnostics/
 /.cache/
 
 # mkcert dev certs (npm run dev:https)

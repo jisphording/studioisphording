@@ -45,6 +45,10 @@ Dev-only `console.log` in `dev/js/three/` is gated behind
 
 ## Commands
 
+Legacy manual diagnostics live in `tools/diagnostics/` (formerly `test/`).
+See `tools/diagnostics/README.md` before running them; some generate local
+thumbnails. Automated suites live in `tests/`.
+
 ```bash
 # First-time setup
 (cd app && composer install)   # installs app/kirby — gitignored, Composer-managed, never committed

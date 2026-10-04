@@ -1,5 +1,5 @@
 <?php
-require_once 'app/kirby/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/app/kirby/bootstrap.php';
 
 $kirby = new Kirby();
 echo "Kirby version: " . $kirby->version() . "\n";

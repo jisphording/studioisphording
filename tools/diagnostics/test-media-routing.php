@@ -3,7 +3,7 @@
 $_SERVER['REQUEST_URI'] = '/media/pages/projects/01-phenotype-agency/b9841300b0-1698155095/phenotype-agency-00_keyvisual-490x390-crop-q35.jpg';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 
-require_once 'app/kirby/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/app/kirby/bootstrap.php';
 
 $kirby = new Kirby();
 

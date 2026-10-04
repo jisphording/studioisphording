@@ -57,7 +57,7 @@ export default defineConfig({
       usePolling: true, // Helps with file watching on Windows
       interval: 500,
       include: ['**/*.js', '**/*.mjs', '**/*.css', '**/*.scss', '**/*.html', '**/*.glsl', '**/*.vs', '**/*.fs'],
-      ignored: ['**/node_modules/**', '**/app/**', '**/test/**', '**/utils/**']
+      ignored: ['**/node_modules/**', '**/app/**', '**/tools/diagnostics/**', '**/utils/**']
     },
     
     // CORS headers for Kirby integration

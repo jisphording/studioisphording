@@ -1,5 +1,5 @@
 <?php
-require_once 'app/kirby/bootstrap.php';
+require_once dirname(__DIR__, 2) . '/app/kirby/bootstrap.php';
 
 $kirby = new Kirby();
 
@@ -40,7 +40,7 @@ try {
 echo "\n=== MANUALLY TESTING PLUGIN REGISTRATION ===\n";
 try {
     // Re-include the plugin file to see if there are any errors
-    include 'app/site/plugins/site-methods/index.php';
+    include dirname(__DIR__, 2) . '/app/site/plugins/site-methods/index.php';
     echo "Plugin file included successfully\n";
     
     // Check again after manual include
