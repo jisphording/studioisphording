@@ -22,7 +22,7 @@ noisy for real comparisons): `npm run perf -- --quick`.
 | Heaviest requests + Lighthouse insights | Representative Lighthouse run per page | What slows the first paint, with estimated savings |
 | After load / on scroll | Real headless Chrome: bytes loaded until `load`, after `load` without interaction, and while scrolling to the bottom; frame times; JS heap; WebGL canvas sizes | Three.js asset loading, whether lazy loading actually defers anything |
 | Media in markup | Every `/de` page's `<img>`/`<video>` with byte sizes and flags | Lazy-loading, poster, srcset and format fixes |
-| Heavy files on disk | `app/content`, `app/video`, `app/assets/three`, … ≥ 1 MB, with "seen this run" | Cleanup candidates and oversized sources |
+| Heavy files on disk | `app/content`, `app/assets/three`, … ≥ 1 MB, with "seen this run" | Cleanup candidates and oversized sources |
 | TTFB | curl, 10 samples per page | Kirby/PHP-side refactors |
 | Bundle | Raw/gzip/brotli per built file | JS/CSS refactors |
 | Code size | Files/lines per area, largest files | Housekeeping ("is this easier to navigate?") |
@@ -227,13 +227,16 @@ through the image pipeline (an authored sibling `<name>.jpg` if present, else a
 frame staged in `.cache/media/posters/`). Resolution, duration and frame rate
 are never changed; silent sources stay silent (`-an`) with a 240-frame GOP.
 
-The `budget` (bytes) set per path in `media.config.mjs` applies to the AV1
-rung: CRF starts at 34 and steps +2 until the rung fits or CRF 48 is hit; at
-the floor the achieved bytes are reported as a miss and the file still ships.
-VP9 (CRF 34) and H.264 (CRF 23) encode once. Warm runs are no-ops (hash in the
-filename); the settled CRF lives in `.cache/media/quality.json`. Manifest
-entries are under `videos` (schema in `scripts/media/manifest.mjs`); templates
-still use the old files until phase 7.
+The `budget` (bytes) set per path in `media.config.mjs` is either a number
+(AV1 rung only) or `{ av1, vp9, h264 }`. A budgeted rung's CRF starts at its
+start value (AV1/VP9 34 step +2, H.264 23 step +1) and steps up until the rung
+fits or its floor (48/48/32) is hit; at the floor the achieved bytes are
+reported as a miss and the file still ships. An unbudgeted rung encodes once.
+Warm runs are no-ops (hash in the filename); the settled CRF lives in
+`.cache/media/quality.json`. Manifest entries are under `videos` (schema in
+`scripts/media/manifest.mjs`), and every `<video>` on the site renders from
+them through the `responsive-video` snippet. Current per-rung budgets and
+sizes: `readme/MEDIA_PIPELINE.md` "Video budgets (per rung)".
 
 ### Home `landing_reel` (1920x1080, 36.7 s, 24 fps, 23.7 MB master), measured 2026-10-03
 
@@ -244,7 +247,8 @@ still use the old files until phase 7.
 | H.264/MP4 | 23 | 18,731,721 | 9.2 s | 0.9931 |
 
 Budget 8,000,000 bytes on the AV1 rung: **met** (3 attempts, 79 s for the whole
-run including the poster). VP9 and H.264 are not budgeted and stay heavy.
+run including the poster). VP9 and H.264 were not budgeted at the time;
+plan 05 phase 4 budgeted them too (VP9 10.14 MB, H.264 16.35 MB).
 
 ## Three.js route split, measured 2026-10-04
 
@@ -327,3 +331,57 @@ page measured 0.72-1.35 s), so it is not treated as a regression; TBT moved up
 from 0 because the chunks now execute earlier, still well under 200 ms on
 desktop. The fallback (vendor-three preload at the end of `<body>`) was not
 tried since FCP recovered.
+
+## Plan 05 close-out, measured 2026-10-05
+
+Snapshots `2026-10-04-00-36-43-after-plan-04` vs
+`2026-10-04-22-29-10-after-plan-05` (`npm run perf:compare -- <before> <after>`;
+Lighthouse simulated throttling, median of 3). The "after" includes all of plan
+05: world-aware head preloads, Experience teardown across Barba, gated dev
+logging, per-rung video budgets, gallery videos from content, and server-side
+lazy video sources. Transfer is Lighthouse's total in MiB, as `perf:compare`
+prints it.
+
+| Mobile | Score | FCP | LCP | TBT | Transfer |
+| --- | --- | --- | --- | --- | --- |
+| /de | 81 → 74 | 1.88 → 1.88 s | 4.80 → 7.65 s | 0 → 0 ms | 5.3 → 5.5 MB |
+| /de/projects | 87 → 87 | 2.03 → 2.03 s | 3.83 → 3.83 s | 0 → 0 ms | 1.7 → 1.7 MB |
+| /de/about | 91 → 87 | 1.73 → 1.73 s | 3.30 → 3.90 s | 0 → 0 ms | 3.9 → 3.9 MB |
+| /de/projects/isphording-inneneinrichtung (WebGL) | 59 → 45 | 5.70 → 2.40 s | 56.38 → 9.60 s | 0 → 1,780 ms | 12.3 → 12.4 MB |
+
+| Desktop | Score | FCP | LCP | TBT | Transfer |
+| --- | --- | --- | --- | --- | --- |
+| /de | 99 → 99 | 462 → 462 ms | 901 → 862 ms | 0 → 0 ms | 4.4 → 4.4 MB |
+| /de/projects | 100 → 100 | 502 → 502 ms | 762 → 762 ms | 0 → 0 ms | 636 → 636 KB |
+| /de/about | 100 → 99 | 423 → 424 ms | 743 → 844 ms | 0 → 0 ms | 4.0 → 4.1 MB |
+| /de/projects/isphording-inneneinrichtung (WebGL) | 92 → 98 | 1.04 s → 524 ms | 1.34 s → 764 ms | 0 → 120 ms | 12.2 → 11.8 MB |
+
+How to read it:
+
+- **WebGL page.** Mobile FCP is down 3.3 s, and the 56 s LCP outlier is gone:
+  LCP is now the article's first paragraph at 9.60–9.62 s in every run.
+  Desktop improves on every timing. The cost is TBT (mobile 1.78 s, desktop
+  120 ms): `runExperience` and a ScrollTrigger refresh now execute inside the
+  measured window, under software WebGL.
+- **/de mobile LCP regression.** The LCP element moved from the showcase
+  keyvisual to the cookie-consent banner text, which waits on a cross-origin
+  jsDelivr script. FCP, transfer and the real-browser bytes are unchanged.
+  This is follow-up #1 in the investigation.
+- **/de/about.** LCP is the mood-film poster (+0.6 s, inside the run spread
+  3.83–3.90 s after vs 3.30–3.91 s before).
+- **Main-thread work** fell 26–40% on the three non-WebGL pages (mobile).
+- **01-phenotype-agency** (not in the table) shows +2.5 MB transfer in
+  Lighthouse only. Real Chrome at the same viewport fetches neither lazy
+  gallery video, and the browser probe's bytes until load fell 4.3 → 3.3 MB.
+
+The mobile critical-path profile and its ranked follow-ups are in
+`plan/05-webgl-loading-and-video-ladder/investigations/critical-path.md` and
+`plan/improvements.md`.
+
+Deploy dry-run (`scripts/deploy.sh --dry-run`, 2026-10-05): the preflight
+passes and Composer is skipped, as intended. The only deletions are four stale
+`animGsap`/`animBarba` bundle chunks. The push list includes the new
+case-study gallery ladders (`isphinnen_20_30_…_iPhone`, `isphinnen_20_50_…_iPad`
+AV1/VP9/H.264) with the rest of `assets/media/`. It also includes 15 orphaned
+pre-budget video hashes (94 MB, per `npm run media:prune`): run
+`npm run media:prune -- --apply` before the next real deploy.

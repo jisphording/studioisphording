@@ -46,6 +46,16 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-048 | [retained-as-a-fallback-for-any-image-the-manifest-does-not-cover](decisions/048-retained-as-a-fallback-for-any-image-the-manifest-does-not-cover.md) | 03-media-compression-and-delivery/decisions/10 |
 | MEM-049 | [masters-stay-on-the-workstation-only-gitignored-and-deploy-exclu](decisions/049-masters-stay-on-the-workstation-only-gitignored-and-deploy-exclu.md) | 03-media-compression-and-delivery/decisions/11 |
 | MEM-050 | [480-800-1200-1600-2000-2560-down-from-ten-steps-3200w-3840w-and](decisions/050-480-800-1200-1600-2000-2560-down-from-ten-steps-3200w-3840w-and.md) | 03-media-compression-and-delivery/decisions/12 |
+| MEM-051 | [keyvisuals-ship-avif-and-jpeg-only-no-webp](decisions/051-keyvisuals-ship-avif-and-jpeg-only-no-webp.md) | 04-backlog-hygiene-and-robustness/decisions/1 |
+| MEM-052 | [the-media-pruner-is-report-only-by-default-and-refuses-without-a](decisions/052-the-media-pruner-is-report-only-by-default-and-refuses-without-a.md) | 04-backlog-hygiene-and-robustness/decisions/2 |
+| MEM-053 | [the-quality-cache-key-hashes-each-format-s-encoder-options](decisions/053-the-quality-cache-key-hashes-each-format-s-encoder-options.md) | 04-backlog-hygiene-and-robustness/decisions/3 |
+| MEM-054 | [tags-are-trimmed-keep-inner-spaces-and-skip-empties-everywhere](decisions/054-tags-are-trimmed-keep-inner-spaces-and-skip-empties-everywhere.md) | 04-backlog-hygiene-and-robustness/decisions/5 |
+| MEM-055 | [three-js-is-route-split-behind-a-webgl-check-with-three-preloads](decisions/055-three-js-is-route-split-behind-a-webgl-check-with-three-preloads.md) | 04-backlog-hygiene-and-robustness/decisions/6 |
+| MEM-056 | [barba-spa-navigation-stays-the-webgl-experience-is-torn-down-and](decisions/056-barba-spa-navigation-stays-the-webgl-experience-is-torn-down-and.md) | 05-webgl-loading-and-video-ladder/decisions/1 |
+| MEM-057 | [project-gallery-videos-live-in-the-project-s-content-folder-not](decisions/057-project-gallery-videos-live-in-the-project-s-content-folder-not.md) | 05-webgl-loading-and-video-ladder/decisions/2 |
+| MEM-058 | [video-budgets-are-per-rung-with-a-1-1-5-2-5-av1-vp9-h-264-starti](decisions/058-video-budgets-are-per-rung-with-a-1-1-5-2-5-av1-vp9-h-264-starti.md) | 05-webgl-loading-and-video-ladder/decisions/3 |
+| MEM-059 | [webgl-pages-preload-runexperience-and-their-own-world-chunk-neve](decisions/059-webgl-pages-preload-runexperience-and-their-own-world-chunk-neve.md) | 05-webgl-loading-and-video-ladder/decisions/4 |
+| MEM-060 | [lazy-videos-emit-data-src-sources-plus-a-noscript-twin](decisions/060-lazy-videos-emit-data-src-sources-plus-a-noscript-twin.md) | 05-webgl-loading-and-video-ladder/decisions/6 |
 
 ### Conventions
 
@@ -68,6 +78,9 @@ Accepted, non-superseded records — the current state of truth.
 | MEM-036 | [browser-qa-runs-the-production-bundle](conventions/036-browser-qa-runs-the-production-bundle.md) | refactor-dev-js/conventions/3 |
 | MEM-037 | [animbarba-path-and-export-stay-stable](conventions/037-animbarba-path-and-export-stay-stable.md) | refactor-dev-js/conventions/5 |
 | MEM-038 | [test-files-use-2-space-indentation](conventions/038-test-files-use-2-space-indentation.md) | refactor-dev-js/conventions/9 |
+| MEM-061 | [plan-improvements-md-is-append-only-for-plan-phases](conventions/061-plan-improvements-md-is-append-only-for-plan-phases.md) | 04-backlog-hygiene-and-robustness/conventions/1 |
+| MEM-062 | [anything-that-deletes-files-defaults-to-report-only-and-needs-an](conventions/062-anything-that-deletes-files-defaults-to-report-only-and-needs-an.md) | 04-backlog-hygiene-and-robustness/conventions/5 |
+| MEM-063 | [non-webgl-pages-never-download-or-preload-a-three-js-chunk](conventions/063-non-webgl-pages-never-download-or-preload-a-three-js-chunk.md) | 05-webgl-loading-and-video-ladder/conventions/5 |
 
 ## Purge log
 

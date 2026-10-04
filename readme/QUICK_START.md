@@ -208,7 +208,8 @@ server. Three categories:
 | `app/assets/fonts/` | **server** | no | **never pushed, never deleted** |
 | `app/assets/pdf/` | **server** | no | **never pushed, never deleted** |
 | `app/assets/three/meshes/`, `.../textures/` | **server** | no | **never pushed, never deleted** |
-| `app/content/`, `app/video/` | **server** | no | **never pushed, never deleted** |
+| `app/content/` | **server** | no | **never pushed, never deleted** |
+| `app/video/` | legacy, **server** | no | unused (see `MEDIA_PIPELINE.md`); excluded so a live copy is never deleted |
 | `app/media/`, `app/site/cache|sessions|accounts/` | server runtime | no | never pushed, never deleted |
 
 The **server-owned** rows are gitignored binaries that neither git nor the

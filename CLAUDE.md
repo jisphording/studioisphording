@@ -31,8 +31,17 @@ The `media-manifest` plugin reads that manifest and the `responsive-image`
 snippet renders `<picture>` (AVIF/WebP/JPEG) from it; a manifest miss falls
 back to `getResponsiveImage()` thumbs (reached only through that snippet's
 fallback — about.php and projects.php now use the snippet — so it is a live
-path, not dead code). Full pipeline
+path, not dead code). Every `<video>` (hero, about, project gallery —
+gallery masters live in the project's content folder; `app/video/` is
+legacy) renders through the `responsive-video` snippet from the manifest
+ladder: hero videos get real `<source src>` + `autoplay`, lazy ones
+`<source data-src>` plus a `<noscript>` twin, restored by
+`dev/js/media/lazyVideo.mjs`. Full pipeline
 reference: `readme/MEDIA_PIPELINE.md`.
+
+Dev-only `console.log` in `dev/js/three/` is gated behind
+`import.meta.env.DEV` (warn/error stay); production also strips
+`console.log` via terser `pure_funcs`.
 
 ## Commands
 
@@ -59,9 +68,10 @@ node scripts/media/index.mjs scorer        # is the scorer available?
 npm run media:images -- --prefix projects/02-screw-driver
 
 # Video ladder — AV1/WebM, VP9/WebM, H.264/MP4 + poster into app/assets/media/
-# (ffmpeg on PATH). Never part of build. The AV1 rung is stepped up in CRF until
-# it fits the `budget` in media.config.mjs (never trims duration/fps; reports a
-# miss at the floor). Unlike images, a scoped run DOES write manifest.json: video
+# (ffmpeg on PATH). Never part of build. Each budgeted rung is stepped up in CRF
+# until it fits its `budget` in media.config.mjs (a number budgets AV1 only,
+# `{ av1, vp9, h264 }` each rung; never trims duration/fps; reports a miss at
+# the floor). Unlike images, a scoped run DOES write manifest.json: video
 # runs merge their `videos` entries into it instead of replacing it.
 npm run media:video -- --prefix home/
 
@@ -188,7 +198,7 @@ often already held by an unrelated local service.
   the deploy must push (`app/assets/bundle`, `app/kirby/bootstrap.php`,
   `app/index.php`, `app/.htaccess`) is missing or empty, and warns
   without aborting if a server-owned tree (fonts, `app/content`,
-  `app/video`, Three.js meshes/textures, PDFs) is absent locally — those
+  Three.js meshes/textures, PDFs) is absent locally — those
   are excluded from its `--delete` mirror on purpose.
 - `npm run dev:assets-only` and `vite.assets-only.config.js` were removed
   as dead — unused by any script, test or doc.

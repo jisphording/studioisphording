@@ -104,6 +104,12 @@ not move):
 | `Studio_Display_S02_Stone` | 10 s | 3.03 MB/34 → 1.93 MB/38 | 5.73 MB/34 → 2.96 MB/40 | 6.99 MB/23 → 4.99 MB/25 |
 | `Studio_Display_S03_Flat_Stone` | 5 s | 0.92 MB/34 → same | 1.28 MB/34 → same | 1.55 MB/23 → same |
 | `isphinnen_00_keyvisual` | 20 s | 2.10 MB/34 → same | 2.91 MB/34 → same | 5.53 MB/23 → same |
+| `isphinnen_20_30_project_casestudy_iPhone` | 5 s | 0.35 MB/34, no budget | 0.50 MB/34, no budget | 0.93 MB/23, no budget |
+| `isphinnen_20_50_project_casestudy_iPad` | 5 s | 0.35 MB/34, no budget | 0.30 MB/34, no budget | 0.54 MB/23, no budget |
+
+The two case-study gallery masters arrived in plan 05 phase 5, after the
+budgets were set, and have no `budget` entry yet. At 5 s they already sit far
+below the starting rule (AV1 ≈ 1 MB).
 
 The VP9 (48) and H.264 (32) floors are unchanged; no budget reached them.
 Rungs at CRF above their start (landing_reel, S02) are the ones to eyeball for
@@ -139,6 +145,15 @@ Tests mock the scorer and never invoke a real binary.
 Everything is written to **`app/assets/media/`** — the one tree that is both
 gitignored and pushed by `scripts/deploy.sh`'s rsync. Nothing is written beside
 a master, into `app/video/`, or into `app/media/`.
+
+**`app/video/` is legacy.** Project gallery videos (`project-gallery.php`) now
+render from the manifest ladder like every other video: the masters live in the
+project's content folder and only `.mp4`/`.mov` masters are gallery items (a
+`.webm` beside one is a legacy rendition; `_keyvisual` videos are skipped; the
+still with the master's base name is its poster). Nothing in `app/site` or
+`dev/js` reads `app/video/` any more, so the server's `video/` folder can be
+deleted by hand. The local folder is gone, and `scripts/deploy.sh` keeps its
+`/video/` exclude so the live copy is never touched by a deploy.
 
 `app/assets/media/manifest.json` (schema v1, specified in
 `scripts/media/manifest.mjs` and pinned by `tests/js/media/manifest.test.mjs`):

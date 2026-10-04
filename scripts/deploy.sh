@@ -6,7 +6,7 @@
 # studioisphording/ instead of soil/ or johannesisphording-writings/.
 #
 # This project's Kirby backend lives under app/ locally (with the deployment
-# artifacts app/kirby, app/media, app/content, app/video, app/assets, and
+# artifacts app/kirby, app/media, app/content, app/assets, and
 # app/index.php/.htaccess/favicons all gitignored — see .gitignore), but the
 # server's webroot is flat, so local app/ maps to remote / (not remote/app).
 #
@@ -104,7 +104,6 @@ warn_server_tree "assets/fonts"
 warn_server_tree "assets/three"
 warn_server_tree "assets/pdf"
 warn_server_tree "content"
-warn_server_tree "video"
 
 # ---------------------------------------------------------------------------
 # 4. Push app/ → remote / (mirror with --delete).
