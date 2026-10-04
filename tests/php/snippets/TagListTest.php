@@ -4,17 +4,18 @@ require_once dirname(__DIR__) . '/KirbyTestCase.php';
 
 /**
  * Tests for the tag-list snippet (app/site/snippets/tag-list.php), the tag
- * loop phase 5 lifted out of the related grid. It pins today's behaviour:
- * explode on ',' with no trimming. Escaping is covered by EscapingTest.
+ * loop phase 5 lifted out of the related grid. Since phase 9 it renders from
+ * the shared tag_items() helper (trim, keep inner spaces, skip empties), the
+ * same as create_tags(). Escaping is covered by EscapingTest.
  */
 final class TagListTest extends KirbyTestCase
 {
-	public function testOneListItemPerCommaSeparatedTagWithoutTrimming(): void
+	public function testOneListItemPerCommaSeparatedTagTrimmed(): void
 	{
 		$html = $this->snippetHtml('tag-list', ['tags' => 'Editorial, Print,Web']);
 
 		preg_match_all('/<li>(.*?)<\/li>/', $html, $m);
-		$this->assertSame(['Editorial', ' Print', 'Web'], $m[1]);
+		$this->assertSame(['Editorial', 'Print', 'Web'], $m[1]);
 	}
 
 	public function testAcceptsAPageTagsField(): void
@@ -23,7 +24,16 @@ final class TagListTest extends KirbyTestCase
 		$html  = $this->snippetHtml('tag-list', ['tags' => $field]);
 
 		preg_match_all('/<li>(.*?)<\/li>/', $html, $m);
-		$this->assertSame(['Editorial', ' Print'], $m[1]);
+		$this->assertSame(['Editorial', 'Print'], $m[1]);
+	}
+
+	public function testRendersTheSameMarkupAsCreateTags(): void
+	{
+		// Phase 9: one tag rendering. Inner spaces survive, empties are dropped.
+		$html = $this->snippetHtml('tag-list', ['tags' => 'R&D, Brand Design,']);
+
+		$this->assertSame('<li>R&amp;D</li><li>Brand Design</li>', preg_replace('/\s+(?=<)|(?<=>)\s+/', '', $html));
+		$this->assertSame('<li>R&amp;D</li><li>Brand Design</li>', create_tags('R&D, Brand Design,'));
 	}
 
 	public function testEmptyFieldRendersNothing(): void
