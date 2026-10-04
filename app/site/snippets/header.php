@@ -23,7 +23,7 @@
 
 	<link rel="stylesheet" href="<?= url('assets/bundle/app.css') ?>">
 
-	<?= vite('js/index.js', $page->rendersWebgl()) ?>
+	<?= vite('js/index.js', $page->rendersWebgl(), $page->rendersWebgl() ? $page->webglWorldChunk() : null) ?>
 
 	<link rel="shortcut icon" type="image/x-icon" href="<?= url('favicon.ico') ?>">
 

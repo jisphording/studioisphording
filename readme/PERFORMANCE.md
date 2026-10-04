@@ -297,3 +297,33 @@ in the "after":
 Deploy dry-run (`scripts/deploy.sh --dry-run`) leaves `app/vendor/bin/phpunit`
 in place; its only deletions are the four stale `animGsap`/`animBarba`
 bundle chunks. `npm run media:prune` reports 0 orphans (1696 files kept).
+
+## World-aware head preloads, measured 2026-10-04
+
+A WebGL page used to modulepreload `runExperience` plus `vendor-three` (651 KB)
+from `<head>`, competing with the CSS and fonts (the FCP regression above).
+`vite($entry, $webgl, $world)` now emits `runExperience` plus only the page's
+own world chunk (`$page->webglWorldChunk()`, from `WEBGL_WORLD_CHUNKS` in the
+site-methods plugin) and never `vendor-three`; the dynamic import fetches that
+as soon as `runExperience` runs. `PageMethodsTest` pins the world map against
+`dev/js/three/worlds.mjs`. Snapshots `2026-10-04-00-36-43-after-plan-04` vs
+`2026-10-04-14-40-51-after-preload`, /de/projects/isphording-inneneinrichtung,
+Lighthouse simulated throttling, median of 3:
+
+| | FCP | LCP | TTI | TBT |
+| --- | --- | --- | --- | --- |
+| Mobile before | 5.70 s | 56.38 s | 56.93 s | 0 ms |
+| Mobile after | 4.67 s | 56.42 s | 56.99 s | 191 ms |
+| Desktop before | 1.04 s | 1.34 s | 1.34 s | 0 ms |
+| Desktop after | 0.78 s | 1.58 s | 1.62 s | 45 ms |
+
+Variant kept: preload `runExperience` + own world, no `vendor-three`. Mobile
+FCP recovers by about 1 s (not all the way to the 4.13 s pre-split figure) and
+desktop FCP improves by 25%. The mobile LCP/TTI medians are the same 56 s
+outlier as before (the cookie banner text, with a 9 MB "other" request on the
+page) and say nothing about this change. Desktop LCP/TTI moved +0.24/+0.28 s,
+inside the run-to-run spread (after: LCP 1.29-1.92 s; before the split the same
+page measured 0.72-1.35 s), so it is not treated as a regression; TBT moved up
+from 0 because the chunks now execute earlier, still well under 200 ms on
+desktop. The fallback (vendor-three preload at the end of `<body>`) was not
+tried since FCP recovered.

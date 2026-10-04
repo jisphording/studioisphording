@@ -47,9 +47,12 @@ splitting:
 
 ### 5. Modulepreload (PHP)
 `vite()` in `app/site/plugins/vite-manifest/index.php` modulepreloads the
-entry's dynamic imports. Chunks that reach `vendor-three` are preloaded —
-together with `vendor-three` itself — only when `vite('js/index.js', true)`
-is called, which `header.php` does for pages whose
+entry's dynamic imports. Chunks that reach `vendor-three` are preloaded only
+when `vite('js/index.js', true, $world)` is called, and then only
+`runExperience` plus the page's own world chunk — never `vendor-three`, which
+the dynamic import fetches itself (it competed with CSS/fonts in `<head>`).
+`header.php` passes the world (`$page->webglWorldChunk()`, from
+`WEBGL_WORLD_CHUNKS`, pinned against `worlds.mjs` by a test) for pages whose
 `$page->rendersWebgl()` is true (templates listed in `WEBGL_TEMPLATES` in the
 site-methods plugin; `tests/php/plugins/PageMethodsTest.php` fails if that
 list drifts from the templates that render `#webgl`).

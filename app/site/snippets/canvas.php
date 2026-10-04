@@ -9,6 +9,6 @@
 	<!-- Intro Image -->
 	<section class="showreel__video parallax__layer--back">
         <canvas id="webgl" class="showreel__video parallax__layer--back showcase__intro__image" 
-		data-world="<?= $page->slug() == 'isphording-inneneinrichtung' ? 'World_01' : 'World_02' ?>"></canvas>
+		data-world="<?= $page->webglWorld() // raw: fixed World_NN registry key, never content ?>"></canvas>
 	</section>
 </section>

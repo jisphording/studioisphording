@@ -92,44 +92,23 @@ function isViteThreeChunk($key, array $seen = []) {
 }
 
 /**
- * Collects a chunk's manifest key followed by every chunk it statically
- * imports, transitively, without duplicates. Entry chunks are skipped: the
- * page already loads them with their own <script>.
- *
- * @param string $key The manifest key of the chunk.
- * @param array $keys Keys collected so far.
- * @return array
- */
-function collectViteStaticChunks($key, array $keys = []) {
-    $manifest = getViteManifest();
-
-    if (!isset($manifest[$key]) || !empty($manifest[$key]['isEntry']) || in_array($key, $keys, true)) {
-        return $keys;
-    }
-
-    $keys[] = $key;
-    foreach ($manifest[$key]['imports'] ?? [] as $import) {
-        $keys = collectViteStaticChunks($import, $keys);
-    }
-
-    return $keys;
-}
-
-/**
  * Retrieves the URLs of dynamic imports associated with a given Vite entry.
  * These are assets that are loaded on demand by the main entry.
  *
  * Three.js and the worlds are only reachable through a dynamic import, and
  * only pages rendering a #webgl canvas run it, so their chunks are left out
- * unless $webgl is true. On a WebGL page the Three dynamic imports are
- * returned together with the chunks they statically import (vendor-three),
- * so the whole experience starts downloading with the page.
+ * unless $webgl is true. On a WebGL page only the experience's own file
+ * (runExperience) and the page's own world chunk are returned: vendor-three
+ * (651 KB) is left out so it doesn't compete with the render-critical CSS and
+ * fonts in <head>; the dynamic import fetches it as soon as the script runs.
  *
  * @param string $entry The entry name (e.g., 'js/index.js').
  * @param bool $webgl Whether the page renders a #webgl canvas.
+ * @param string|null $world Folder of the page's world chunk
+ *                           (js/three/projects/<folder>/index.mjs); null preloads no world.
  * @return array An array of URLs for the dynamic imports.
  */
-function getViteDynamicImports($entry, $webgl = false) {
+function getViteDynamicImports($entry, $webgl = false, $world = null) {
     $manifest = getViteManifest();
     $keys = [];
 
@@ -137,7 +116,14 @@ function getViteDynamicImports($entry, $webgl = false) {
         if (!isViteThreeChunk($import)) {
             $keys[] = $import;
         } elseif ($webgl) {
-            $keys = collectViteStaticChunks($import, $keys);
+            $keys[] = $import;
+
+            if ($world !== null) {
+                $worldKey = 'js/three/projects/' . $world . '/index.mjs';
+                if (in_array($worldKey, $manifest[$import]['dynamicImports'] ?? [], true)) {
+                    $keys[] = $worldKey;
+                }
+            }
         }
     }
 
@@ -157,10 +143,11 @@ function getViteDynamicImports($entry, $webgl = false) {
  *
  * @param string $entry The entry name (e.g., 'js/index.js').
  * @param bool $webgl Whether the page renders a #webgl canvas.
+ * @param string|null $world Folder of the page's world chunk.
  * @return string HTML string containing modulepreload links.
  */
-function vitePreloadLinks($entry, $webgl = false) {
-    $dynamicImports = getViteDynamicImports($entry, $webgl);
+function vitePreloadLinks($entry, $webgl = false, $world = null) {
+    $dynamicImports = getViteDynamicImports($entry, $webgl, $world);
     $html = '';
     
     foreach ($dynamicImports as $importUrl) {
@@ -178,9 +165,10 @@ function vitePreloadLinks($entry, $webgl = false) {
  * @param string $entry The entry name of the asset (e.g., 'dev/js/index.js' for development, 'js/index.js' for production).
  * @param bool $webgl Whether the page renders a #webgl canvas (Page::rendersWebgl());
  *                    only then are the Three.js chunks modulepreloaded.
+ * @param string|null $world Folder of the page's world chunk (Page::webglWorldChunk()).
  * @return string HTML string containing the script tags for the Vite assets.
  */
-function vite($entry, $webgl = false) {
+function vite($entry, $webgl = false, $world = null) {
     $html = '';
     if (option('debug')) {
         // In development, load from Vite dev server
@@ -194,7 +182,7 @@ function vite($entry, $webgl = false) {
         // In production, load from manifest
         $manifest = getViteManifest();
         if (isset($manifest[$entry])) {
-            $html .= vitePreloadLinks($entry, $webgl);
+            $html .= vitePreloadLinks($entry, $webgl, $world);
             $html .= '<script type="module" src="' . getViteAssetUrl($entry) . '"></script>' . "\n";
         }
     }

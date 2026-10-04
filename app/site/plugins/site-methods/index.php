@@ -12,6 +12,14 @@ use Kirby\Cms\Html;
 // fails if a template starts or stops rendering #webgl without updating this.
 const WEBGL_TEMPLATES = ['moodboard', 'project.three'];
 
+// World name (the canvas' data-world, a key of dev/js/three/worlds.mjs) →
+// folder of its chunk, js/three/projects/<folder>/index.mjs. PageMethodsTest
+// fails if this drifts from worlds.mjs.
+const WEBGL_WORLD_CHUNKS = [
+	'World_01' => 'isphording-inneneinrichtung',
+	'World_02' => 'moodboard',
+];
+
 Kirby::plugin('studio-isphording/site-methods', [
   'siteMethods' => [
 
@@ -118,6 +126,24 @@ Kirby::plugin('studio-isphording/site-methods', [
 		// the header should modulepreload the Three.js chunks (see vite()).
 		'rendersWebgl' => function (): bool {
 			return in_array($this->template()->name(), WEBGL_TEMPLATES, true);
+		},
+
+		// WEBGL WORLD
+		// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+		//
+		// The world the page's #webgl canvas runs (its data-world): World_01 for
+		// the isphording-inneneinrichtung project, World_02 for everything else.
+		'webglWorld' => function (): string {
+			return $this->slug() === 'isphording-inneneinrichtung' ? 'World_01' : 'World_02';
+		},
+
+		// WEBGL WORLD CHUNK
+		// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+		//
+		// Folder name of the page world's chunk, so the header can modulepreload
+		// exactly that chunk (see vite()).
+		'webglWorldChunk' => function (): string {
+			return WEBGL_WORLD_CHUNKS[$this->webglWorld()];
 		}
   ]
 ]);

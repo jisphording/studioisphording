@@ -4,7 +4,7 @@ require_once dirname(__DIR__) . '/KirbyTestCase.php';
 
 /**
  * Tests for the pageMethods registered by the studio-isphording/site-methods
- * plugin (app/site/plugins/site-methods/index.php): keyvisual(), rendersWebgl().
+ * plugin (app/site/plugins/site-methods/index.php): keyvisual(), rendersWebgl(), webglWorld(), webglWorldChunk().
  */
 final class PageMethodsTest extends KirbyTestCase
 {
@@ -40,8 +40,42 @@ final class PageMethodsTest extends KirbyTestCase
 		$this->assertFalse($this->kirby->site()->find('about')->rendersWebgl());
 	}
 
-	/**
-	 * Guard: the template list behind rendersWebgl() must match the templates
+	public function testWebglWorldIsWorld01ForTheInneneinrichtungSlug(): void
+	{
+		$page = new Kirby\Cms\Page(['slug' => 'isphording-inneneinrichtung', 'template' => 'project.three']);
+
+		$this->assertSame('World_01', $page->webglWorld());
+		$this->assertSame('isphording-inneneinrichtung', $page->webglWorldChunk());
+	}
+
+	public function testWebglWorldIsWorld02ForEveryOtherPage(): void
+	{
+		$page = $this->kirby->site()->find('moodboard');
+
+		$this->assertSame('World_02', $page->webglWorld());
+		$this->assertSame('moodboard', $page->webglWorldChunk());
+	}
+
+	/** Guard: the world → chunk-folder map must match dev/js/three/worlds.mjs. */
+	public function testWebglWorldChunksMatchTheWorldsRegistry(): void
+	{
+		$source = file_get_contents(dirname(__DIR__, 3) . '/dev/js/three/worlds.mjs');
+		preg_match_all("/(World_\\d+):\\s*\\{[^}]*?projects\\/([^\\/]+)\\/index\\.mjs[^}]*?name:\\s*'([^']+)'/", $source, $m, PREG_SET_ORDER);
+
+		$registry = [];
+		foreach ($m as $row) {
+			$this->assertSame($row[2], $row[3], 'chunk folder and Resources worldName agree');
+			$registry[$row[1]] = $row[2];
+		}
+		ksort($registry);
+		$map = WEBGL_WORLD_CHUNKS;
+		ksort($map);
+
+		$this->assertNotSame([], $registry);
+		$this->assertSame($registry, $map);
+	}
+
+	/** Guard: the template list behind rendersWebgl() must match the templates
 	 * that actually render a #webgl canvas snippet, or a new WebGL template
 	 * would silently lose its Three.js modulepreload.
 	 */

@@ -57,7 +57,7 @@ final class ViteManifestTest extends KirbyTestCase
 		$this->assertSame([], $this->threeUrls($urls));
 	}
 
-	public function testWebglPageModulepreloadsTheExperienceAndVendorThree(): void
+	public function testWebglPageModulepreloadsTheExperienceAndItsOwnWorldOnly(): void
 	{
 		$html  = $this->kirby->site()->find('moodboard')->render();
 		$xpath = $this->dom($html);
@@ -69,9 +69,20 @@ final class ViteManifestTest extends KirbyTestCase
 
 		$this->assertSame(1, $xpath->query("//canvas[@id='webgl']")->length, 'the page renders #webgl');
 		$this->assertContains('https://example.test/assets/bundle/runExperience-AAAA0005.js', $hrefs);
-		$this->assertContains('https://example.test/assets/bundle/vendor-three-AAAA0002.js', $hrefs);
+		$this->assertContains('https://example.test/assets/bundle/moodboard-AAAA0007.js', $hrefs);
+		$this->assertNotContains('https://example.test/assets/bundle/vendor-three-AAAA0002.js', $hrefs, 'vendor-three is left to the dynamic import');
+		$this->assertNotContains('https://example.test/assets/bundle/isphording-inneneinrichtung-AAAA0006.js', $hrefs, 'only the page\'s own world');
 		$this->assertSame(count($hrefs), count(array_unique($hrefs)), 'no chunk is preloaded twice');
 		$this->assertNotContains('https://example.test/assets/bundle/app.bundle.js', $hrefs, 'the entry is loaded by its <script>, not preloaded again');
+	}
+
+	public function testHelperPreloadsTheRequestedWorldChunk(): void
+	{
+		$urls = $this->scriptUrls(vite('js/index.js', true, 'isphording-inneneinrichtung'));
+
+		$this->assertContains('https://example.test/assets/bundle/isphording-inneneinrichtung-AAAA0006.js', $urls);
+		$this->assertNotContains('https://example.test/assets/bundle/moodboard-AAAA0007.js', $urls);
+		$this->assertNotContains('https://example.test/assets/bundle/vendor-three-AAAA0002.js', $urls);
 	}
 
 	public function testHelperOnlyPreloadsThreeChunksWhenAskedFor(): void

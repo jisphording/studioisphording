@@ -12,9 +12,10 @@ Composer 2.x, Node ≥ 20.19. Deploy via rsync to IONOS
 
 Three.js is route-split: `dev/js/utils/startWebgl.mjs` dynamic-imports the
 experience only when a `#webgl` canvas exists, `dev/js/three/worlds.mjs` lazily
-loads one chunk per world, and `vite()` modulepreloads the Three chunks only
-for templates in `WEBGL_TEMPLATES` (site-methods plugin, exposed as
-`$page->rendersWebgl()`). A new template rendering `#webgl` must be added
+loads one chunk per world, and `vite()` modulepreloads `runExperience` and the
+page's own world chunk (never `vendor-three`) only for templates in
+`WEBGL_TEMPLATES` (site-methods plugin, exposed as `$page->rendersWebgl()`;
+the world comes from `$page->webglWorld()` / `webglWorldChunk()`). A new template rendering `#webgl` must be added
 there — `PageMethodsTest` fails until it is. See
 `readme/VITE_OPTIMIZATION_SUMMARY.md`.
 
