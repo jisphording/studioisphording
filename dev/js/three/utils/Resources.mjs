@@ -116,7 +116,7 @@ export class Resources extends EventEmitter
     // START PROGRESSIVE LOADING
     // This is called by World to start the progressive loading process
     startProgressiveLoading(initialBatchSize = 10, backgroundBatchSize = 8) {
-        console.log(`Resources: Starting progressive loading with initial batch of ${initialBatchSize} images`);
+        if (import.meta.env.DEV) console.log(`Resources: Starting progressive loading with initial batch of ${initialBatchSize} images`);
 
         // Load other resources first (non-moodboard)
         this.loadOtherResources();
@@ -128,7 +128,7 @@ export class Resources extends EventEmitter
     // LOAD OTHER RESOURCES
     // Load all non-moodboard resources
     loadOtherResources() {
-        console.log(`Resources: Loading ${this.otherSources.length} non-moodboard resources`);
+        if (import.meta.env.DEV) console.log(`Resources: Loading ${this.otherSources.length} non-moodboard resources`);
 
         // Load each non-moodboard source
         for (const source of this.otherSources) {
@@ -154,7 +154,7 @@ export class Resources extends EventEmitter
             source.path,
             (file) => {
                 this.sourceLoaded(source, file);
-                console.log(source.name + ' loaded');
+                if (import.meta.env.DEV) console.log(source.name + ' loaded');
             },
             undefined,
             (error) => {
@@ -200,7 +200,7 @@ export class Resources extends EventEmitter
                 setTimeout(() => this.trigger('batchProcessed'), 100);
             }
         } else {
-            console.log('Resources: All textures in batch failed to load, proceeding to next batch');
+            if (import.meta.env.DEV) console.log('Resources: All textures in batch failed to load, proceeding to next batch');
             // Trigger batchProcessed directly since there's nothing to process
             this.trigger('batchProcessed');
         }
@@ -210,11 +210,11 @@ export class Resources extends EventEmitter
 
     // START BATCH LOADING
     startBatchLoading(initialBatchSize, backgroundBatchSize) {
-        console.log(`Resources: Starting batch loading with ${this.moodboardSources.length} images remaining`);
+        if (import.meta.env.DEV) console.log(`Resources: Starting batch loading with ${this.moodboardSources.length} images remaining`);
 
         // Create a listener for batch processing completion
         const onBatchProcessed = () => {
-            console.log('Resources: Batch processing complete, loading next batch...');
+            if (import.meta.env.DEV) console.log('Resources: Batch processing complete, loading next batch...');
             this.batchProcessing = false;
             this.off('batchProcessed', onBatchProcessed); // Remove listener
 
@@ -226,7 +226,7 @@ export class Resources extends EventEmitter
             // If we're already processing a batch or there are no more images, exit
             if (this.batchProcessing || this.moodboardSources.length === 0) {
                 if (this.moodboardSources.length === 0) {
-                    console.log('Resources: No more images to load, batch loading complete');
+                    if (import.meta.env.DEV) console.log('Resources: No more images to load, batch loading complete');
                     this.checkOverallLoadCompletion();
                 }
                 return;
@@ -300,7 +300,7 @@ export class Resources extends EventEmitter
     checkOverallLoadCompletion() {
         if (this.loaded === this.toLoad && !this.readyFired) {
             this.readyFired = true;
-            console.log('Resources: All resources have been loaded.');
+            if (import.meta.env.DEV) console.log('Resources: All resources have been loaded.');
 
             // NOTIFY LEVEL
             this.trigger('resourcesReady');

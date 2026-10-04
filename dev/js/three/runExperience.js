@@ -32,7 +32,7 @@ export function runExperience( canvas, world, clearColor ) {
         _clearColor = clearColor
     }
 
-    console.log( 'runExperience in ' + canvas + ' ' + _world + ' ' + '0x_' + _clearColor )
+    if ( import.meta.env.DEV ) console.log( 'runExperience in ' + canvas + ' ' + _world + ' ' + '0x_' + _clearColor )
 
     if ( _canvas ) {
         new Experience( _canvas, _world, _clearColor )
