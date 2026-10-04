@@ -1,6 +1,7 @@
 // Media pipeline CLI.   node scripts/media/index.mjs images [--dry-run] [--prefix <content-path-prefix>]
 //                       node scripts/media/index.mjs video  [--dry-run] [--prefix <content-path-prefix>]
 //                       node scripts/media/index.mjs scorer   (is ssimulacra2 available?)
+//                       node scripts/media/index.mjs prune [--apply]   (report, or delete, files the manifest no longer references)
 //
 // Invoked deliberately (`npm run media:images` / `npm run media:video`) — NOT
 // part of prebuild/build, because a cold run encodes thousands of variants. A warm run is a no-op.
@@ -14,6 +15,7 @@ import { encodeVideos } from './encode-video.mjs'
 import { createFfmpeg } from './ffmpeg.mjs'
 import { keepVideoState, mergeManifestData, readManifest, writeManifest } from './manifest.mjs'
 import { createScorer, describeScorer } from './scorer.mjs'
+import { applyPrune, planPrune } from './prune.mjs'
 import { createMemoryQualityCache, createQualityCache } from './cache.mjs'
 
 const [command, ...args] = process.argv.slice(2)
@@ -27,8 +29,27 @@ if (command === 'scorer') {
   process.exit(scorer.available ? 0 : 1)
 }
 
+if (command === 'prune') {
+  const pruneRoot = join(repoRoot, 'app', 'assets', 'media')
+  try {
+    const plan = await planPrune(pruneRoot)
+    const mb = (plan.bytes / 1e6).toFixed(2)
+    for (const orphan of plan.orphans) console.log(`  ${orphan.path} (${orphan.bytes} B)`)
+    if (flag('--apply')) {
+      const { deleted } = await applyPrune(pruneRoot, plan)
+      console.log(`removed ${deleted} orphaned files, ${mb} MB (${plan.kept} referenced files kept)`)
+    } else {
+      console.log(`${plan.orphans.length} orphaned files, ${mb} MB (${plan.kept} referenced files kept) — report only, pass --apply to delete`)
+    }
+    process.exit(0)
+  } catch (error) {
+    console.error(error.message)
+    process.exit(1)
+  }
+}
+
 if (command !== 'images' && command !== 'video') {
-  console.error('usage: node scripts/media/index.mjs images|video [--dry-run] [--prefix <path>] | scorer')
+  console.error('usage: node scripts/media/index.mjs images|video [--dry-run] [--prefix <path>] | scorer | prune [--apply]')
   process.exit(2)
 }
 

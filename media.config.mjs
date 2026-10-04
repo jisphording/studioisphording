@@ -41,8 +41,11 @@ export default {
   },
   overrides: [
     // Keyvisuals open a project and carry its art direction — visually
-    // lossless, 88-92.
-    { match: 'projects/**/*_keyvisual*', target: 90 },
+    // lossless, 88-92. AVIF + JPEG only: lossy WebP tops out near SSIMULACRA2
+    // 88 on detailed keyvisuals (so it MISSes the band) and bands on dark
+    // backdrop gradients; AVIF covers most clients and JPEG catches the rest
+    // at full fidelity. responsive-image.php skips the absent WebP <source>.
+    { match: 'projects/**/*_keyvisual*', target: 90, formats: ['avif', 'jpeg'] },
 
     // The home hero poster is the LCP candidate on /de: visually lossless
     // (88-92) and eager.

@@ -5,7 +5,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { canonicalJson, cacheDecision, hashBytes, hashFile, variantHash } from '../../../scripts/media/cache.mjs'
+import { canonicalJson, cacheDecision, hashBytes, hashFile, qualityKey, variantHash } from '../../../scripts/media/cache.mjs'
+import { ENCODER_OPTIONS } from '../../../scripts/media/encoder-options.mjs'
 import { encoderSettings } from '../../../scripts/media/config.mjs'
 
 const settings = (overrides = {}) => encoderSettings({ target: 86, ...overrides }, 'avif')
@@ -144,5 +145,34 @@ describe('hashFile', () => {
     writeFileSync(file, 'master bytes')
 
     expect(await hashFile(file)).toBe(hashBytes(Buffer.from('master bytes')))
+  })
+})
+
+describe('qualityKey', () => {
+  const input = { masterHash: 'h', width: 800, target: 84, tolerance: 2 }
+  const keyFor = (format, encoderOptions) => qualityKey({ ...input, format, ...(encoderOptions ? { encoderOptions } : {}) })
+
+  it('is stable for identical inputs', () => {
+    expect(keyFor('avif')).toBe(keyFor('avif'))
+    expect(keyFor('avif')).toMatch(/^[0-9a-f]{16}$/)
+  })
+
+  it('reads the encoder options for the format from ENCODER_OPTIONS by default', () => {
+    for (const format of ['avif', 'webp', 'jpeg']) {
+      expect(keyFor(format)).toBe(keyFor(format, ENCODER_OPTIONS[format]))
+    }
+  })
+
+  it('changes when that format\'s encoder options change, and only that format\'s key', () => {
+    const changed = { ...ENCODER_OPTIONS, avif: { ...ENCODER_OPTIONS.avif, effort: ENCODER_OPTIONS.avif.effort + 1 } }
+
+    expect(keyFor('avif', changed.avif)).not.toBe(keyFor('avif'))
+    for (const format of ['webp', 'jpeg']) {
+      expect(keyFor(format, changed[format])).toBe(keyFor(format))
+    }
+  })
+
+  it('does not depend on option key order', () => {
+    expect(keyFor('jpeg', { chromaSubsampling: '4:4:4', mozjpeg: true })).toBe(keyFor('jpeg', { mozjpeg: true, chromaSubsampling: '4:4:4' }))
   })
 })

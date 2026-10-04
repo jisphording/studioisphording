@@ -279,6 +279,14 @@ describe('loadConfig', () => {
     expect(config.overrides.some((o) => o.match === 'home/landing_reel.jpg')).toBe(true)
   })
 
+  it('serves keyvisuals as AVIF + JPEG only, other project images as all three', async () => {
+    const config = await loadConfig()
+
+    expect(resolveSettings(config, 'projects/01-a/a-00_keyvisual.jpg').formats).toEqual(['avif', 'jpeg'])
+    expect(resolveSettings(config, 'projects/01-a/a-02-landing-page.jpg').formats)
+      .toEqual(['avif', 'webp', 'jpeg'])
+  })
+
   it('resolves the repo config to the researched quality bands', async () => {
     const config = await loadConfig()
 

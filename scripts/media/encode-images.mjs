@@ -15,6 +15,7 @@ import { dirname, join } from 'node:path'
 import sharp from 'sharp'
 import { encoderSettings, resolveSettings } from './config.mjs'
 import { cacheDecision, createMemoryQualityCache, hashFile } from './cache.mjs'
+import { ENCODER_OPTIONS } from './encoder-options.mjs'
 import { createManifest } from './manifest.mjs'
 import { createQualityResolver } from './quality.mjs'
 
@@ -40,14 +41,11 @@ export const createSharpEncoder = () => ({
     }
     const { quality } = settings
     const pipeline = resized(masterFile, width)
-    // Chroma: AVIF is 4:4:4 by default. JPEG is forced to 4:4:4 because at
-    // 4:2:0 it cannot reach the 88-92 band even at q100 (measured 87.9 on a
-    // noisy keyvisual), and costs no more bytes at equal score below it.
-    // Lossy WebP is 4:2:0 by format; smartSubsample buys it ~1-2 points, but
-    // its ceiling stays near 88 — see readme/PERFORMANCE.md "Fidelity bands".
-    if (format === 'avif') pipeline.avif({ quality, effort: 4 })
-    else if (format === 'webp') pipeline.webp({ quality, smartSubsample: true })
-    else pipeline.jpeg({ quality, mozjpeg: true, chromaSubsampling: '4:4:4' })
+    // Options live in encoder-options.mjs so qualityKey hashes the same values.
+    const options = { quality, ...ENCODER_OPTIONS[format] }
+    if (format === 'avif') pipeline.avif(options)
+    else if (format === 'webp') pipeline.webp(options)
+    else pipeline.jpeg(options)
     const { data, info } = await pipeline.toBuffer({ resolveWithObject: true })
     return { data, width: info.width, height: info.height }
   }

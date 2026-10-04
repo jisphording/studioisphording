@@ -27,7 +27,8 @@ import { createHash } from 'node:crypto'
 import { existsSync, mkdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import { derivativeFile, derivativeName, derivativeUrlPath } from './paths.mjs'
+import { ENCODER_OPTIONS } from './encoder-options.mjs'
+import { derivativeFile,derivativeName, derivativeUrlPath } from './paths.mjs'
 
 export const HASH_LENGTH = 8
 
@@ -89,14 +90,19 @@ export const cacheDecision = ({ mediaRoot, contentPath, width, format, masterHas
   return { hash, name, file, url, hit, bytes: hit ? statSync(file).size : null }
 }
 
-// Bump when the encoders change in a way that moves the quality a target
-// resolves to (e.g. a different AVIF effort), to invalidate every search.
+// Bump only for changes the encoder options cannot express — e.g. a different
+// scoring method or band. Encoder option changes (ENCODER_OPTIONS) invalidate
+// the key on their own.
 export const QUALITY_SEARCH_VERSION = 1
 
-/** Key of one quality search: (master hash, width, format, target, tolerance). */
-export const qualityKey = ({ masterHash, width, format, target, tolerance }) =>
+/**
+ * Key of one quality search: (master hash, width, format, target, tolerance,
+ * that format's encoder options). `encoderOptions` defaults to the live
+ * ENCODER_OPTIONS entry the encoder reads.
+ */
+export const qualityKey = ({ masterHash, width, format, target, tolerance, encoderOptions = ENCODER_OPTIONS[format] }) =>
   createHash('sha256')
-    .update(canonicalJson({ v: QUALITY_SEARCH_VERSION, masterHash, width, format, target, tolerance }))
+    .update(canonicalJson({ v: QUALITY_SEARCH_VERSION, masterHash, width, format, target, tolerance, encoderOptions: encoderOptions ?? null }))
     .digest('hex')
     .slice(0, 16)
 

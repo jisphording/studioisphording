@@ -8,6 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:php": "app/vendor/bin/phpunit",
+    "test:deploy": "bash tests/deploy/deploy-dry-run.test.sh",
     "dev": "vite --config vite.config.dev.js",
     "dev:https": "VITE_HTTPS=1 vite --config vite.config.dev.js",
     "prebuild": "node scripts/copy-draco.mjs",
@@ -18,7 +19,8 @@
     "perf:compare": "node scripts/perf/compare.mjs",
     "test:perf": "node --test scripts/perf/test/*.test.mjs",
     "media:images": "node scripts/media/index.mjs images",
-    "media:video": "node scripts/media/index.mjs video"
+    "media:video": "node scripts/media/index.mjs video",
+    "media:prune": "node scripts/media/index.mjs prune"
   },
   "keywords": [],
   "author": "",
