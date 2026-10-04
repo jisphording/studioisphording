@@ -25,9 +25,11 @@
 //
 // An override may also carry non-quality concerns: `eager` (render the image
 // eagerly, for an LCP candidate), a narrower `widths` or `formats` list, and,
-// for a video master, `budget`: a transfer size in bytes for its AV1 rung.
-// scripts/media/encode-video.mjs steps the CRF up until the rung fits or a
-// floor quality is reached; it never trims duration or frame rate.
+// for a video master, `budget`: transfer sizes in bytes, either one number (the
+// AV1 rung only) or { av1, vp9, h264 } budgeting each rung. A rung without a
+// budget encodes once. scripts/media/encode-video.mjs steps a budgeted rung's
+// CRF up until it fits or its floor quality is reached; it never trims
+// duration or frame rate.
 //
 // Resolution is most-specific-glob-wins, layered over `default`; see
 // scripts/media/config.mjs for the exact rule.
@@ -51,9 +53,15 @@ export default {
     // (88-92) and eager.
     { match: 'home/landing_reel.jpg', target: 90, eager: true },
 
-    // The 36 s home reel shipped as a 23 MB MP4; the AV1 rung has to fit a
-    // hero's worth of transfer. Re-encode only — framing and fps stay.
-    { match: 'home/landing_reel.mp4', budget: 8000000 },
+    // Video budgets. Starting rule: AV1 ~ 200 KB/s of duration, VP9 <= 1.5x
+    // and H.264 <= 2.5x that AV1 budget, so a client without AV1 stops paying
+    // near-original bytes. Re-encode only — framing, duration and fps stay.
+    // The 36.7 s home reel shipped as a 23 MB MP4; the rule gives 7.3 MB.
+    { match: 'home/landing_reel.mp4', budget: { av1: 7300000, vp9: 10950000, h264: 18250000 } },
+    { match: 'about/about_moodfilm.mp4', budget: { av1: 8860000, vp9: 13290000, h264: 22150000 } },
+    { match: 'projects/01-phenotype-agency/Studio_Display_S02_Stone.mp4', budget: { av1: 2000000, vp9: 3000000, h264: 5000000 } },
+    { match: 'projects/01-phenotype-agency/Studio_Display_S03_Flat_Stone.mp4', budget: { av1: 1000000, vp9: 1500000, h264: 2500000 } },
+    { match: 'projects/isphording-inneneinrichtung/isphinnen_00_keyvisual.mp4', budget: { av1: 4000000, vp9: 6000000, h264: 10000000 } },
 
     // Intro images sit below the fold in a single column; the default band is
     // enough, but they are wide, so drop the smallest step.

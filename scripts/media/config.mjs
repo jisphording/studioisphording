@@ -118,6 +118,29 @@ const validateQuality = (quality, where) => {
   }
 }
 
+const BUDGET_CODECS = ['av1', 'vp9', 'h264']
+
+// A video `budget` is a byte count for the AV1 rung alone, or an object with
+// optional per-rung byte counts ({ av1, vp9, h264 }).
+const validateBudget = (budget, where) => {
+  if (isPositiveInt(budget)) return
+  if (isPlainObject(budget) && Object.keys(budget).length > 0) {
+    for (const [codec, bytes] of Object.entries(budget)) {
+      if (!BUDGET_CODECS.includes(codec)) {
+        fail(`${where}: \`budget\` has unknown rung ${JSON.stringify(codec)}; allowed: ${BUDGET_CODECS.join(', ')}.`)
+      }
+      if (!isPositiveInt(bytes)) {
+        fail(`${where}: \`budget.${codec}\` must be a transfer size in bytes (a positive integer), got ${JSON.stringify(bytes)}.`)
+      }
+    }
+    return
+  }
+  fail(
+    `${where}: \`budget\` must be a transfer size in bytes (a positive integer, AV1 only) ` +
+      `or an object of per-rung byte counts (${BUDGET_CODECS.join('/')}), got ${JSON.stringify(budget)}.`
+  )
+}
+
 const validateBlock = (block, where, allowedKeys) => {
   if (!isPlainObject(block)) fail(`${where} must be an object.`)
 
@@ -163,9 +186,7 @@ const validateBlock = (block, where, allowedKeys) => {
     }
   }
 
-  if (block.budget !== undefined && !isPositiveInt(block.budget)) {
-    fail(`${where}: \`budget\` must be a transfer size in bytes (a positive integer), got ${JSON.stringify(block.budget)}.`)
-  }
+  if (block.budget !== undefined) validateBudget(block.budget, where)
 
   if (block.eager !== undefined && typeof block.eager !== 'boolean') {
     fail(`${where}: \`eager\` must be a boolean, got ${JSON.stringify(block.eager)}.`)

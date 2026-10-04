@@ -4,12 +4,13 @@
 // (AV1/WebM, VP9/WebM, H.264/MP4), each CRF-targeted, and a poster routed
 // through the image pipeline so it is a first-class manifest image.
 //
-// Byte budget: a `budget` from media.config.mjs applies to the AV1 rung — the
-// one a modern browser actually downloads. The rung is encoded, measured, and
-// the CRF stepped up until it fits or a floor quality is reached. Duration,
+// Byte budget: a `budget` from media.config.mjs is either a number (the AV1
+// rung only, the one a modern browser downloads) or an { av1, vp9, h264 }
+// object budgeting each named rung. A budgeted rung is encoded, measured, and
+// the CRF stepped up until it fits or its floor quality is reached. Duration,
 // frame rate and resolution are never touched; if the floor is hit the achieved
-// bytes and CRF are reported (`met: false`) and the output still ships. VP9 and
-// H.264 encode once at a CRF chosen to sit near AV1's quality.
+// bytes and CRF are reported (`met: false`) and the output still ships. An
+// unbudgeted rung encodes once at its start CRF, chosen to sit near AV1's quality.
 //
 // Cache: the output filename carries a hash of (master bytes, codec, encoder
 // settings incl. budget), so a warm run is one existsSync per rung. The CRF a
@@ -91,6 +92,10 @@ export const fitToBudget = async ({ attempt, start, floor, step, budget }) => {
   }
 }
 
+// A scalar budget is the AV1 rung's alone; an object budgets each named rung.
+export const rungBudget = (budget, codec) =>
+  typeof budget === 'number' ? (codec === 'av1' ? budget : undefined) : budget?.[codec]
+
 const rungKey = (masterHash, codec, settings) =>
   createHash('sha256').update(canonicalJson({ masterHash, codec, settings })).digest('hex').slice(0, 8)
 
@@ -133,7 +138,7 @@ export const encodeVideos = async ({
 
     for (const codec of VIDEO_CODEC_ORDER) {
       const rung = RUNGS[codec]
-      const budget = codec === 'av1' ? resolved.budget : undefined
+      const budget = rungBudget(resolved.budget, codec)
       const settings = { v: VIDEO_ENCODER_VERSION, ...rung, budget: budget ?? null, hasAudio: probe.hasAudio }
       const hash = rungKey(masterHash, codec, settings)
       const name = videoDerivativeName(contentPath, codec, hash)

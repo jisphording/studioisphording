@@ -314,4 +314,21 @@ describe('budget', () => {
     expect(() => validateConfig({ default: { ...base, budget: '8MB' } })).toThrow(/budget/)
     expect(() => validateConfig({ default: { ...base, budget: 0 } })).toThrow(/budget/)
   })
+
+  it('accepts a per-rung object with optional positive-integer av1/vp9/h264 keys', () => {
+    const config = validateConfig({
+      default: base,
+      overrides: [{ match: 'home/reel.mp4', budget: { av1: 8000000, h264: 20000000 } }]
+    })
+    expect(resolveSettings(config, 'home/reel.mp4').budget).toEqual({ av1: 8000000, h264: 20000000 })
+    expect(() => validateConfig({ default: { ...base, budget: { vp9: 1 } } })).not.toThrow()
+  })
+
+  it('rejects an empty object, unknown codecs and non-byte rung values', () => {
+    expect(() => validateConfig({ default: { ...base, budget: {} } })).toThrow(/budget/)
+    expect(() => validateConfig({ default: { ...base, budget: { av2: 1 } } })).toThrow(/av2/)
+    expect(() => validateConfig({ default: { ...base, budget: { av1: 0 } } })).toThrow(/av1/)
+    expect(() => validateConfig({ default: { ...base, budget: { vp9: '1MB' } } })).toThrow(/vp9/)
+    expect(() => validateConfig({ default: { ...base, budget: [1] } })).toThrow(/budget/)
+  })
 })

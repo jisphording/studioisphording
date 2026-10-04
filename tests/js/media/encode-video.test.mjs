@@ -124,14 +124,36 @@ describe('encodeVideos', () => {
     expect(ffmpeg.calls.encode.every((c) => c.input !== c.output)).toBe(true)
   })
 
-  it('steps only the AV1 rung against the budget and records its CRF', async () => {
+  it('steps only the AV1 rung for a scalar budget and records its CRF', async () => {
     const ffmpeg = fakeFfmpeg({ bytesFor: (codec, crf) => (codec === 'libsvtav1' ? 1000 - (crf - RUNGS.av1.start) * 100 : 5000) })
     const { manifest, rungs, unmet } = await run({ ffmpeg, config: config(800) })
     const av1 = manifest.videos['home/reel.mp4'].variants[0]
     expect(av1).toMatchObject({ codec: 'av1', crf: RUNGS.av1.start + 2, bytes: 800 })
     expect(rungs.find((r) => r.codec === 'av1').attempts).toEqual([34, 36])
     expect(rungs.find((r) => r.codec === 'vp9').attempts).toEqual([34])
+    expect(rungs.find((r) => r.codec === 'h264').attempts).toEqual([RUNGS.h264.start])
     expect(unmet).toEqual([])
+  })
+
+  it('steps each budgeted rung of an object budget and encodes unbudgeted rungs once', async () => {
+    const ffmpeg = fakeFfmpeg({
+      bytesFor: (codec, crf) =>
+        codec === 'libsvtav1' ? 1000 - (crf - RUNGS.av1.start) * 100 : codec === 'libx264' ? 3000 - (crf - RUNGS.h264.start) * 500 : 5000
+    })
+    const { manifest, rungs, unmet } = await run({ ffmpeg, config: config({ av1: 800, h264: 2000 }) })
+    const [av1, vp9, h264] = manifest.videos['home/reel.mp4'].variants
+    expect(av1).toMatchObject({ crf: RUNGS.av1.start + 2, bytes: 800 })
+    expect(vp9).toMatchObject({ crf: RUNGS.vp9.start, bytes: 5000 })
+    expect(h264).toMatchObject({ crf: RUNGS.h264.start + 2, bytes: 2000 })
+    expect(rungs.find((r) => r.codec === 'vp9').budget).toBeNull()
+    expect(rungs.find((r) => r.codec === 'h264')).toMatchObject({ budget: 2000, met: true })
+    expect(unmet).toEqual([])
+  })
+
+  it('reports a miss on the rung that hit its own floor', async () => {
+    const ffmpeg = fakeFfmpeg({ bytesFor: () => 5000 })
+    const { unmet } = await run({ ffmpeg, config: config({ vp9: 100 }) })
+    expect(unmet).toEqual([expect.objectContaining({ codec: 'vp9', crf: RUNGS.vp9.floor, budget: 100 })])
   })
 
   it('stops at the floor, reports the miss and never alters duration or frame rate', async () => {
@@ -161,6 +183,12 @@ describe('encodeVideos', () => {
     await run({ config: config(800) })
     const again = await run({ config: config(900) })
     expect(again.encoded).toBe(1) // only the AV1 rung's key moved
+  })
+
+  it('re-encodes only the rung whose object budget changed', async () => {
+    await run({ config: config({ av1: 800, vp9: 900 }) })
+    const again = await run({ config: config({ av1: 800, vp9: 950 }) })
+    expect(again.encoded).toBe(1)
   })
 
   it('writes nothing on a dry run', async () => {

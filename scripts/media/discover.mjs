@@ -1,7 +1,7 @@
 // Master discovery: walk app/content for image masters.
 //
 // Strictly read-only — this module imports no write API from node:fs, and
-// tests/js/media/discover.test.mjs asserts that. Returns content-relative
+// the discoverMasters tests in tests/js/media/encode-images.test.mjs cover it. Returns content-relative
 // paths (forward slashes, no leading slash), the keys the manifest uses.
 
 import { readdir } from 'node:fs/promises'

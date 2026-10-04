@@ -88,7 +88,26 @@ segments, `?`). The most specific matching glob wins, layered over `default`.
 | `quality` | Raw per-codec map, e.g. `{ avif: 60, webp: 78, jpeg: 82 }`, bypassing the loop. Always a map — never a scalar, because the three codecs' scales are not comparable. |
 | `widths`, `formats` | Narrow the width ladder or format list for a path. |
 | `eager` | Render without lazy-loading (LCP candidate). |
-| `budget` | Video masters only: byte budget for the AV1 rung. CRF steps up until it fits or hits the floor; duration and frame rate are never trimmed. |
+| `budget` | Video masters only: a byte number (AV1 rung only) or `{ av1, vp9, h264 }` budgeting each rung. A budgeted rung's CRF steps up until it fits or hits that rung's floor; an unbudgeted rung encodes once. Duration and frame rate are never trimmed. |
+
+### Video budgets (per rung)
+
+Starting rule in `media.config.mjs`: AV1 ≈ 200 KB/s of duration, VP9 ≤ 1.5× and
+H.264 ≤ 2.5× the AV1 budget. Size / CRF, before → after the per-rung budgets
+(no floor misses; the rule is a ceiling, so short or already-small masters did
+not move):
+
+| Master | Duration | AV1 | VP9 | H.264 |
+| --- | --- | --- | --- | --- |
+| `about/about_moodfilm` | 44.3 s | 3.77 MB/34 → same | 4.98 MB/34 → same | 15.89 MB/23 → same |
+| `home/landing_reel` | 36.7 s | 7.04 MB/38 → same | 13.92 MB/34 → 10.14 MB/38 | 18.73 MB/23 → 16.35 MB/24 |
+| `Studio_Display_S02_Stone` | 10 s | 3.03 MB/34 → 1.93 MB/38 | 5.73 MB/34 → 2.96 MB/40 | 6.99 MB/23 → 4.99 MB/25 |
+| `Studio_Display_S03_Flat_Stone` | 5 s | 0.92 MB/34 → same | 1.28 MB/34 → same | 1.55 MB/23 → same |
+| `isphinnen_00_keyvisual` | 20 s | 2.10 MB/34 → same | 2.91 MB/34 → same | 5.53 MB/23 → same |
+
+The VP9 (48) and H.264 (32) floors are unchanged; no budget reached them.
+Rungs at CRF above their start (landing_reel, S02) are the ones to eyeball for
+blocking and banding.
 
 ### Fidelity bands
 
