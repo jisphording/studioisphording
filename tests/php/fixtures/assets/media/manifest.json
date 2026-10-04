@@ -248,6 +248,64 @@
           "url": "assets/media/home/reel.h264.3333.mp4"
         }
       ]
+    },
+    "projects/02-beta/beta-demo.mp4": {
+      "width": 1920,
+      "height": 1080,
+      "duration": 5,
+      "poster": "projects/02-beta/beta-demo.png",
+      "variants": [
+        {
+          "codec": "av1",
+          "type": "video/webm; codecs=\"av01.0.08M.08\"",
+          "bytes": 1,
+          "crf": 38,
+          "url": "assets/media/projects/02-beta/beta-demo.av1.1111.webm"
+        },
+        {
+          "codec": "vp9",
+          "type": "video/webm; codecs=\"vp09.00.40.08\"",
+          "bytes": 2,
+          "crf": 34,
+          "url": "assets/media/projects/02-beta/beta-demo.vp9.2222.webm"
+        },
+        {
+          "codec": "h264",
+          "type": "video/mp4; codecs=\"avc1.640028\"",
+          "bytes": 3,
+          "crf": 23,
+          "url": "assets/media/projects/02-beta/beta-demo.h264.3333.mp4"
+        }
+      ]
+    },
+    "projects/02-beta/beta_keyvisual.mp4": {
+      "width": 1920,
+      "height": 1080,
+      "duration": 5,
+      "poster": "projects/02-beta/beta_keyvisual.png",
+      "variants": [
+        {
+          "codec": "av1",
+          "type": "video/webm; codecs=\"av01.0.08M.08\"",
+          "bytes": 1,
+          "crf": 38,
+          "url": "assets/media/projects/02-beta/beta_keyvisual.av1.1111.webm"
+        },
+        {
+          "codec": "vp9",
+          "type": "video/webm; codecs=\"vp09.00.40.08\"",
+          "bytes": 2,
+          "crf": 34,
+          "url": "assets/media/projects/02-beta/beta_keyvisual.vp9.2222.webm"
+        },
+        {
+          "codec": "h264",
+          "type": "video/mp4; codecs=\"avc1.640028\"",
+          "bytes": 3,
+          "crf": 23,
+          "url": "assets/media/projects/02-beta/beta_keyvisual.h264.3333.mp4"
+        }
+      ]
     }
   }
 }

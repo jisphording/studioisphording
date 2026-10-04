@@ -141,4 +141,39 @@ final class ProjectGalleryTest extends KirbyTestCase
 
 		$this->assertSame(2, $this->dom($html)->query('//img')->length);
 	}
+
+	public function testGalleryVideosRenderFromTheManifestLadderAndSkipTheKeyvisualVideo(): void
+	{
+		// A project's videos come from the manifest ladder (AV1, VP9, H.264)
+		// like every other video. The keyvisual video is not a gallery item,
+		// legacy .webm siblings of a master are not videos of their own, and
+		// the still that is the video's poster is not listed as an image.
+		$page = $this->kirby->site()->find('projects/02-beta');
+		foreach (['beta-demo.mp4', 'beta-demo.webm', 'beta_keyvisual.mp4'] as $name) {
+			file_put_contents($page->root() . '/' . $name, 'x');
+		}
+		copy($page->root() . '/beta-work-01.png', $page->root() . '/beta-demo.png');
+		$this->app();
+
+		$html = $this->snippetHtml('project-gallery', [
+			'page' => $this->kirby->site()->find('projects/02-beta'),
+			'site' => $this->kirby->site(),
+		]);
+		$xpath = $this->dom($html);
+
+		$this->assertSame(1, $xpath->query('//video[not(ancestor::noscript)]')->length, 'one gallery video, keyvisual skipped');
+		$types = [];
+		foreach ($xpath->query('//video[not(ancestor::noscript)]//source') as $source) {
+			$types[] = $source->getAttribute('type');
+			$this->assertStringContainsString('beta-demo', $source->getAttribute('data-src'));
+			$this->assertStringNotContainsString('/video/', $source->getAttribute('data-src'));
+		}
+		$this->assertSame([
+			'video/webm; codecs="av01.0.08M.08"',
+			'video/webm; codecs="vp09.00.40.08"',
+			'video/mp4; codecs="avc1.640028"',
+		], $types);
+		$this->assertSame(1, $xpath->query('//img')->length, 'the poster still is not listed beside its video');
+		$this->assertStringNotContainsString('beta-demo', $xpath->query('//img')->item(0)->getAttribute('src'));
+	}
 }

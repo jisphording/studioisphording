@@ -5,13 +5,11 @@ use Kirby\Cms\Html;
 /**
  * Project Gallery Snippet
  * Handles both videos and images
- * 
+ *
  * @param bool $useResponsiveImages - Whether to use responsive images (default: true)
- * @param string $videoPath - Custom video path for three.js projects (default: uses Kirby videos)
  */
 
 $useResponsiveImages = $useResponsiveImages ?? true;
-$videoPath = $videoPath ?? null;
 ?>
 
 <ul class="project__single--gallery">
@@ -19,50 +17,24 @@ $videoPath = $videoPath ?? null;
 	// First, collect all videos that will be displayed
 	$displayedVideos = [];
 	
-	if ($videoPath) {
-		// Custom video handling for three.js projects
-		// Check which videos exist in the custom video directory (a real
-		// webroot-relative folder, e.g. app/video/, outside the content tree)
-		foreach($page->images()->filterBy('filename', '!*=', '_keyvisual')->filterBy('filename', '!*=', 'intro-img') as $image):
-			$baseName = pathinfo($image->filename(), PATHINFO_FILENAME);
-			$file_video_mp4 = $baseName . ".mp4";
-			$file_video_webm = $baseName . ".webm";
-			$filetocheck = kirby()->root('index') . '/' . $videoPath . $file_video_mp4;
-
-			if (file_exists($filetocheck)):
-				$displayedVideos[] = $baseName; ?>
-				<li>
-					<figure>
-						<?php snippet('responsive-video', [
-							// app/video/ lies outside the content tree, so no manifest
-							// entry: the existing file URLs are the sources.
-							'file'     => null,
-							'fallback' => [
-								['url' => url($videoPath . $file_video_mp4), 'type' => 'video/mp4'],
-								['url' => url($videoPath . $file_video_webm), 'type' => 'video/webm'],
-							],
-							'class' => 'showcase__grid--image',
-						]) ?>
-					</figure>
-				</li>
-			<?php endif;
-		endforeach;
-	} else {
-		// Standard Kirby video handling
-		foreach($page->videos() as $video): 
-			$videoBaseName = pathinfo($video->filename(), PATHINFO_FILENAME);
-			$displayedVideos[] = $videoBaseName; ?>
-			<li>
-				<figure>
-					<?php snippet('responsive-video', [
-						'file'     => $video,
-						'fallback' => [['url' => $video->url(), 'type' => $video->mime()]],
-						'class'    => 'showcase__grid--image',
-					]) ?>
-				</figure>
-			</li>
-		<?php endforeach;
-	}
+	// Videos render from the media manifest ladder like every other video.
+	// Only masters (.mp4/.mov) are gallery items: a .webm beside one is a
+	// legacy rendition, and the keyvisual video is not a gallery entry. The
+	// still sharing a master's base name is its poster, so the image loop
+	// skips it.
+	foreach($page->videos()->filter(fn ($video) => in_array(strtolower($video->extension()), ['mp4', 'mov'], true) && !str_contains($video->filename(), '_keyvisual')) as $video):
+		$videoBaseName = pathinfo($video->filename(), PATHINFO_FILENAME);
+		$displayedVideos[] = $videoBaseName; ?>
+		<li>
+			<figure>
+				<?php snippet('responsive-video', [
+					'file'     => $video,
+					'fallback' => [['url' => $video->url(), 'type' => $video->mime()]],
+					'class'    => 'showcase__grid--image',
+				]) ?>
+			</figure>
+		</li>
+	<?php endforeach;
 
 	// Then display images, filtering out keyvisual and intro images. Format
 	// negotiation (AVIF/WebP/JPEG) is the <picture> element's job, so every
