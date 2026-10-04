@@ -38,7 +38,7 @@ $index = 0; ?>
 	<figure class="showcase__grid--image">
 
 		<!-- Responsive Image -->
-		<?php snippet('responsive-image', ['file' => $image, 'alt' => 'Project: ' . $subpage->title(), 'class' => 'showcase__grid--image--inside', 'sizes' => null, 'eager' => $index < $eagerCount]) ?>
+		<?php snippet('responsive-image', ['file' => $image, 'alt' => 'Project: ' . $subpage->title()->titleText('raw'), 'class' => 'showcase__grid--image--inside', 'sizes' => null, 'eager' => $index < $eagerCount]) ?>
 
 	</figure>
 

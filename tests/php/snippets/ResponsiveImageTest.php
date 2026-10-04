@@ -114,6 +114,35 @@ final class ResponsiveImageTest extends KirbyTestCase
 		$this->assertSame(1, $xpath->query('//img[@srcset]')->length);
 	}
 
+	public function testWebpLessEntryRendersAvifSourceAndJpegImgOnly(): void
+	{
+		// Keyvisuals ship as AVIF + JPEG only: the manifest carries no webp
+		// variants, and the `if (!$variants) continue` skips that source.
+		$path     = $this->tmp . '/assets/media/manifest.json';
+		$manifest = json_decode(file_get_contents($path), true);
+		foreach ($manifest['images'] as &$entry) {
+			$entry['variants'] = array_values(array_filter(
+				$entry['variants'],
+				fn ($v) => $v['format'] !== 'webp'
+			));
+		}
+		unset($entry);
+		file_put_contents($path, json_encode($manifest));
+		$this->app();
+
+		$xpath = $this->render('projects/01-alpha');
+
+		$types = [];
+		foreach ($xpath->query('//picture//source') as $source) {
+			$types[] = $source->getAttribute('type');
+		}
+		$this->assertSame(['image/avif'], $types, 'AVIF source only, no WebP source');
+
+		$img = $xpath->query('//picture//img')->item(0);
+		$this->assertNotNull($img);
+		$this->assertStringContainsString('alpha_keyvisual-1200-ffff.jpg 1200w', $img->getAttribute('srcset'));
+	}
+
 	public function testAltAndClassAreEscapedInThePictureBranch(): void
 	{
 		$html = $this->snippetHtml('responsive-image', [

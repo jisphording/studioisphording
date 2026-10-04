@@ -23,7 +23,7 @@ if ($items->isNotEmpty()) :
 			<ul>
 				<?php foreach ($items as $item) : ?>
 					<li>
-						<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>
+						<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->titleText() ?></a>
 					</li>
 				<?php endforeach ?>
 					<li>
@@ -39,7 +39,7 @@ if ($items->isNotEmpty()) :
 		<ul>
 			<?php foreach ($items as $item) : ?>
 				<li>
-					<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->html() ?></a>
+					<a<?php e($item->isOpen(), ' class="active"') ?> href="<?= $item->url() ?>"><?= $item->title()->titleText() ?></a>
 				</li>
 			<?php endforeach ?>
 				<li>

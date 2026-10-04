@@ -81,7 +81,7 @@ $videoPath = $videoPath ?? null;
 						try {
 							$responsiveImage = snippet('responsive-image', [
 								'file'  => $selectedImage,
-								'alt'   => $page->title()->value(),
+								'alt'   => $page->title()->titleText('raw')->value(),
 								'class' => 'showcase__grid--image--inside',
 								'sizes' => null,
 								'eager' => false,
@@ -99,7 +99,7 @@ $videoPath = $videoPath ?? null;
 						// are off or the responsive image threw.
 						$thumb = $site->getThumbnail($selectedImage, 800, 640, 85);
 						echo Html::img($thumb->url(), [
-							'alt'   => $page->title()->value(),
+							'alt'   => $page->title()->titleText('raw')->value(),
 							'class' => 'showcase__grid--image--inside',
 						]);
 					}

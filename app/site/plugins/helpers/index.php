@@ -20,6 +20,25 @@ if (!function_exists('remove_br_tags')) {
 	}
 }
 
+if (!function_exists('tag_items')) {
+	// TAG ITEMS
+	// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+	/**
+	 * Split a comma-separated tags field into clean tag names: each is
+	 * trimmed, inner spaces are kept ('Brand Design' stays two words) and
+	 * empties are dropped. The one explode-on-comma for tags in app/site.
+	 * @param {string} $tags - The raw tags field value.
+	 * @return {string[]} - The tag names, unescaped.
+	 */
+	function tag_items(string $tags): array
+	{
+		return array_values(array_filter(
+			array_map('trim', explode(',', $tags)),
+			fn ($tag) => $tag !== ''
+		));
+	}
+}
+
 if (!function_exists('create_tags')) {
 	// CREATE TAGS LIST
 	// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- //
@@ -30,18 +49,8 @@ if (!function_exists('create_tags')) {
 	 */
 	function create_tags($tags)
 	{
-		// Remove whitespace from string
-		$tags = str_replace(' ', '', $tags);
-
-		// Put tag list from kirby into array
-		$tag_list = explode(',', $tags);
-
-		// Create <li> markup for every non-empty element in array
 		$items = '';
-		foreach ($tag_list as $tag) {
-			if ($tag === '') {
-				continue;
-			}
+		foreach (tag_items((string)$tags) as $tag) {
 			$items .= '<li>' . esc($tag) . '</li>';
 		}
 
@@ -67,6 +76,28 @@ Kirby::plugin('studio-isphording/helpers', [
 				'<$1>',
 				esc((string)$field->value)
 			);
+
+			return $field;
+		},
+
+		// TITLE TEXT
+		// ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- //
+		/**
+		 * Plain-text version of a title for contexts that cannot render
+		 * markup (<title>, data-* and alt attributes): <br> becomes a space,
+		 * every other tag is stripped and whitespace is collapsed.
+		 *
+		 * $context picks the escaping: 'html' (default) and 'attr' escape for
+		 * that context; 'raw' returns unescaped text for values handed to a
+		 * snippet that escapes them itself (e.g. responsive-image's $alt).
+		 *
+		 * Usage: <title><?= $page->title()->titleText() ?></title>
+		 */
+		'titleText' => function ($field, string $context = 'html') {
+			$text = preg_replace('/<br\s*\/?>/i', ' ', (string)$field->value);
+			$text = trim(preg_replace('/\s+/', ' ', strip_tags($text)));
+
+			$field->value = $context === 'raw' ? $text : esc($text, $context);
 
 			return $field;
 		},

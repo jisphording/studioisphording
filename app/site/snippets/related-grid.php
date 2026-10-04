@@ -28,7 +28,7 @@ $subpages = $parentPage->children()->limit($limit); ?>
 		<a href="<?= $subpage->url() ?>">
 		<?php if($image = $subpage->keyvisual()): ?>
 		<div class="related__showcase--image-wrap">
-			<?php snippet('responsive-image', ['file' => $image, 'alt' => 'Thumbnail for ' . $subpage->title(), 'class' => 'rel-article-showcase--image', 'sizes' => null, 'eager' => false]) ?>
+			<?php snippet('responsive-image', ['file' => $image, 'alt' => 'Thumbnail for ' . $subpage->title()->titleText('raw'), 'class' => 'rel-article-showcase--image', 'sizes' => null, 'eager' => false]) ?>
 		</div>
 
 		<?php endif ?>

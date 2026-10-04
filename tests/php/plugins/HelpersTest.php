@@ -38,7 +38,7 @@ final class HelpersTest extends KirbyTestCase
 
 		$html = create_tags('Editorial, Print');
 
-		// str_replace strips spaces; the function returns rather than echoes.
+		// The function returns rather than echoes.
 		$this->assertSame('<li>Editorial</li><li>Print</li>', $html);
 	}
 
@@ -68,6 +68,20 @@ final class HelpersTest extends KirbyTestCase
 			'<li>Editorial</li><li>Print</li>',
 			create_tags(' Editorial , Print ')
 		);
+	}
+
+	public function testCreateTagsKeepsInnerSpaces(): void
+	{
+		// Phase 9: create_tags() used to strip every space ("BrandDesign");
+		// it now trims only, via the shared tag_items() helper.
+		$this->assertSame('<li>R&amp;D</li><li>Brand Design</li>', create_tags('R&D, Brand Design,'));
+	}
+
+	public function testTagItemsTrimsKeepsInnerSpacesAndDropsEmpties(): void
+	{
+		$this->assertSame(['R&D', 'Brand Design'], tag_items('R&D, Brand Design,'));
+		$this->assertSame([], tag_items(''));
+		$this->assertSame([], tag_items(' , ,'));
 	}
 
 	public function testLoadingHelpersPluginFileTwiceDoesNotFatal(): void

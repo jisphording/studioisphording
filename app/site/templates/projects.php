@@ -20,7 +20,7 @@
       <a href="<?= $project->url() ?>">
         <figure>
           <?php if($coverImage = $project->images()->filterBy('filename', '*=', '_keyvisual')->first()): ?>
-            <?= $site->getResponsiveImage($coverImage, $project->title(), 'project-list-image') ?>
+            <?php snippet('responsive-image', ['file' => $coverImage, 'alt' => $project->title()->titleText('raw')->value(), 'class' => 'project-list-image', 'sizes' => '100vw']) ?>
           <?php endif ?>
           <figcaption><?= $project->title()->titleHtml() ?> <small><?= $project->year()->escape() ?></small></figcaption>
         </figure>

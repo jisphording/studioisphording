@@ -17,7 +17,7 @@
 				<!-- about mood -->
 				<section class="mood full">
 					<?php if($moodImage = $page->file($page->mood_01())): ?>
-						<?= $site->getResponsiveImage($moodImage, $page->mood_01_txt(), 'mood-image') ?>
+						<?php snippet('responsive-image', ['file' => $moodImage, 'alt' => $page->mood_01_txt()->value(), 'class' => 'mood-image', 'sizes' => '100vw', 'eager' => true]) ?>
 					<?php endif ?>
 					<p class="bildunterschrift"><?= $page->mood_01_txt()->escape() ?></p>
 				</section>
@@ -33,17 +33,17 @@
 					<ul>
 						<li class="full border">
 							<?php if($moodImage2 = $page->file($page->mood_02())): ?>
-								<?= $site->getResponsiveImage($moodImage2, 'Mood image', 'mood-image-full') ?>
+								<?php snippet('responsive-image', ['file' => $moodImage2, 'alt' => 'Mood image', 'class' => 'mood-image-full', 'sizes' => '100vw']) ?>
 							<?php endif ?>
 						</li>
 						<li class="quarter">
 							<?php if($moodImage3a = $page->file($page->mood_03a())): ?>
-								<?= $site->getResponsiveImage($moodImage3a, 'Mood image', 'mood-image-quarter') ?>
+								<?php snippet('responsive-image', ['file' => $moodImage3a, 'alt' => 'Mood image', 'class' => 'mood-image-quarter', 'sizes' => '(max-width: 767px) 100vw, 50vw']) ?>
 							<?php endif ?>
 						</li>
 						<li class="quarter">
 							<?php if($moodImage3b = $page->file($page->mood_03b())): ?>
-								<?= $site->getResponsiveImage($moodImage3b, 'Mood image', 'mood-image-quarter') ?>
+								<?php snippet('responsive-image', ['file' => $moodImage3b, 'alt' => 'Mood image', 'class' => 'mood-image-quarter', 'sizes' => '(max-width: 767px) 100vw, 50vw']) ?>
 							<?php endif ?>
 						</li>
 					</ul>

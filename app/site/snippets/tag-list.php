@@ -4,16 +4,10 @@
  *
  * @var \Kirby\Content\Field|string $tags the tags field (or its value)
  *
- * Behaviour is a verbatim move of the tag loop that lived inline in the
- * old related-pages site method: explode on ',' with NO trimming, so a
- * "R&D, Branding" field still yields the leading space on " Branding".
- * Each tag is HTML-escaped. An empty field renders nothing.
+ * Renders from the shared tag_items() helper (helpers plugin), the same as
+ * create_tags(): each tag is trimmed, inner spaces are kept, empties are
+ * skipped. Each tag is HTML-escaped. An empty field renders nothing.
  */
-$value = (string)($tags ?? '');
-if ($value === '') {
-	return;
-}
-$taglist = explode(',', $value);
-foreach ($taglist as $tag): ?>
+foreach (tag_items((string)($tags ?? '')) as $tag): ?>
 	<li><?= esc($tag) ?></li>
 <?php endforeach ?>

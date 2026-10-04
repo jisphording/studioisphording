@@ -1,7 +1,7 @@
 <section class="section__headline">
-	<h1 data-value="<?= $page->headline()->or($page->title())->esc() ?>" >
+	<h1 data-value="<?= $page->headline()->or($page->title())->titleText() ?>" >
 		<?php // Split headline into two rows with approx. same number of words
-			$title = $page->headline()->or($page->title())->esc();
+			$title = $page->headline()->or($page->title())->titleText();
 			$title_words = explode( " ", $title );
 			$title_length = count( $title_words ); 
 			$title_chunk = array_chunk( $title_words, ceil( $title_length / 2 ) );
@@ -12,4 +12,4 @@
             }
 		?>
 	</h1>
-</section>
+</section>

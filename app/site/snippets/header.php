@@ -12,7 +12,7 @@
 	<meta name="author" content="Johannes Isphording" />
 	<meta name="keywords" content="design, digital, writing, longform" />
 
-	<title><?= $site->title()->esc() ?> | <?= $page->title()->esc() ?></title>
+	<title><?= $site->title()->esc() ?> | <?= $page->title()->titleText() ?></title>
 
 	<link rel="preload" as="font" type="font/woff2" href="<?= url('assets/fonts/RadioGrotesk-Regular.woff2') ?>" crossorigin>
 	<link rel="preload" as="font" type="font/woff2" href="<?= url('assets/fonts/Grafier-Regular.woff2') ?>" crossorigin>
@@ -23,7 +23,7 @@
 
 	<link rel="stylesheet" href="<?= url('assets/bundle/app.css') ?>">
 
-	<?= vite('js/index.js') ?>
+	<?= vite('js/index.js', $page->rendersWebgl()) ?>
 
 	<link rel="shortcut icon" type="image/x-icon" href="<?= url('favicon.ico') ?>">
 

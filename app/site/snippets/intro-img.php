@@ -12,7 +12,7 @@
 		if ( !empty( $introimg )) { ?>
 			<!-- Image Wrapper -->
 			<figure class="showcase__intro__image">
-				<?php snippet('responsive-image', ['file' => $introimg, 'alt' => 'Project: ' . $page->title(), 'class' => 'showcase__intro__image--inside', 'sizes' => null, 'eager' => true]) ?>
+				<?php snippet('responsive-image', ['file' => $introimg, 'alt' => 'Project: ' . $page->title()->titleText('raw'), 'class' => 'showcase__intro__image--inside', 'sizes' => null, 'eager' => true]) ?>
 			</figure>
 		<?php } ?>
 	</section>
